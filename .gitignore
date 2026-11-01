@@ -1,0 +1,13 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Export builds
+*.apk
+*.aab
+*.idsig
+
+# Keystores and signing credentials (never commit!)
+*.keystore
+*.jks
+export_credentials.cfg
