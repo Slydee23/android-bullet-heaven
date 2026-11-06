@@ -3,12 +3,13 @@
 ## Status
 - [x] M0 – Umstellung auf Querformat
 - [ ] M1 – Hauptmenü, Arena, Spielfigur, Kamera
-- [ ] M2 – Touch-Steuerung + GitHub-README
+- [ ] M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
 - [ ] M3 – Gegner (mit Performance-Grundlage)
 - [ ] M4 – Auto-Angriff
-- [ ] M5 – Stresstest & Optimierung
+- [ ] M5 – Debug-Menü, Stresstest & Optimierung
 - [ ] M6 – XP & Level-Up
 - [ ] M7 – Wellen & Run-Ende
+- [ ] M8 – Run speichern & fortsetzen
 
 ## Ziel
 Zuerst entsteht ein kleines, spielbares Grundspiel (Bewegen, Gegner, Auto-Angriff, Level-Up, Wellen). Danach kommen die
@@ -111,6 +112,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/tiles/forest_props.png` | Reihe aus 32×32-Zellen (Bäume, Felsen, Büsche; unten bündig) | beliebig viele | M1 |
 | `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
 | `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
+| `assets/ui/pause_button.png` | 16×16 | 1 | M2 |
 | `assets/sprites/enemies/skeleton_walk.png` | 16×16 | 4 | M3 |
 | `assets/sprites/characters/hero_hit.png` | 16×16 | 2 | M3 |
 | `assets/sprites/characters/hero_death.png` | 16×16 | 6 | M3 |
@@ -125,6 +127,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/card_frame.png` | 32×32 (9-Slice) | 1 | M6 |
 | `assets/sprites/enemies/bat_fly.png` | 16×16 | 4 | M7 |
 | `assets/sprites/enemies/slime_hop.png` | 16×16 | 4 | M7 |
+| `assets/ui/paperdoll.png` | Silhouette ca. 64×96 | 1 | E7 |
 
 ## Meilensteine – Grundspiel
 
@@ -146,31 +149,51 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   Das Bild dreht sich mit, wenn du das Handy umdrehst.
   **Am PC (F5):** Der Held läuft mit WASD, die Kamera folgt und bleibt am Arenarand stehen.
 
-### M2 – Touch-Steuerung + GitHub-README
+### M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
 - `README.md` für GitHub, geschrieben, als wäre das Spiel fertig und zum Download bereit. Aufbau orientiert an
   READMEs veröffentlichter Indie-Games: Titel, Kurzbeschreibung, Features, Lore-Teaser, Steuerung, Download, Tech-Stack, Lizenz.
 - Virtueller Joystick mit drei Modi: Floating (linke Bildschirmhälfte, Standard), Fest (unten links) und Überall.
-  Zum Umschalten gibt es vorerst ein kleines Debug-Menü, das richtige Einstellungsmenü kommt später.
-- **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere alle 3 Modi aus und sag mir,
-  welcher sich am besten anfühlt.
+- **Optionsmenü (Grundgerüst):** erreichbar aus dem Hauptmenü und aus der Pause. Erster Eintrag: Steuerung → Joystick-Modus.
+  Einstellungen werden gespeichert (`user://settings.cfg`) und bleiben nach einem Neustart erhalten.
+- **Pause-/Statusbildschirm (Grundgerüst):** Pause-Knopf oben rechts, am PC Esc, am Handy die Zurück-Geste.
+  Knöpfe „Weiter“, „Optionen“ und „Run aufgeben“ (bis M8 geht der Run dabei verloren).
+  Die drei Status-Spalten (siehe „UI-Konzepte“) sind schon angelegt und füllen sich ab M3.
+- **Auto-Pause:** Wechselt die App in den Hintergrund (andere App, Anruf), öffnet sich automatisch das Pausemenü.
+- **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere alle 3 Modi im Optionsmenü aus
+  und sag mir, welcher sich am besten anfühlt. Schließ die App und öffne sie neu: Der gewählte Modus ist noch eingestellt.
+  Pause-Knopf und Zurück-Geste öffnen die Pause. Wechsle während eines Runs kurz in eine andere App:
+  Beim Zurückkommen ist das Spiel pausiert.
   **Auf GitHub:** Prüfe auf der Repo-Startseite, ob die README gut aussieht und dir der Text gefällt.
 
 ### M3 – Gegner (mit Performance-Grundlage)
 - `EnemyManager` mit Pooling und Spatial Grid. Gegner (z. B. Skelett) erscheinen außerhalb des Sichtfelds und laufen auf den
   Helden zu, ohne sich alle auf einen Punkt zu stapeln.
 - Bei Berührung nimmt der Held Schaden. Es gibt eine Lebensleiste, und bei 0 HP kommt ein Game-Over-Bildschirm mit den Knöpfen „Nochmal“ und „Hauptmenü“.
+- **Lebensleiste über dem Helden** (Option „Lebensleiste Spieler“ an/aus).
+- **Treffer-Feedback beim Helden:** kurzes Bildschirmwackeln und Vibration (Optionen „Bildschirmwackeln“ und „Vibration“).
+  Für Vibration braucht der Android-Export die Berechtigung VIBRATE. Das ist eine Änderung an `export_presets.cfg`, vorher fragen.
+- Statusbildschirm zeigt HP.
 - FPS-Anzeige in der Ecke.
 - **Am Handy testen:** Die Gegner kommen von außen herein und verfolgen dich. Du verlierst Leben, Game Over und Neustart funktionieren.
+  Bei Treffern wackelt das Bild und das Handy vibriert. Beides und die Lebensleiste lassen sich in den Optionen abschalten.
   Notiere dir den FPS-Wert.
 
 ### M4 – Auto-Angriff
 - Erste Waffe „Magiegeschoss“: Sie schießt automatisch auf den nächsten Gegner. Geschosse kommen aus einem Pool.
   Gegner haben HP, blinken kurz bei einem Treffer und sterben (mit kleinem Effekt).
 - Die Waffe ist als Resource-Datei angelegt (Grundlage für spätere Level und Evolutionen).
+- **Schadenszahlen** über getroffenen Gegnern (Option „Schadenszahlen“), aus einem Pool.
+- **Lebensleisten über Gegnern** (Option „Lebensleisten Gegner“). Sie erscheinen nur bei bereits verletzten Gegnern und
+  werden alle in einem einzigen Zeichenaufruf des EnemyManagers gezeichnet, nicht als eigene Nodes. Das ist wichtig für die Performance.
+- Statusbildschirm zeigt die Waffe mit ihren Werten.
 - **Am Handy testen:** Der Held schießt von allein, Treffer und Tode sind gut zu erkennen, und das Spiel fühlt sich an wie ein Survivor-Like.
+  Schadenszahlen und Gegner-Lebensleisten lassen sich einzeln abschalten.
 
-### M5 – Stresstest & Optimierung
-- Debug-Knopf: „+100 Gegner“. Messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
+### M5 – Debug-Menü, Stresstest & Optimierung
+- **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release):
+  FPS und Gegnerzahl, „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
+  in M7 „Zu Welle X springen“, später z. B. „Magie-Schrott geben“.
+- Mit „+100 Gegner“ messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
   Bei Bedarf optimieren, z. B. mit MultiMesh-Rendering oder einem gröberen Grid.
 - Zielwert: mindestens **500 gleichzeitige Gegner bei 60 FPS** auf dem Testhandy **Redmi Note 13 4G** (Snapdragon 685 / Adreno 610 GPU, Display 2400×1080 = 20:9).
   Das ist untere Mittelklasse: Läuft es dort flüssig, läuft es auf den meisten Handys.
@@ -182,6 +205,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 - Beim Level-Up pausiert das Spiel, und es erscheinen **3 Karten** zum Antippen: eine neue Waffe (maximal 3 Slots) oder
   das Upgrade einer vorhandenen Waffe.
 - Im Grundspiel gibt es 3 Waffen, z. B. Magiegeschoss, kreisende Klingen und Feuer-Aura.
+- Statusbildschirm zeigt Level, XP, alle Waffen-Slots mit Level und Werten sowie die Spielerwerte.
 - **Am Handy testen:** Kristalle werden eingesammelt, das Level-Up-Menü lässt sich gut antippen und die Karten sind lesbar.
   Mit 3 Waffen kommen keine neuen Waffen mehr, sondern nur noch Upgrades.
 
@@ -189,32 +213,114 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 - Wellen-Timer (z. B. 60 s) mit Anzeige, z. B. „Welle 3 / 10“. Die Gegner werden pro Welle stärker und zahlreicher.
 - Zwischen den Wellen gibt es einen Platzhalter-Rastplatz: eine Pause mit Wellen-Zusammenfassung und „Weiter“-Knopf.
   Die echten Händler kommen später.
-- Nach der letzten Welle erscheint ein Sieg-Bildschirm, bei Tod ein Game-Over-Bildschirm. Beide zeigen eine kleine Statistik (Kills, Zeit, Level) und führen zurück ins Hauptmenü.
+- Nach der letzten Welle erscheint ein Sieg-Bildschirm, bei Tod ein Game-Over-Bildschirm. Beide zeigen die
+  **Run-Zusammenfassung (Basis)** (siehe „UI-Konzepte“) und führen zurück ins Hauptmenü.
+- Statusbildschirm zeigt Welle, Zeit und Kills.
 - **Am Handy testen:** Ein kompletter Run lässt sich durchspielen, gewinnen und verlieren. Ist die Länge von 10–15 Minuten angenehm?
+  Stimmen die Zahlen in der Zusammenfassung?
 
-➡ **Nach M7 ist das Grundspiel fertig.**
+### M8 – Run speichern & fortsetzen
+- Die genaue technische Umsetzung planen wir zu Beginn von M8. Diese Grundsätze stehen schon fest:
+  - Im Pausemenü wird „Run aufgeben“ ergänzt durch **„Speichern & Hauptmenü“**. Im Hauptmenü erscheint **„Fortsetzen“**,
+    wenn ein Run gespeichert ist.
+  - **Autosave nach jeder abgeschlossenen Welle** (beim Betreten des Rastplatzes).
+  - **Autosave, wenn die App in den Hintergrund geht.** Android kann Apps im Hintergrund jederzeit beenden.
+  - **Kein Save-Scumming:**
+    - Shop-Angebote und Level-Up-Auswahlen werden beim Erzeugen mitgespeichert. Neuladen würfelt sie nicht neu.
+    - Jeder Kauf wird sofort gespeichert und lässt sich durch Neuladen nicht rückgängig machen.
+    - Beim Tod wird der Run-Spielstand sofort gelöscht. Wer die App kurz vor dem Tod beendet, kann sich so nicht retten.
+  - **Sicheres Schreiben:** erst in eine temporäre Datei schreiben, dann ersetzen. Bei einem Absturz während des Speicherns
+    bleibt so der alte Spielstand erhalten.
+  - **Versionsnummer im Spielstand**, damit spätere Spiel-Updates alte Spielstände erkennen und umwandeln können.
+- **Am Handy testen:** Run mitten in einer Welle über „Speichern & Hauptmenü“ beenden, App ganz schließen, neu starten,
+  „Fortsetzen“ funktioniert. Am Rastplatz etwas kaufen, App beenden, neu starten: Der Kauf ist noch da, die Angebote sind dieselben.
 
-## Erweiterungen (später, Reihenfolge flexibel)
-1. Einstellungsmenü + Speichersystem (Joystick-Modus, Lautstärke, Fortschritt), erreichbar über einen Knopf im Hauptmenü
-2. Spezialfähigkeit (aufladbar, Knopf rechts)
-3. Waffen-Evolutionen (Level 10 → 3 Varianten → 2. Evolution → 3 Varianten = 9 Endformen)
-4. Rastplätze mit zufälligen Händlern (Tränke, Artefakte), Währung „Magie-Schrott“
-5. Dorf-Hub: Gebäude wieder aufbauen, NPCs, Story-Dialoge
-6. Rüstungssystem mit RPG-Slots (nur im Dorf)
-7. Materialien und Meta-Währung aus den Runs, permanente Upgrades
-8. Mehrere Charaktere mit eigener Startwaffe und Spezialfähigkeit
-9. Weitere Maps/Biome und Gegnertypen, Bosse
-10. Endlos-Modus nach der letzten Welle
-11. Echte Pixel-Art, Sound und Musik, Effekte
+➡ **Nach M8 ist das Grundspiel fertig.**
 
-## Vor dem ersten Play-Store-Upload
-- Endgültigen Spielnamen festlegen, dann Paketnamen (`com.slydee23.…`) und App-Namen im Export-Preset anpassen.
+## UI-Konzepte
+
+### Pause-/Statusbildschirm (im Run)
+Drei Spalten, damit im Querformat alles auf einen Blick sichtbar ist:
+
+| Links: Charakter | Mitte: Waffen | Rechts: Ausrüstung & Run |
+|---|---|---|
+| HP, Level, XP-Fortschritt | 3 Waffen-Slots: Icon, Level x/10, Evolutionsstufe und gewählter Zweig | **Paperdoll** mit angelegter Rüstung |
+| Spezialfähigkeit + Abklingzeit | Werte je Waffe: Schaden, Tempo, Reichweite | Aktive Artefakte mit Beschreibung |
+| Werte: Schaden %, Angriffstempo, Laufgeschwindigkeit, Krit, Rüstung, Regeneration, Sammelradius, Glück | Bisher verursachter Schaden je Waffe | Tränke im Inventar |
+| | | Ausbeute: Magie-Schrott, Materialien, Kills, Zeit, Welle x/y |
+
+Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) · Run aufgeben**.
+
+**Paperdoll (Ausrüstungsanzeige):**
+- In der Mitte steht eine humanoide Charakter-Silhouette, die Rüstungs-Slots liegen direkt an der passenden Körperstelle:
+  Helm am Kopf, Schultern an den Schultern, Brust am Oberkörper, Handschuhe an den Händen, Beine an den Beinen, Stiefel an den Füßen.
+- Antippen eines Slots öffnet ein Infofenster mit Name, Werten und Boni des Teils. Im Run kann man nur ansehen, nicht tauschen.
+- Sie wird als **wiederverwendbare Komponente** gebaut: Im Dorf dient dieselbe Paperdoll zum Anlegen und Tauschen der Rüstung.
+- Bis zum Rüstungssystem (E7) bleibt die Stelle leer oder zeigt nur die Silhouette.
+
+### Optionsmenü
+Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeichert.
+**Regel: Jede Option kommt im selben Meilenstein wie das Feature, das sie steuert.**
+
+| Bereich | Option | Kommt in |
+|---|---|---|
+| Steuerung | Joystick-Modus (Floating / Fest / Überall) | M2 |
+| Anzeige | Lebensleiste Spieler an/aus | M3 |
+| Anzeige | Bildschirmwackeln an/aus | M3 |
+| Anzeige | Vibration an/aus | M3 |
+| Anzeige | Schadenszahlen an/aus | M4 |
+| Anzeige | Lebensleisten Gegner an/aus | M4 |
+| Audio | Lautstärke Gesamt / Musik / Effekte | E2 |
+| Sprache | Deutsch / Englisch | E14 |
+| Steuerung | Joystick-Größe, -Transparenz, Linkshänder-Modus | E15 |
+| Grafik | FPS-Limit 30 / 60 / 120 | E15 |
+
+### Run-Zusammenfassung / Belohnungsbildschirm
+Erscheint nach jedem Run (Sieg oder Tod) und zeigt Run-Ergebnis und langfristigen Fortschritt.
+- **Basis (M7):** Kills, überstandene Wellen, Zeit, erreichtes Level, verwendete Waffen mit Level, Schaden pro Waffe.
+- **Voll (E5):**
+  - Run-Statistiken: Kills nach Gegnertyp, erlittener und geheilter Schaden, höchster Einzeltreffer.
+  - Build-Zusammenfassung: Waffen mit Evolutionszweig, gewählte Upgrades und Werte, Artefakte.
+  - Belohnungen: erhaltene Materialien und Ressourcen, was davon ins Dorf geht.
+- **Quests (E9):** erhaltene Quest-Items und Questfortschritt.
+
+## Erweiterungen (Alpha, nach M8)
+Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Beginn.
+1. **E1 – Rastplätze mit Händlern:** zufällige Händler (Tränke, Artefakte), Währung „Magie-Schrott“. Braucht Wellen (M7) und Speichern (M8).
+2. **E2 – Audio:** Musik und Soundeffekte, Lautstärke-Optionen.
+3. **E3 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm.
+4. **E4 – Waffen-Evolutionen:** Level 10 → 1 von 3 Varianten → 2. Evolution → 1 von 3 = 9 Endformen.
+5. **E5 – Meta-Spielstand + Belohnungsbildschirm:** dauerhafter Spielstand, Materialien aus Runs, volle Run-Zusammenfassung.
+6. **E6 – Dorf-Hub:** Gebäude wieder aufbauen (Schmied, Alchemist, Enchanter …), NPCs, Story-Dialoge.
+7. **E7 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und anlegen, im Run ansehen.
+8. **E8 – Permanente Upgrades** über Dorf-Gebäude.
+9. **E9 – Questsystem:** Quest-Items und Questfortschritt, Anzeige im Belohnungsbildschirm.
+10. **E10 – Mehrere Charaktere** mit eigener Startwaffe und Spezialfähigkeit.
+11. **E11 – Tutorial / erster Start:** braucht Level-Up, Rastplatz und Spezialfähigkeit. Den Inhalt besprechen wir vorher gemeinsam.
+12. **E12 – Weitere Maps/Biome, Gegnertypen, Bosse.**
+13. **E13 – Endlos-Modus** nach der letzten Welle.
+14. **E14 – Englisch** + Sprach-Option.
+15. **E15 – Erweiterte Optionen:** Joystick-Größe/-Transparenz, Linkshänder, FPS-Limit.
+16. **E16 – Credits-Bildschirm.** Ab dem ersten fremden Asset führen wir `CREDITS.md` mit Quelle und Lizenz,
+    damit am Ende nichts fehlt.
+- **Laufend:** Alpha-Assets ersetzen die Platzhalter, sobald du sie hast.
+
+## Beta (vor der Veröffentlichung, nicht Teil der Alpha)
+- **Monetarisierung** entscheiden (Einmalkauf, Werbung, In-App-Käufe oder kostenlos). Das beeinflusst das Design, z. B. ob es
+  „Wiederbeleben gegen Werbung“ gibt.
+- **Play-Store-Pflichten:** App-Icon, Datenschutzerklärung (Pflicht, auch ohne Werbung), Altersfreigabe, Store-Texte, Screenshots.
+- **Endgültiger Spielname**, dann Paketname (`com.slydee23.…`) und App-Namen im Export-Preset anpassen.
   Nach dem ersten Upload lässt sich der Paketname nie mehr ändern.
 
-## Später brainstormen
-- Händlertypen an Rastplätzen und was es dort außer Shops noch gibt
+## Offene Designfragen
+- **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
+  exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit
+  vollen HP vom Wellenanfang wiederholen. Ist das okay, oder braucht es eine Gegenmaßnahme? → vor M8 entscheiden
+- **Magie-Schrott vs. Materialien:** Magie-Schrott = Run-Währung für Rastplatz-Händler, verfällt am Run-Ende
+  (Lore-Idee: Überreste der zerfallenen Waffen). Materialien (z. B. Holz, Erz, Kräuter) = dauerhafte Beute fürs Dorf. Passt das? → vor E1
+- Händlertypen an Rastplätzen und was es dort außer Shops noch gibt → vor E1
 - Echte Namen für [Hohe Zirkel], [den Bann] und die Welt
-- Details zu Dorf, Rüstung, Evolutionen (sobald das Grundspiel steht)
+- Details zu Dorf, Rüstung, Evolutionen → jeweils vor dem Meilenstein
 
 ## Verifikation
 - Nach jedem Meilenstein: F5 am PC, danach Remote-Deploy aufs Handy (Testpunkte siehe oben).
