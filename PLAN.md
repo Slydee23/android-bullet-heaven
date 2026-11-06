@@ -171,7 +171,8 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 ### M5 – Stresstest & Optimierung
 - Debug-Knopf: „+100 Gegner“. Messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
   Bei Bedarf optimieren, z. B. mit MultiMesh-Rendering oder einem gröberen Grid.
-- Zielwert: mindestens **500 gleichzeitige Gegner bei 60 FPS** auf dem Testhandy **Redmi Note 13** (Mittelklasse, also ein guter Maßstab).
+- Zielwert: mindestens **500 gleichzeitige Gegner bei 60 FPS** auf dem Testhandy **Redmi Note 13 4G** (Snapdragon 685 / Adreno 610 GPU, Display 2400×1080 = 20:9).
+  Das ist untere Mittelklasse: Läuft es dort flüssig, läuft es auf den meisten Handys.
   Den Wert passen wir nach der Messung an.
 - **Am Handy testen:** Spawne immer mehr Gegner und sag mir, ab welcher Anzahl es ruckelt und wie warm das Handy wird.
 

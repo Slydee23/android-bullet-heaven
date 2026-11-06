@@ -21,7 +21,7 @@
 Der aktuelle Plan steht in PLAN.md, halte ihn aktuell.
 
 - Spieltexte: immer über Übersetzungssystem (`tr()`), zuerst Deutsch, später Englisch
-- Testhandy: Redmi Note 13
+- Testhandy: Redmi Note 13 4G (Snapdragon 685, Adreno 610, 2400×1080 / 20:9) – Performance-Maßstab
 
 ## Android-Export
 - Bereits eingerichtet in `export_presets.cfg`, Paketname `com.slydee23.bulletheaven`
