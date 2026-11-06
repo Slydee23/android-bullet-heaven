@@ -3,7 +3,7 @@
 ## Status
 - [x] M0 – Umstellung auf Querformat
 - [ ] M1 – Hauptmenü, Arena, Spielfigur, Kamera
-- [ ] M2 – Touch-Steuerung
+- [ ] M2 – Touch-Steuerung + GitHub-README
 - [ ] M3 – Gegner (mit Performance-Grundlage)
 - [ ] M4 – Auto-Angriff
 - [ ] M5 – Stresstest & Optimierung
@@ -82,6 +82,8 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
   Magie-Schrott), liegt in einem eigenen `RunState`, der nach jedem Run gelöscht wird. Dauerhaftes (Rüstung, Dorf,
   Freischaltungen) kommt später in einen separaten Spielstand. So passt die Architektur von Anfang an zur Lore.
 - **Ordnerstruktur:** `scenes/`, `scripts/`, `assets/sprites/`, `data/weapons/`, `data/enemies/`, `ui/`.
+- **Sprache:** Alle Spieltexte laufen von Anfang an über Godots Übersetzungssystem (`tr()` + Übersetzungstabelle).
+  Zuerst gibt es nur Deutsch, Englisch kommt später dazu, ohne dass Code geändert werden muss.
 - **PC-Test:** Am PC funktionieren zusätzlich WASD und die Pfeiltasten. F5 bleibt damit immer nutzbar.
 
 ## Assets: Platzhalter → Alpha
@@ -143,11 +145,14 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   Das Bild dreht sich mit, wenn du das Handy umdrehst.
   **Am PC (F5):** Der Held läuft mit WASD, die Kamera folgt und bleibt am Arenarand stehen.
 
-### M2 – Touch-Steuerung
+### M2 – Touch-Steuerung + GitHub-README
+- `README.md` für GitHub, geschrieben, als wäre das Spiel fertig und zum Download bereit. Aufbau orientiert an
+  READMEs veröffentlichter Indie-Games: Titel, Kurzbeschreibung, Features, Lore-Teaser, Steuerung, Download, Tech-Stack, Lizenz.
 - Virtueller Joystick mit drei Modi: Floating (linke Bildschirmhälfte, Standard), Fest (unten links) und Überall.
   Zum Umschalten gibt es vorerst ein kleines Debug-Menü, das richtige Einstellungsmenü kommt später.
 - **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere alle 3 Modi aus und sag mir,
   welcher sich am besten anfühlt.
+  **Auf GitHub:** Prüfe auf der Repo-Startseite, ob die README gut aussieht und dir der Text gefällt.
 
 ### M3 – Gegner (mit Performance-Grundlage)
 - `EnemyManager` mit Pooling und Spatial Grid. Gegner (z. B. Skelett) erscheinen außerhalb des Sichtfelds und laufen auf den
@@ -166,7 +171,8 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 ### M5 – Stresstest & Optimierung
 - Debug-Knopf: „+100 Gegner“. Messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
   Bei Bedarf optimieren, z. B. mit MultiMesh-Rendering oder einem gröberen Grid.
-- Zielwert: mindestens **500 gleichzeitige Gegner bei 60 FPS** auf deinem Handy. Den Wert passen wir nach der Messung an.
+- Zielwert: mindestens **500 gleichzeitige Gegner bei 60 FPS** auf dem Testhandy **Redmi Note 13** (Mittelklasse, also ein guter Maßstab).
+  Den Wert passen wir nach der Messung an.
 - **Am Handy testen:** Spawne immer mehr Gegner und sag mir, ab welcher Anzahl es ruckelt und wie warm das Handy wird.
 
 ### M6 – XP & Level-Up

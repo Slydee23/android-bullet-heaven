@@ -20,6 +20,9 @@
 
 Der aktuelle Plan steht in PLAN.md, halte ihn aktuell.
 
+- Spieltexte: immer über Übersetzungssystem (`tr()`), zuerst Deutsch, später Englisch
+- Testhandy: Redmi Note 13
+
 ## Android-Export
 - Bereits eingerichtet in `export_presets.cfg`, Paketname `com.slydee23.bulletheaven`
 - `export_presets.cfg` **nicht verändern**
