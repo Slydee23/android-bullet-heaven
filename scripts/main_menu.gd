@@ -9,9 +9,13 @@ const BUTTON_TEXTURE := preload("res://assets/ui/button.png")
 const BUTTON_MARGIN := 4
 
 @onready var start_button: Button = %StartButton
+@onready var version_label: Label = %VersionLabel
 
 
 func _ready() -> void:
+	# Version steht zentral in Projekteinstellungen → Anwendung → Konfiguration → Version
+	version_label.text = ProjectSettings.get_setting("application/config/version", "")
+
 	var style := PixelUI.nine_slice(BUTTON_TEXTURE, BUTTON_MARGIN)
 	var pressed_style := style.duplicate() as StyleBoxTexture
 	pressed_style.modulate_color = Color(0.7, 0.7, 0.7)
