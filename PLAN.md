@@ -97,17 +97,18 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 - **Dateinamen auf Englisch, klein geschrieben, mit Unterstrich, ohne Umlaute und Leerzeichen**
   (z. B. `hero_run.png`, nicht `Held Laufen.png`). Android unterscheidet Groß- und Kleinschreibung,
   und Umlaute in Dateinamen machen Probleme.
-- Hat ein Alpha-Asset eine andere Frame-Anzahl oder Größe, sag mir Bescheid. Dann passe ich die Animation an (ist eine Zahl).
+- Die **Frame-Anzahl** wird automatisch aus der Bildbreite berechnet (Breite ÷ Frame-Breite). Mehr oder weniger Frames
+  sind also kein Problem. Nur bei einer anderen **Frame-Größe** (z. B. 16×24 statt 16×16) sag mir Bescheid.
 
 | Datei | Größe pro Frame | Frames | Ab |
 |---|---|---|---|
-| `assets/ui/menu_background.png` | 480×270 (gerne breiter, z. B. 600×270) | 1 | M1 |
-| `assets/fonts/pixel_font.ttf` | – (mit ä, ö, ü, ß) | – | M1 |
+| `assets/ui/menu_background.png` | 600×270 (mind. 480×270) | 1 | M1 |
+| `assets/fonts/pixel_font.ttf` | – (mit ä, ö, ü, ß); noch kein Platzhalter, bis dahin Godot-Standardschrift | – | M1 |
 | `assets/ui/button.png` | 16×16 (9-Slice) | 1 | M1 |
 | `assets/sprites/characters/hero_idle.png` | 16×16 | 4 | M1 |
 | `assets/sprites/characters/hero_run.png` | 16×16 | 6 | M1 |
-| `assets/tiles/forest_ground.png` | Kacheln 16×16 (Tileset) | – | M1 |
-| `assets/tiles/forest_props.png` | 16×32 / 32×32 (Bäume, Felsen) | – | M1 |
+| `assets/tiles/forest_ground.png` | Kacheln 16×16 in **einer Reihe** = Bodenvarianten; die erste Kachel wird am häufigsten benutzt | beliebig viele | M1 |
+| `assets/tiles/forest_props.png` | Reihe aus 32×32-Zellen (Bäume, Felsen, Büsche; unten bündig) | beliebig viele | M1 |
 | `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
 | `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
 | `assets/sprites/enemies/skeleton_walk.png` | 16×16 | 4 | M3 |
