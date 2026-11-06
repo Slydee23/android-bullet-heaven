@@ -1,8 +1,8 @@
-# Plan: Bullet-Heaven für Android (Querformat)
+# Plan: Banebound (Codename) – Bullet-Heaven für Android (Querformat)
 
 ## Status
 - [x] M0 – Umstellung auf Querformat
-- [ ] M1 – Arena, Spielfigur, Kamera
+- [ ] M1 – Hauptmenü, Arena, Spielfigur, Kamera
 - [ ] M2 – Touch-Steuerung
 - [ ] M3 – Gegner (mit Performance-Grundlage)
 - [ ] M4 – Auto-Angriff
@@ -68,8 +68,7 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Orientation:** `sensor_landscape`. Querformat bleibt fest, und das Bild dreht sich mit, egal wie herum man das Handy hält.
 - **Pixel-Art:** Die Texturen werden ohne Glättung skaliert (Filter `Nearest`) und erscheinen dadurch scharf und pixelig.
   Platzhalter-Sprites sind 16×16 bzw. 32×32 Pixel und werden im Spiel 4× vergrößert angezeigt.
-  Ich erstelle sie selbst als kleine Pixel-SVGs (z. B. Held, Skelett, Fledermaus, Schleim, Magiegeschoss,
-  XP-Kristall, Waldboden).
+  Ich erstelle sie selbst als kleine PNGs (Liste und Vorgaben siehe „Assets: Platzhalter → Alpha“).
 - **Performance von Anfang an:**
   - Gegner sind **keine** Physik-Körper. Ein zentraler `EnemyManager` bewegt alle Gegner in einer einzigen Schleife.
   - Kollisionen laufen über ein **Spatial Grid**. Jeder Gegner prüft nur Objekte in den Nachbarzellen statt alle anderen.
@@ -85,6 +84,45 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Ordnerstruktur:** `scenes/`, `scripts/`, `assets/sprites/`, `data/weapons/`, `data/enemies/`, `ui/`.
 - **PC-Test:** Am PC funktionieren zusätzlich WASD und die Pfeiltasten. F5 bleibt damit immer nutzbar.
 
+## Assets: Platzhalter → Alpha
+Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Assets überschreibst du einfach die Datei mit
+**demselben Namen am selben Ort**. Godot importiert sie dann automatisch neu, und am Code ändert sich nichts.
+
+**Vorgaben:**
+- PNG mit Transparenz, Pixel-Art ohne Anti-Aliasing, Grundraster 16×16, im Spiel 4× vergrößert.
+- Animationen als horizontaler Streifen: alle Frames gleich groß, eine Datei pro Animation.
+- Lizenz: CC0 oder ausdrücklich für kommerzielle Nutzung freigegeben.
+- **Dateinamen auf Englisch, klein geschrieben, mit Unterstrich, ohne Umlaute und Leerzeichen**
+  (z. B. `hero_run.png`, nicht `Held Laufen.png`). Android unterscheidet Groß- und Kleinschreibung,
+  und Umlaute in Dateinamen machen Probleme.
+- Hat ein Alpha-Asset eine andere Frame-Anzahl oder Größe, sag mir Bescheid. Dann passe ich die Animation an (ist eine Zahl).
+
+| Datei | Größe pro Frame | Frames | Ab |
+|---|---|---|---|
+| `assets/ui/menu_background.png` | 480×270 (gerne breiter, z. B. 600×270) | 1 | M1 |
+| `assets/fonts/pixel_font.ttf` | – (mit ä, ö, ü, ß) | – | M1 |
+| `assets/ui/button.png` | 16×16 (9-Slice) | 1 | M1 |
+| `assets/sprites/characters/hero_idle.png` | 16×16 | 4 | M1 |
+| `assets/sprites/characters/hero_run.png` | 16×16 | 6 | M1 |
+| `assets/tiles/forest_ground.png` | Kacheln 16×16 (Tileset) | – | M1 |
+| `assets/tiles/forest_props.png` | 16×32 / 32×32 (Bäume, Felsen) | – | M1 |
+| `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
+| `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
+| `assets/sprites/enemies/skeleton_walk.png` | 16×16 | 4 | M3 |
+| `assets/sprites/characters/hero_hit.png` | 16×16 | 2 | M3 |
+| `assets/sprites/characters/hero_death.png` | 16×16 | 6 | M3 |
+| `assets/ui/bar_frame.png` / `bar_fill.png` | 48×8 | 1 | M3 |
+| `assets/sprites/weapons/magic_bolt.png` | 8×8 | 4 | M4 |
+| `assets/sprites/effects/hit.png` | 16×16 | 4 | M4 |
+| `assets/sprites/effects/death.png` | 16×16 | 6 | M4 |
+| `assets/sprites/pickups/xp_crystal.png` | 8×8 | 4 | M6 |
+| `assets/sprites/weapons/spinning_blade.png` | 16×16 | 1 | M6 |
+| `assets/sprites/weapons/fire_aura.png` | 64×64 | 8 | M6 |
+| `assets/sprites/icons/weapon_magic_bolt.png` (usw. je Waffe) | 16×16 | 1 | M6 |
+| `assets/ui/card_frame.png` | 32×32 (9-Slice) | 1 | M6 |
+| `assets/sprites/enemies/bat_fly.png` | 16×16 | 4 | M7 |
+| `assets/sprites/enemies/slime_hop.png` | 16×16 | 4 | M7 |
+
 ## Meilensteine – Grundspiel
 
 ### M0 – Umstellung auf Querformat
@@ -96,10 +134,12 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Am Handy testen:** In diesem Meilenstein noch nichts, weil es noch keine Szene gibt. Prüfe nur in Godot unter
   Projekt → Projekteinstellungen → Anzeige → Fenster, ob 1920×1080 und Landscape eingetragen sind.
 
-### M1 – Arena, Spielfigur, Kamera
-- Haupt-Szene mit einer Wald-Arena (Pixel-Bodenkacheln, Begrenzung durch Bäume oder Ränder), Held-Sprite in der Mitte,
+### M1 – Hauptmenü, Arena, Spielfigur, Kamera
+- Hauptmenü als Startszene: Titel „Banebound“ und ein Knopf „Run starten“, der in die Arena führt. Mehr kann das Menü vorerst nicht.
+- Run-Szene mit einer Wald-Arena (Pixel-Bodenkacheln, Begrenzung durch Bäume oder Ränder), Held-Sprite in der Mitte,
   Kamera folgt mit Begrenzung am Arenarand. Bewegung vorerst nur per Tastatur.
-- **Am Handy testen:** Das Spiel startet im Querformat und füllt den ganzen Bildschirm. Die Pixel sind scharf (nicht verschwommen).
+- **Am Handy testen:** Das Spiel startet im Hauptmenü, „Run starten“ lässt sich antippen und führt in die Arena.
+  Das Bild ist im Querformat und füllt den ganzen Bildschirm. Die Pixel sind scharf (nicht verschwommen).
   Das Bild dreht sich mit, wenn du das Handy umdrehst.
   **Am PC (F5):** Der Held läuft mit WASD, die Kamera folgt und bleibt am Arenarand stehen.
 
@@ -112,7 +152,7 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 ### M3 – Gegner (mit Performance-Grundlage)
 - `EnemyManager` mit Pooling und Spatial Grid. Gegner (z. B. Skelett) erscheinen außerhalb des Sichtfelds und laufen auf den
   Helden zu, ohne sich alle auf einen Punkt zu stapeln.
-- Bei Berührung nimmt der Held Schaden. Es gibt eine Lebensleiste, und bei 0 HP kommt ein Game-Over-Bildschirm mit „Nochmal“-Knopf.
+- Bei Berührung nimmt der Held Schaden. Es gibt eine Lebensleiste, und bei 0 HP kommt ein Game-Over-Bildschirm mit den Knöpfen „Nochmal“ und „Hauptmenü“.
 - FPS-Anzeige in der Ecke.
 - **Am Handy testen:** Die Gegner kommen von außen herein und verfolgen dich. Du verlierst Leben, Game Over und Neustart funktionieren.
   Notiere dir den FPS-Wert.
@@ -141,13 +181,13 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - Wellen-Timer (z. B. 60 s) mit Anzeige, z. B. „Welle 3 / 10“. Die Gegner werden pro Welle stärker und zahlreicher.
 - Zwischen den Wellen gibt es einen Platzhalter-Rastplatz: eine Pause mit Wellen-Zusammenfassung und „Weiter“-Knopf.
   Die echten Händler kommen später.
-- Nach der letzten Welle erscheint ein Sieg-Bildschirm, bei Tod ein Game-Over-Bildschirm. Beide zeigen eine kleine Statistik (Kills, Zeit, Level).
+- Nach der letzten Welle erscheint ein Sieg-Bildschirm, bei Tod ein Game-Over-Bildschirm. Beide zeigen eine kleine Statistik (Kills, Zeit, Level) und führen zurück ins Hauptmenü.
 - **Am Handy testen:** Ein kompletter Run lässt sich durchspielen, gewinnen und verlieren. Ist die Länge von 10–15 Minuten angenehm?
 
 ➡ **Nach M7 ist das Grundspiel fertig.**
 
 ## Erweiterungen (später, Reihenfolge flexibel)
-1. Einstellungsmenü + Speichersystem (Joystick-Modus, Lautstärke, Fortschritt)
+1. Einstellungsmenü + Speichersystem (Joystick-Modus, Lautstärke, Fortschritt), erreichbar über einen Knopf im Hauptmenü
 2. Spezialfähigkeit (aufladbar, Knopf rechts)
 3. Waffen-Evolutionen (Level 10 → 3 Varianten → 2. Evolution → 3 Varianten = 9 Endformen)
 4. Rastplätze mit zufälligen Händlern (Tränke, Artefakte), Währung „Magie-Schrott“
@@ -158,6 +198,10 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 9. Weitere Maps/Biome und Gegnertypen, Bosse
 10. Endlos-Modus nach der letzten Welle
 11. Echte Pixel-Art, Sound und Musik, Effekte
+
+## Vor dem ersten Play-Store-Upload
+- Endgültigen Spielnamen festlegen, dann Paketnamen (`com.slydee23.…`) und App-Namen im Export-Preset anpassen.
+  Nach dem ersten Upload lässt sich der Paketname nie mehr ändern.
 
 ## Später brainstormen
 - Händlertypen an Rastplätzen und was es dort außer Shops noch gibt

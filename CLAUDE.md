@@ -1,13 +1,14 @@
-# android-bullet-heaven
+# Banebound (Codename)
 
 ## Projekt
-- Spiel: Bullet-Heaven / Survivor-Like für Android
+- Spiel: Bullet-Heaven / Survivor-Like für Android, Codename „Banebound“ (Repo/Ordner heißen android-bullet-heaven)
 - Querformat (Landscape, `sensor_landscape`), Touch-Steuerung
 - Engine: Godot 4.7.2 (Standard-Version, **nicht** .NET)
 - Sprache: GDScript
 - Renderer: Mobile
 - Viewport 1920×1080, Stretch `canvas_items` + `expand` (breitere Handys zeigen mehr Welt, UI an Ränder/Safe Area verankern)
-- Grafik: 2D Fantasy Pixel-Art, Texturfilter `Nearest`; Platzhalter-Sprites als kleine Pixel-SVGs
+- Grafik: 2D Fantasy Pixel-Art, Texturfilter `Nearest`; Platzhalter als PNG nach den Vorgaben in PLAN.md
+  (Dateinamen englisch, snake_case); der Nutzer ersetzt sie durch Überschreiben mit Alpha-Assets
 
 ## Konzept (Kurzfassung, Details in PLAN.md)
 - Dunkle Fantasy; Runs = Expeditionen in feste Maps, Wellen mit Rastplätzen (Händler) dazwischen, 10–20 min
