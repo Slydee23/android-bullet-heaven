@@ -2,7 +2,7 @@
 
 ## Status
 - [x] M0 – Umstellung auf Querformat
-- [ ] M1 – Hauptmenü, Arena, Spielfigur, Kamera
+- [x] M1 – Hauptmenü, Arena, Spielfigur, Kamera
 - [ ] M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
 - [ ] M3 – Gegner (mit Performance-Grundlage)
 - [ ] M4 – Auto-Angriff
@@ -82,7 +82,37 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Run-Zustand und dauerhafter Zustand getrennt:** Alles, was nur im Run gilt (Waffen, Level, XP, Artefakte,
   Magie-Schrott), liegt in einem eigenen `RunState`, der nach jedem Run gelöscht wird. Dauerhaftes (Rüstung, Dorf,
   Freischaltungen) kommt später in einen separaten Spielstand. So passt die Architektur von Anfang an zur Lore.
-- **Ordnerstruktur:** `scenes/`, `scripts/`, `assets/sprites/`, `data/weapons/`, `data/enemies/`, `ui/`.
+- **Materialien (und andere Gegenstände) als Daten:** Jedes Material ist eine eigene Datei in `data/materials/`
+  (z. B. `iron_ore.tres`) mit ID, Name (Übersetzungs-Schlüssel), Icon, Seltenheit, Wert und Beschreibung.
+  - Ein zentrales **Register** lädt beim Start automatisch alle Dateien aus dem Ordner. Kein Code kennt eine feste Materialliste.
+  - **Neues Material** = neue Datei anlegen. **Werte ändern** = Datei bearbeiten. **Entfernen** = Datei löschen.
+    Am Code ändert sich dabei nichts.
+  - Inventare speichern nur **ID → Anzahl**. Unbekannte IDs (z. B. von gelöschten Materialien) werden beim Laden übersprungen,
+    statt den Spielstand kaputt zu machen.
+  - **Crafting-Rezepte** und **Quests** sind ebenfalls Datendateien und verweisen auf Materialien („3× `iron_ore` + 1× `wolf_pelt`“).
+    So hängen Materialien, Rezepte und Quests zusammen, ohne dass einer den anderen im Code kennen muss.
+  - Ein Prüfskript (im Debug-Menü) meldet Rezepte oder Quests, die auf nicht mehr vorhandene Materialien verweisen.
+  - Dasselbe Muster gilt später für Rüstungsteile, Artefakte, Tränke und Verzauberungen.
+- **Ordnerstruktur:** `scenes/`, `scripts/`, `assets/sprites/`, `data/weapons/`, `data/enemies/`, `data/materials/`, `ui/`.
+
+### Speicher-Architektur
+Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnummer und sicherem Schreiben:
+
+| Datei | Inhalt | Lebensdauer | Ab |
+|---|---|---|---|
+| `settings.cfg` | Optionen (Joystick, Anzeige, Audio, Sprache) | dauerhaft | M2 |
+| `run.save` | **Run-Spielstand:** Waffen + Level, Spielerlevel/XP, HP, Welle, Artefakte, Tränke, Magie-Schrott, im Run gesammelte Materialien, gespeicherte Shop-Angebote und Level-Up-Karten, Run-Statistik | nur während eines Runs | M8 |
+| `profile.save` | **Profil-Spielstand:** Dorf-Ausbau, Material-Lager, Rüstungsbesitz + angelegte Rüstung, Verzauberungen, permanente Upgrades, Freischaltungen, Quests, Gesamtstatistik | dauerhaft, wird nie durch einen Run gelöscht | E5 |
+
+- Der Run-Spielstand **liest** die angelegte Rüstung nur aus dem Profil (im Run kann man sie nicht tauschen) und schreibt nie hinein.
+- **Run-Ende (Sieg oder Tod), feste Reihenfolge:**
+  1. Belohnungen berechnen (was ins Dorf geht, siehe offene Frage unten).
+  2. Belohnungen ins Profil eintragen und `profile.save` sicher speichern.
+  3. Erst danach `run.save` löschen.
+  Stürzt die App zwischen 2 und 3 ab, merkt das Spiel beim nächsten Start an einer im Profil gespeicherten Run-ID,
+  dass die Belohnung schon gutgeschrieben ist. So gibt es weder doppelte noch verlorene Belohnungen.
+- Die Meta-Progression (Dorf, Rüstung, Verzauberungen, Freischaltungen) kann **durch einen Tod nie verloren gehen**,
+  weil der Tod nur `run.save` betrifft.
 - **Sprache:** Alle Spieltexte laufen von Anfang an über Godots Übersetzungssystem (`tr()` + Übersetzungstabelle).
   Zuerst gibt es nur Deutsch, Englisch kommt später dazu, ohne dass Code geändert werden muss.
 - **PC-Test:** Am PC funktionieren zusätzlich WASD und die Pfeiltasten. F5 bleibt damit immer nutzbar.
@@ -144,6 +174,9 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 - Hauptmenü als Startszene: Titel „Banebound“ und ein Knopf „Run starten“, der in die Arena führt. Mehr kann das Menü vorerst nicht.
 - Run-Szene mit einer Wald-Arena (Pixel-Bodenkacheln, Begrenzung durch Bäume oder Ränder), Held-Sprite in der Mitte,
   Kamera folgt mit Begrenzung am Arenarand. Bewegung vorerst nur per Tastatur.
+- Versionsanzeige unten rechts im Hauptmenü (aus Projekteinstellungen → `application/config/version`, aktuell „Alpha v0.1“).
+- Die Arena-Begrenzung durch Bäume, Büsche und Steine ist **vorläufig**. Du hast eine andere Idee für die Map-Abgrenzung,
+  die Props-Texturen werden dann anderweitig verwendet. → Thema nach M7 (siehe dort).
 - **Am Handy testen:** Das Spiel startet im Hauptmenü, „Run starten“ lässt sich antippen und führt in die Arena.
   Das Bild ist im Querformat und füllt den ganzen Bildschirm. Die Pixel sind scharf (nicht verschwommen).
   Das Bild dreht sich mit, wenn du das Handy umdrehst.
@@ -218,6 +251,8 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 - Statusbildschirm zeigt Welle, Zeit und Kills.
 - **Am Handy testen:** Ein kompletter Run lässt sich durchspielen, gewinnen und verlieren. Ist die Länge von 10–15 Minuten angenehm?
   Stimmen die Zahlen in der Zusammenfassung?
+- ⚠ **Erinnerung nach Abschluss von M7:** Neue Idee für die **Map-Abgrenzung** besprechen (ersetzt den Rand aus Bäumen/Büschen/Steinen)
+  und klären, wofür die Props-Texturen stattdessen verwendet werden.
 
 ### M8 – Run speichern & fortsetzen
 - Die genaue technische Umsetzung planen wir zu Beginn von M8. Diese Grundsätze stehen schon fest:
@@ -232,8 +267,12 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   - **Sicheres Schreiben:** erst in eine temporäre Datei schreiben, dann ersetzen. Bei einem Absturz während des Speicherns
     bleibt so der alte Spielstand erhalten.
   - **Versionsnummer im Spielstand**, damit spätere Spiel-Updates alte Spielstände erkennen und umwandeln können.
+  - **Getrennte Speicherdateien** (siehe „Speicher-Architektur“). In M8 entsteht nur der Run-Spielstand, der Profil-Spielstand kommt in E5.
+- **Changelog im Hauptmenü:** Knopf „Neuigkeiten“ öffnet eine scrollbare Liste der Änderungen je Version.
+  Der Inhalt steht in einer eigenen Textdatei im Projekt, damit für eine neue Version nur diese Datei ergänzt wird.
 - **Am Handy testen:** Run mitten in einer Welle über „Speichern & Hauptmenü“ beenden, App ganz schließen, neu starten,
   „Fortsetzen“ funktioniert. Am Rastplatz etwas kaufen, App beenden, neu starten: Der Kauf ist noch da, die Angebote sind dieselben.
+  Der Changelog lässt sich öffnen, scrollen und schließen.
 
 ➡ **Nach M8 ist das Grundspiel fertig.**
 
@@ -255,7 +294,9 @@ Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) 
 - In der Mitte steht eine humanoide Charakter-Silhouette, die Rüstungs-Slots liegen direkt an der passenden Körperstelle:
   Helm am Kopf, Schultern an den Schultern, Brust am Oberkörper, Handschuhe an den Händen, Beine an den Beinen, Stiefel an den Füßen.
 - Antippen eines Slots öffnet ein Infofenster mit Name, Werten und Boni des Teils. Im Run kann man nur ansehen, nicht tauschen.
-- Sie wird als **wiederverwendbare Komponente** gebaut: Im Dorf dient dieselbe Paperdoll zum Anlegen und Tauschen der Rüstung.
+- Sie wird als **wiederverwendbare Komponente** gebaut. Das **Ausrüsten im Dorf läuft ebenfalls über die Paperdoll**:
+  Slot an der Silhouette antippen → Liste der passenden Teile aus dem Besitz → auswählen → angelegt.
+  Übersicht und Ausrüsten sind also derselbe Bildschirm, nur dass im Run das Tauschen gesperrt ist.
 - Bis zum Rüstungssystem (E7) bleibt die Stelle leer oder zeigt nur die Silhouette.
 
 ### Optionsmenü
@@ -290,9 +331,10 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 2. **E2 – Audio:** Musik und Soundeffekte, Lautstärke-Optionen.
 3. **E3 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm.
 4. **E4 – Waffen-Evolutionen:** Level 10 → 1 von 3 Varianten → 2. Evolution → 1 von 3 = 9 Endformen.
-5. **E5 – Meta-Spielstand + Belohnungsbildschirm:** dauerhafter Spielstand, Materialien aus Runs, volle Run-Zusammenfassung.
+5. **E5 – Meta-Spielstand + Belohnungsbildschirm:** Profil-Spielstand (`profile.save`), Material-Register und erste Materialien
+   aus Runs, volle Run-Zusammenfassung.
 6. **E6 – Dorf-Hub:** Gebäude wieder aufbauen (Schmied, Alchemist, Enchanter …), NPCs, Story-Dialoge.
-7. **E7 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und anlegen, im Run ansehen.
+7. **E7 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und über die Paperdoll anlegen, im Run ansehen.
 8. **E8 – Permanente Upgrades** über Dorf-Gebäude.
 9. **E9 – Questsystem:** Quest-Items und Questfortschritt, Anzeige im Belohnungsbildschirm.
 10. **E10 – Mehrere Charaktere** mit eigener Startwaffe und Spezialfähigkeit.
@@ -318,6 +360,9 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
   vollen HP vom Wellenanfang wiederholen. Ist das okay, oder braucht es eine Gegenmaßnahme? → vor M8 entscheiden
 - **Magie-Schrott vs. Materialien:** Magie-Schrott = Run-Währung für Rastplatz-Händler, verfällt am Run-Ende
   (Lore-Idee: Überreste der zerfallenen Waffen). Materialien (z. B. Holz, Erz, Kräuter) = dauerhafte Beute fürs Dorf. Passt das? → vor E1
+- **Materialien beim Tod:** Behält man alle im Run gesammelten Materialien, nur einen Teil (z. B. 50 %) oder nur die
+  bis zum letzten Rastplatz gesammelten? Die Meta-Progression bleibt in jedem Fall erhalten. → vor E5
+- Welche Materialien es gibt (Liste wächst laufend, dank Daten-Dateien unkritisch) → vor E5
 - Händlertypen an Rastplätzen und was es dort außer Shops noch gibt → vor E1
 - Echte Namen für [Hohe Zirkel], [den Bann] und die Welt
 - Details zu Dorf, Rüstung, Evolutionen → jeweils vor dem Meilenstein
