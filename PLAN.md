@@ -213,6 +213,8 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
   Zurück-Geste und Esc schließen immer nur das oberste offene Fenster (Optionen → Pause → weiterspielen).
   Die drei Status-Spalten (siehe „UI-Konzepte“) sind schon angelegt und füllen sich ab M3.
 - **Auto-Pause:** Wechselt die App in den Hintergrund (andere App, Anruf), öffnet sich automatisch das Pausemenü.
+  Bekannte Einschränkung: Das Herunterziehen der Benachrichtigungsleiste meldet Android/Godot auf dem Testhandy nicht,
+  dort pausiert das Spiel nicht. Ab M3 (Gegner) prüfen, ob das stört; dann ggf. nachbessern.
 - **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere Modi, Seiten und Transparenz im Optionsmenü aus
   und sag mir, was sich am besten anfühlt. Schließ die App und öffne sie neu: Die Einstellungen sind noch da.
   Pause-Knopf und Zurück-Geste öffnen die Pause. Wechsle während eines Runs kurz in eine andere App:
@@ -294,6 +296,8 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
 - **Am Handy testen:** Run mitten in einer Welle über „Speichern & Hauptmenü“ beenden, App ganz schließen, neu starten,
   „Fortsetzen“ funktioniert. Am Rastplatz etwas kaufen, App beenden, neu starten: Der Kauf ist noch da, die Angebote sind dieselben.
   Der Changelog lässt sich öffnen, scrollen und schließen.
+
+- ⚠ **Erinnerung nach Abschluss von M8:** UI-Design-Überarbeitung besprechen (siehe „UI-Überarbeitung“).
 
 ➡ **Nach M8 ist das Grundspiel fertig.**
 
@@ -394,6 +398,12 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 ## Ideen (noch nicht eingeplant)
 - **Headstart-Perk:** Ein Teil des Magie-Schrotts aus dem vorherigen Run wird in den nächsten Run mitgenommen.
   Wie und ob das ins Spiel kommt, ist noch offen.
+
+## UI-Überarbeitung (später)
+- **Feedback zu M2c:** Das Design von Pausemenü, Status-Screen und Buttons wirkt kantig und nicht modern.
+  Erst angehen, wenn die Menüs inhaltlich vollständig sind → **nach M8 gemeinsam besprechen**.
+- Technisch hängt die Optik vor allem an den UI-Texturen (`button.png`, `panel.png` …) und den Theme-Werten in
+  `scripts/pixel_ui.gd` (`make_theme()`). Der Menü-Code bleibt bei einem Redesign weitgehend unberührt.
 
 ## Offene Designfragen
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder

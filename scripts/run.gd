@@ -49,6 +49,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		open_pause_menu()
 
 
+func _notification(what: int) -> void:
+	# Auto-Pause: App geht in den Hintergrund (Android) oder das Fenster verliert den Fokus (PC, Benachrichtigungsleiste)
+	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		open_pause_menu()
+
+
 func open_pause_menu() -> void:
 	if _pause_menu:
 		return
