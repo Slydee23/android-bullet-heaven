@@ -10,12 +10,17 @@ const MAIN_GROUND_SHARE := 0.7
 
 const GROUND_TEXTURE := preload("res://assets/tiles/forest_ground.png")
 const PROPS_TEXTURE := preload("res://assets/tiles/forest_props.png")
+const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
+
+var _pause_menu: Control
 
 @onready var ground: TileMapLayer = $Ground
 @onready var props: Node2D = $Props
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Player/Camera2D
 @onready var joystick: TouchJoystick = $HUD/TouchJoystick
+@onready var hud: CanvasLayer = $HUD
+@onready var pause_button: TextureButton = $HUD/PauseButton
 
 
 func _ready() -> void:
@@ -33,6 +38,23 @@ func _ready() -> void:
 	camera.limit_right = int(arena.size.x)
 	camera.limit_bottom = int(arena.size.y)
 	camera.call_deferred("reset_smoothing")
+
+	pause_button.pressed.connect(open_pause_menu)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	# Esc am PC bzw. Zurück-Geste am Handy öffnet die Pause
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		open_pause_menu()
+
+
+func open_pause_menu() -> void:
+	if _pause_menu:
+		return
+	_pause_menu = PAUSE_MENU.instantiate()
+	_pause_menu.tree_exited.connect(func() -> void: _pause_menu = null)
+	hud.add_child(_pause_menu)
 
 
 func _build_ground() -> void:

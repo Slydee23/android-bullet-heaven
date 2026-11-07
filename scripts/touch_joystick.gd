@@ -15,6 +15,8 @@ const FIXED_MARGIN := Vector2(80, 80)
 const DEADZONE := 0.15
 ## Durchsichtigkeit des festen Joysticks, solange er nicht berührt wird
 const IDLE_ALPHA := 0.5
+## Controls in dieser Gruppe (z. B. Pause-Knopf) starten keinen Joystick
+const BLOCKER_GROUP := &"joystick_blocker"
 
 ## Laufrichtung, Länge 0..1
 var output := Vector2.ZERO
@@ -43,6 +45,9 @@ func _input(event: InputEvent) -> void:
 
 
 func _can_start_at(pos: Vector2) -> bool:
+	for blocker: Control in get_tree().get_nodes_in_group(BLOCKER_GROUP):
+		if blocker.is_visible_in_tree() and blocker.get_global_rect().has_point(pos):
+			return false
 	if Settings.joystick_mode == Settings.JoystickMode.FIXED:
 		# Etwas großzügiger als der Ring, damit man ihn leicht trifft
 		return pos.distance_to(_fixed_center()) < _radius() * 1.5
@@ -99,3 +104,6 @@ func _draw() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:
 		queue_redraw()
+	elif what == NOTIFICATION_PAUSED:
+		# Während der Pause kommt das Loslassen des Daumens hier nicht an
+		_release()

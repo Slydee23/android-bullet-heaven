@@ -1,0 +1,132 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="1_script"]
+
+[node name="PauseMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.01, 0.04, 0.75)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 96
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 96
+theme_override_constants/margin_bottom = 48
+
+[node name="Layout" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Title" type="Label" parent="Margin/Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "PAUSE_TITLE"
+horizontal_alignment = 1
+
+[node name="Columns" type="HBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 32
+
+[node name="CharacterColumn" type="PanelContainer" parent="Margin/Layout/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Content" type="VBoxContainer" parent="Margin/Layout/Columns/CharacterColumn"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="Label" parent="Margin/Layout/Columns/CharacterColumn/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
+theme_override_font_sizes/font_size = 40
+text = "PAUSE_COLUMN_CHARACTER"
+
+[node name="Placeholder" type="Label" parent="Margin/Layout/Columns/CharacterColumn/Content"]
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 2
+text = "PAUSE_COMING_SOON"
+autowrap_mode = 3
+
+[node name="WeaponsColumn" type="PanelContainer" parent="Margin/Layout/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Content" type="VBoxContainer" parent="Margin/Layout/Columns/WeaponsColumn"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="Label" parent="Margin/Layout/Columns/WeaponsColumn/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
+theme_override_font_sizes/font_size = 40
+text = "PAUSE_COLUMN_WEAPONS"
+
+[node name="Placeholder" type="Label" parent="Margin/Layout/Columns/WeaponsColumn/Content"]
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 2
+text = "PAUSE_COMING_SOON"
+autowrap_mode = 3
+
+[node name="RunColumn" type="PanelContainer" parent="Margin/Layout/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Content" type="VBoxContainer" parent="Margin/Layout/Columns/RunColumn"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="Label" parent="Margin/Layout/Columns/RunColumn/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
+theme_override_font_sizes/font_size = 40
+text = "PAUSE_COLUMN_RUN"
+
+[node name="Placeholder" type="Label" parent="Margin/Layout/Columns/RunColumn/Content"]
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 2
+text = "PAUSE_COMING_SOON"
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 32
+
+[node name="ResumeButton" type="Button" parent="Margin/Layout/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 96)
+layout_mode = 2
+text = "PAUSE_RESUME"
+
+[node name="OptionsButton" type="Button" parent="Margin/Layout/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 96)
+layout_mode = 2
+text = "MENU_OPTIONS"
+
+[node name="AbandonButton" type="Button" parent="Margin/Layout/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 96)
+layout_mode = 2
+text = "PAUSE_ABANDON"

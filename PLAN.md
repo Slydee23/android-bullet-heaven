@@ -208,7 +208,9 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
   Joystick-Modus, Joystick-Seite und **Joystick-Transparenz** (Schieberegler 0–80 %, 0 % = voll sichtbar).
   Einstellungen werden gespeichert (`user://settings.cfg`) und bleiben nach einem Neustart erhalten.
 - **Pause-/Statusbildschirm (Grundgerüst):** Pause-Knopf oben rechts, am PC Esc, am Handy die Zurück-Geste.
-  Knöpfe „Weiter“, „Optionen“ und „Run aufgeben“ (bis M8 geht der Run dabei verloren).
+  Knöpfe „Weiter“, „Optionen“ und „Run aufgeben“ (bis M8 geht der Run dabei verloren). „Run aufgeben“ muss zweimal
+  angetippt werden („Wirklich aufgeben?“), damit man nicht versehentlich aufgibt.
+  Zurück-Geste und Esc schließen immer nur das oberste offene Fenster (Optionen → Pause → weiterspielen).
   Die drei Status-Spalten (siehe „UI-Konzepte“) sind schon angelegt und füllen sich ab M3.
 - **Auto-Pause:** Wechselt die App in den Hintergrund (andere App, Anruf), öffnet sich automatisch das Pausemenü.
 - **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere Modi, Seiten und Transparenz im Optionsmenü aus

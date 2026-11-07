@@ -13,13 +13,14 @@ config_version=5
 config/name="Banebound"
 config/version="Alpha v0.1"
 run/main_scene="res://ui/main_menu.tscn"
+config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
-config/quit_on_go_back=false
 
 [autoload]
 
 Settings="*res://scripts/settings.gd"
+BackGesture="*res://scripts/back_gesture.gd"
 
 [display]
 

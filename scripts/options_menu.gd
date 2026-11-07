@@ -1,5 +1,5 @@
 extends Control
-## Optionsmenü: wird aus dem Hauptmenü (und ab 2c aus der Pause) geöffnet und schließt sich selbst.
+## Optionsmenü: wird aus dem Hauptmenü und aus der Pause geöffnet und schließt sich selbst.
 
 signal closed
 
@@ -53,14 +53,9 @@ func close() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Esc am PC bzw. Zurück-Geste am Handy (siehe BackGesture)
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
-		close()
-
-
-func _notification(what: int) -> void:
-	# Zurück-Geste bzw. Zurück-Taste unter Android
-	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		close()
 
 

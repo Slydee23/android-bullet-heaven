@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bbto074oje1o2" path="res://scripts/run.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/touch_joystick.gd" id="3_joystick"]
+[ext_resource type="Texture2D" path="res://assets/ui/pause_button.png" id="4_pause"]
 
 [node name="Run" type="Node2D" unique_id=439059942]
 script = ExtResource("1_script")
@@ -24,3 +25,17 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("3_joystick")
+
+[node name="PauseButton" type="TextureButton" parent="HUD" groups=["joystick_blocker"]]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -128.0
+offset_top = 48.0
+offset_right = -48.0
+offset_bottom = 128.0
+grow_horizontal = 0
+texture_normal = ExtResource("4_pause")
+ignore_texture_size = true
+stretch_mode = 0
