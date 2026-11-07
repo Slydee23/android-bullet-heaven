@@ -105,8 +105,21 @@ Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnum
 | `profile.save` | **Profil-Spielstand:** Dorf-Ausbau, Material-Lager, Rüstungsbesitz + angelegte Rüstung, Verzauberungen, permanente Upgrades, Freischaltungen, Quests, Gesamtstatistik | dauerhaft, wird nie durch einen Run gelöscht | E5 |
 
 - Der Run-Spielstand **liest** die angelegte Rüstung nur aus dem Profil (im Run kann man sie nicht tauschen) und schreibt nie hinein.
+- **Belohnungsregeln:**
+
+  | | Tod / Run aufgeben | Expedition erfolgreich |
+  |---|---|---|
+  | Magie-Schrott | verloren | verloren |
+  | Materialien (Artefakte, Verzauberungen, Schmied, Crafting) | verloren | **ins Profil** |
+  | Quest-Items und Quest-Ressourcen | verloren | **ins Profil** |
+  | Bereits Freigeschaltetes, Dorf-Ausbau, Rüstung | bleibt | bleibt |
+
+  - Während des Runs liegt die Beute nur als **„Run-Beute“** im `run.save`. Erst bei Erfolg wird sie ins Profil übertragen.
+  - „Run aufgeben“ zählt wie ein Tod. Sonst könnte man kurz vor dem Tod aufgeben und die Beute retten.
+  - **Ausnahme Headstart-Perk** (späteres permanentes Upgrade, E8): Ein Prozentsatz des Magie-Schrotts wird als
+    Startguthaben in den **nächsten** Run mitgenommen. Dafür speichert das Profil nur diese eine Zahl.
 - **Run-Ende (Sieg oder Tod), feste Reihenfolge:**
-  1. Belohnungen berechnen (was ins Dorf geht, siehe offene Frage unten).
+  1. Belohnungen nach den Regeln oben berechnen.
   2. Belohnungen ins Profil eintragen und `profile.save` sicher speichern.
   3. Erst danach `run.save` löschen.
   Stürzt die App zwischen 2 und 3 ab, merkt das Spiel beim nächsten Start an einer im Profil gespeicherten Run-ID,
@@ -298,6 +311,20 @@ Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) 
   Slot an der Silhouette antippen → Liste der passenden Teile aus dem Besitz → auswählen → angelegt.
   Übersicht und Ausrüsten sind also derselbe Bildschirm, nur dass im Run das Tauschen gesperrt ist.
 - Bis zum Rüstungssystem (E7) bleibt die Stelle leer oder zeigt nur die Silhouette.
+- **Kategorien als Reiter:** Rüstung (Paperdoll), Artefakte, Tränke und spätere Kategorien. Auch die Slots sind Daten
+  (Kategorie, Position an der Silhouette, erlaubte Teile). Eine neue Kategorie oder ein neuer Slot ist also eine neue Datei, kein Code.
+
+**Performance-Regeln für Ausrüstung und Inventar:**
+- **Register kennt nur die Liste, nicht den Inhalt:** Beim Start wird nur „ID → Dateipfad“ eingelesen. Eine Gegenstandsdatei
+  samt Icon wird erst geladen, wenn sie gebraucht wird, und danach im Speicher behalten. Bei Tausenden Gegenständen bleibt der Start so schnell.
+- **Bildschirme nur bei Bedarf:** Pause-/Status- und Ausrüstungsbildschirm werden beim Öffnen erzeugt und beim Schließen freigegeben.
+  Gefüllt wird nur der aktive Reiter.
+- **Lange Listen** (z. B. 300 Rüstungsteile im Besitz) zeigen nur die gerade sichtbaren Einträge und verwenden sie beim Scrollen wieder.
+- **Icons klein und gebündelt:** 16×16-Icons, bei Bedarf in einem gemeinsamen Atlas (eine Textur statt vieler).
+- **Im Run zählt nur das Ergebnis:** Die Werte aller angelegten Teile werden einmal am Run-Start (und bei Änderungen wie Artefakt-Kauf)
+  zu einem Werte-Block zusammengerechnet. Pro Frame wird nichts aus der Ausrüstung neu berechnet.
+- **Speichern nur bei Änderung:** Spielstände speichern nur IDs, Anzahlen und Verbesserungsstufen, keine Bilder oder Texte, und werden
+  nur geschrieben, wenn sich etwas geändert hat.
 
 ### Optionsmenü
 Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeichert.
@@ -335,7 +362,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
    aus Runs, volle Run-Zusammenfassung.
 6. **E6 – Dorf-Hub:** Gebäude wieder aufbauen (Schmied, Alchemist, Enchanter …), NPCs, Story-Dialoge.
 7. **E7 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und über die Paperdoll anlegen, im Run ansehen.
-8. **E8 – Permanente Upgrades** über Dorf-Gebäude.
+8. **E8 – Permanente Upgrades** über Dorf-Gebäude, z. B. Headstart-Perk (Teil des Magie-Schrotts in den nächsten Run mitnehmen).
 9. **E9 – Questsystem:** Quest-Items und Questfortschritt, Anzeige im Belohnungsbildschirm.
 10. **E10 – Mehrere Charaktere** mit eigener Startwaffe und Spezialfähigkeit.
 11. **E11 – Tutorial / erster Start:** braucht Level-Up, Rastplatz und Spezialfähigkeit. Den Inhalt besprechen wir vorher gemeinsam.
@@ -360,8 +387,8 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
   vollen HP vom Wellenanfang wiederholen. Ist das okay, oder braucht es eine Gegenmaßnahme? → vor M8 entscheiden
 - **Magie-Schrott vs. Materialien:** Magie-Schrott = Run-Währung für Rastplatz-Händler, verfällt am Run-Ende
   (Lore-Idee: Überreste der zerfallenen Waffen). Materialien (z. B. Holz, Erz, Kräuter) = dauerhafte Beute fürs Dorf. Passt das? → vor E1
-- **Materialien beim Tod:** Behält man alle im Run gesammelten Materialien, nur einen Teil (z. B. 50 %) oder nur die
-  bis zum letzten Rastplatz gesammelten? Die Meta-Progression bleibt in jedem Fall erhalten. → vor E5
+- **Endlos-Modus und Beute:** Gilt die Expedition nach der letzten regulären Welle als erfolgreich, sodass die Beute bis dahin
+  schon sicher ist, und riskiert man im Endlos-Modus nur die zusätzliche Beute? → vor E13
 - Welche Materialien es gibt (Liste wächst laufend, dank Daten-Dateien unkritisch) → vor E5
 - Händlertypen an Rastplätzen und was es dort außer Shops noch gibt → vor E1
 - Echte Namen für [Hohe Zirkel], [den Bann] und die Welt
