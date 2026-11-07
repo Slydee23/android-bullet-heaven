@@ -3,7 +3,7 @@
 ## Status
 - [x] M0 – Umstellung auf Querformat
 - [x] M1 – Hauptmenü, Arena, Spielfigur, Kamera
-- [ ] M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
+- [x] M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
 - [ ] M3 – Gegner (mit Performance-Grundlage)
 - [ ] M4 – Auto-Angriff
 - [ ] M5 – Debug-Menü, Stresstest & Optimierung
@@ -297,7 +297,9 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
   „Fortsetzen“ funktioniert. Am Rastplatz etwas kaufen, App beenden, neu starten: Der Kauf ist noch da, die Angebote sind dieselben.
   Der Changelog lässt sich öffnen, scrollen und schließen.
 
-- ⚠ **Erinnerung nach Abschluss von M8:** UI-Design-Überarbeitung besprechen (siehe „UI-Überarbeitung“).
+- ⚠ **Erinnerung nach Abschluss von M8:**
+  - UI-Design-Überarbeitung besprechen (siehe „UI-Überarbeitung“).
+  - README gemeinsam aktualisieren und deine ersten Screenshots einbauen.
 
 ➡ **Nach M8 ist das Grundspiel fertig.**
 
