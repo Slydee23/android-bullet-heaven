@@ -116,8 +116,6 @@ Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnum
 
   - Während des Runs liegt die Beute nur als **„Run-Beute“** im `run.save`. Erst bei Erfolg wird sie ins Profil übertragen.
   - „Run aufgeben“ zählt wie ein Tod. Sonst könnte man kurz vor dem Tod aufgeben und die Beute retten.
-  - **Ausnahme Headstart-Perk** (späteres permanentes Upgrade, E8): Ein Prozentsatz des Magie-Schrotts wird als
-    Startguthaben in den **nächsten** Run mitgenommen. Dafür speichert das Profil nur diese eine Zahl.
 - **Run-Ende (Sieg oder Tod), feste Reihenfolge:**
   1. Belohnungen nach den Regeln oben berechnen.
   2. Belohnungen ins Profil eintragen und `profile.save` sicher speichern.
@@ -362,7 +360,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
    aus Runs, volle Run-Zusammenfassung.
 6. **E6 – Dorf-Hub:** Gebäude wieder aufbauen (Schmied, Alchemist, Enchanter …), NPCs, Story-Dialoge.
 7. **E7 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und über die Paperdoll anlegen, im Run ansehen.
-8. **E8 – Permanente Upgrades** über Dorf-Gebäude, z. B. Headstart-Perk (Teil des Magie-Schrotts in den nächsten Run mitnehmen).
+8. **E8 – Permanente Upgrades** über Dorf-Gebäude.
 9. **E9 – Questsystem:** Quest-Items und Questfortschritt, Anzeige im Belohnungsbildschirm.
 10. **E10 – Mehrere Charaktere** mit eigener Startwaffe und Spezialfähigkeit.
 11. **E11 – Tutorial / erster Start:** braucht Level-Up, Rastplatz und Spezialfähigkeit. Den Inhalt besprechen wir vorher gemeinsam.
@@ -380,6 +378,10 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 - **Play-Store-Pflichten:** App-Icon, Datenschutzerklärung (Pflicht, auch ohne Werbung), Altersfreigabe, Store-Texte, Screenshots.
 - **Endgültiger Spielname**, dann Paketname (`com.slydee23.…`) und App-Namen im Export-Preset anpassen.
   Nach dem ersten Upload lässt sich der Paketname nie mehr ändern.
+
+## Ideen (noch nicht eingeplant)
+- **Headstart-Perk:** Ein Teil des Magie-Schrotts aus dem vorherigen Run wird in den nächsten Run mitgenommen.
+  Wie und ob das ins Spiel kommt, ist noch offen.
 
 ## Offene Designfragen
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
