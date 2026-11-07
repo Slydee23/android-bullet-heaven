@@ -222,6 +222,9 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
   **Auf GitHub:** Prüfe auf der Repo-Startseite, ob die README gut aussieht und dir der Text gefällt.
 
 ### M3 – Gegner (mit Performance-Grundlage)
+Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, Grid, FPS-Anzeige) →
+M3b Schaden, Lebensleiste, Game Over → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
+M3d HP im Statusbildschirm.
 - `EnemyManager` mit Pooling und Spatial Grid. Gegner (z. B. Skelett) erscheinen außerhalb des Sichtfelds und laufen auf den
   Helden zu, ohne sich alle auf einen Punkt zu stapeln.
 - Bei Berührung nimmt der Held Schaden. Es gibt eine Lebensleiste, und bei 0 HP kommt ein Game-Over-Bildschirm mit den Knöpfen „Nochmal“ und „Hauptmenü“.

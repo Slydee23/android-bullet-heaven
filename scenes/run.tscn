@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/touch_joystick.gd" id="3_joystick"]
 [ext_resource type="Texture2D" path="res://assets/ui/pause_button.png" id="4_pause"]
+[ext_resource type="Script" path="res://scripts/enemy_manager.gd" id="5_enemies"]
 
 [node name="Run" type="Node2D" unique_id=439059942]
 script = ExtResource("1_script")
@@ -11,6 +12,9 @@ script = ExtResource("1_script")
 [node name="Ground" type="TileMapLayer" parent="." unique_id=1398712046]
 
 [node name="Props" type="Node2D" parent="." unique_id=561007299]
+
+[node name="EnemyManager" type="Node2D" parent="."]
+script = ExtResource("5_enemies")
 
 [node name="Player" parent="." unique_id=1281301606 instance=ExtResource("2_player")]
 
@@ -39,3 +43,14 @@ grow_horizontal = 0
 texture_normal = ExtResource("4_pause")
 ignore_texture_size = true
 stretch_mode = 0
+
+[node name="FpsLabel" type="Label" parent="HUD"]
+offset_left = 48.0
+offset_top = 40.0
+offset_right = 648.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.91, 0.87, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.03, 0.08, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 32
+text = "FPS"

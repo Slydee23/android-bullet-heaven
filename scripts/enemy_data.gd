@@ -1,0 +1,15 @@
+class_name EnemyData
+extends Resource
+## Werte eines Gegnertyps. Neuer Gegner = neue .tres-Datei in data/enemies/, kein neuer Code.
+
+@export var id := &""
+## Lauf-Animation als horizontaler Streifen (Frame-Anzahl = Bildbreite ÷ frame_width)
+@export var walk_texture: Texture2D
+@export var frame_width := 16
+@export var animation_fps := 6.0
+## Laufgeschwindigkeit in Welt-Pixeln pro Sekunde (Held: 90)
+@export var speed := 40.0
+@export var max_hp := 10.0
+@export var contact_damage := 5.0
+## Körperradius in Welt-Pixeln: Abstand zu anderen Gegnern und Trefferfläche
+@export var radius := 5.0

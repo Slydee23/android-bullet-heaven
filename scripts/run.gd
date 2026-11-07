@@ -11,8 +11,12 @@ const MAIN_GROUND_SHARE := 0.7
 const GROUND_TEXTURE := preload("res://assets/tiles/forest_ground.png")
 const PROPS_TEXTURE := preload("res://assets/tiles/forest_props.png")
 const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
+const SKELETON := preload("res://data/enemies/skeleton.tres")
+## Wie oft die FPS-Anzeige aktualisiert wird (Sekunden)
+const FPS_UPDATE_INTERVAL := 0.5
 
 var _pause_menu: Control
+var _fps_timer := 0.0
 
 @onready var ground: TileMapLayer = $Ground
 @onready var props: Node2D = $Props
@@ -21,6 +25,8 @@ var _pause_menu: Control
 @onready var joystick: TouchJoystick = $HUD/TouchJoystick
 @onready var hud: CanvasLayer = $HUD
 @onready var pause_button: TextureButton = $HUD/PauseButton
+@onready var enemy_manager: EnemyManager = $EnemyManager
+@onready var fps_label: Label = $HUD/FpsLabel
 
 
 func _ready() -> void:
@@ -33,6 +39,13 @@ func _ready() -> void:
 	player.position = arena.get_center()
 	player.joystick = joystick
 
+	enemy_manager.set_bounds(player.bounds)
+	enemy_manager.target = player
+	enemy_manager.spawn_types = [SKELETON]
+
+	# FPS-Anzeige nur in Test-Builds (aus Godot gestartet), nicht in einer späteren Veröffentlichung
+	fps_label.visible = OS.is_debug_build()
+
 	camera.limit_left = 0
 	camera.limit_top = 0
 	camera.limit_right = int(arena.size.x)
@@ -40,6 +53,15 @@ func _ready() -> void:
 	camera.call_deferred("reset_smoothing")
 
 	pause_button.pressed.connect(open_pause_menu)
+
+
+func _process(delta: float) -> void:
+	if not fps_label.visible:
+		return
+	_fps_timer -= delta
+	if _fps_timer <= 0.0:
+		_fps_timer = FPS_UPDATE_INTERVAL
+		fps_label.text = tr("DEBUG_FPS") % [Engine.get_frames_per_second(), enemy_manager.count]
 
 
 func _unhandled_input(event: InputEvent) -> void:
