@@ -1,6 +1,6 @@
 class_name Player
 extends Node2D
-## Spielfigur: Bewegung (vorerst nur Tastatur, Touch folgt in M2) und Animation.
+## Spielfigur: Bewegung (Touch-Joystick, am PC zusätzlich Tastatur) und Animation.
 
 ## Breite eines Animationsframes im Spritesheet (Pixel)
 const FRAME_WIDTH := 16
@@ -14,6 +14,8 @@ const RUN_TEXTURE := preload("res://assets/sprites/characters/hero_run.png")
 
 ## Bereich, den der Spieler nicht verlassen kann (setzt die Run-Szene)
 var bounds := Rect2()
+## Touch-Joystick (setzt die Run-Szene)
+var joystick: TouchJoystick
 
 var _current_texture: Texture2D
 var _animation_time := 0.0
@@ -41,6 +43,8 @@ func _read_input() -> Vector2:
 		direction.y -= 1.0
 	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		direction.y += 1.0
+	if direction == Vector2.ZERO and joystick:
+		return joystick.output
 	return direction.normalized()
 
 

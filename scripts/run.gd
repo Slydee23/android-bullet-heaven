@@ -15,6 +15,7 @@ const PROPS_TEXTURE := preload("res://assets/tiles/forest_props.png")
 @onready var props: Node2D = $Props
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Player/Camera2D
+@onready var joystick: TouchJoystick = $HUD/TouchJoystick
 
 
 func _ready() -> void:
@@ -25,6 +26,7 @@ func _ready() -> void:
 	# Der Spieler bleibt innerhalb des Baumrings
 	player.bounds = arena.grow(-PROP_SIZE)
 	player.position = arena.get_center()
+	player.joystick = joystick
 
 	camera.limit_left = 0
 	camera.limit_top = 0

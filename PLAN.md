@@ -26,7 +26,7 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Waffen:** maximal 3. Das ist eine einzige Konstante im Code und lässt sich leicht auf 4 ändern. Bei Level-Up gibt es Waffen bzw. Waffen-Upgrades. Ab Waffenlevel 10 kann man die
   Waffe in 1 von 3 Varianten weiterentwickeln, später noch einmal in 1 von 3. Daraus ergeben sich 9 Endformen pro Waffe.
 - **Welt:** feste Maps (begrenzte Arena, größer als der Bildschirm), die Kamera folgt der Figur.
-- **Steuerung:** drei Joystick-Modi (Floating, Fest, Überall), in den Einstellungen umschaltbar.
+- **Steuerung:** Joystick Floating oder Fest, linke/rechte/beide Bildschirmseiten, einstellbare Deckkraft.
 - **Grafik:** 2D Fantasy Pixel-Art. Die Platzhalter sind schon in Pixel-Optik, die echte Grafik folgt später.
 
 ## Lore: Der Waffenbann
@@ -194,17 +194,22 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   **Am PC (F5):** Der Held läuft mit WASD, die Kamera folgt und bleibt am Arenarand stehen.
 
 ### M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
+Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optionsmenü → 2c Pause-/Statusbildschirm →
+2d Auto-Pause → 2e README.
 - `README.md` für GitHub, geschrieben, als wäre das Spiel fertig und zum Download bereit. Aufbau orientiert an
   READMEs veröffentlichter Indie-Games: Titel, Kurzbeschreibung, Features, Lore-Teaser, Steuerung, Download, Tech-Stack, Lizenz.
-- Virtueller Joystick mit drei Modi: Floating (linke Bildschirmhälfte, Standard), Fest (unten links) und Überall.
-- **Optionsmenü (Grundgerüst):** erreichbar aus dem Hauptmenü und aus der Pause. Erster Eintrag: Steuerung → Joystick-Modus.
+- Virtueller Joystick mit zwei Modi: **Floating** (erscheint an der Daumen-Position, Standard) und **Fest** (feste Position unten).
+  Dazu die Option **Seite: Links / Rechts / Beide** (Standard: Beide). Beim festen Joystick legt sie fest, ob er unten links oder
+  unten rechts sitzt („Beide“ = unten links).
+- **Optionsmenü (Grundgerüst):** erreichbar aus dem Hauptmenü und aus der Pause. Erste Einträge unter Steuerung:
+  Joystick-Modus, Joystick-Seite und **Joystick-Deckkraft** (Schieberegler 20–100 %).
   Einstellungen werden gespeichert (`user://settings.cfg`) und bleiben nach einem Neustart erhalten.
 - **Pause-/Statusbildschirm (Grundgerüst):** Pause-Knopf oben rechts, am PC Esc, am Handy die Zurück-Geste.
   Knöpfe „Weiter“, „Optionen“ und „Run aufgeben“ (bis M8 geht der Run dabei verloren).
   Die drei Status-Spalten (siehe „UI-Konzepte“) sind schon angelegt und füllen sich ab M3.
 - **Auto-Pause:** Wechselt die App in den Hintergrund (andere App, Anruf), öffnet sich automatisch das Pausemenü.
-- **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere alle 3 Modi im Optionsmenü aus
-  und sag mir, welcher sich am besten anfühlt. Schließ die App und öffne sie neu: Der gewählte Modus ist noch eingestellt.
+- **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere Modi, Seiten und Deckkraft im Optionsmenü aus
+  und sag mir, was sich am besten anfühlt. Schließ die App und öffne sie neu: Die Einstellungen sind noch da.
   Pause-Knopf und Zurück-Geste öffnen die Pause. Wechsle während eines Runs kurz in eine andere App:
   Beim Zurückkommen ist das Spiel pausiert.
   **Auf GitHub:** Prüfe auf der Repo-Startseite, ob die README gut aussieht und dir der Text gefällt.
@@ -330,7 +335,9 @@ Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeicher
 
 | Bereich | Option | Kommt in |
 |---|---|---|
-| Steuerung | Joystick-Modus (Floating / Fest / Überall) | M2 |
+| Steuerung | Joystick-Modus (Floating / Fest) | M2 |
+| Steuerung | Joystick-Seite (Links / Rechts / Beide) | M2 |
+| Steuerung | Joystick-Deckkraft (Schieberegler) | M2 |
 | Anzeige | Lebensleiste Spieler an/aus | M3 |
 | Anzeige | Bildschirmwackeln an/aus | M3 |
 | Anzeige | Vibration an/aus | M3 |
@@ -338,7 +345,7 @@ Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeicher
 | Anzeige | Lebensleisten Gegner an/aus | M4 |
 | Audio | Lautstärke Gesamt / Musik / Effekte | E2 |
 | Sprache | Deutsch / Englisch | E14 |
-| Steuerung | Joystick-Größe, -Transparenz, Linkshänder-Modus | E15 |
+| Steuerung | Joystick-Größe | E15 |
 | Grafik | FPS-Limit 30 / 60 / 120 | E15 |
 
 ### Run-Zusammenfassung / Belohnungsbildschirm
@@ -367,7 +374,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 12. **E12 – Weitere Maps/Biome, Gegnertypen, Bosse.**
 13. **E13 – Endlos-Modus** nach der letzten Welle.
 14. **E14 – Englisch** + Sprach-Option.
-15. **E15 – Erweiterte Optionen:** Joystick-Größe/-Transparenz, Linkshänder, FPS-Limit.
+15. **E15 – Erweiterte Optionen:** Joystick-Größe, FPS-Limit.
 16. **E16 – Credits-Bildschirm.** Ab dem ersten fremden Asset führen wir `CREDITS.md` mit Quelle und Lizenz,
     damit am Ende nichts fehlt.
 - **Laufend:** Alpha-Assets ersetzen die Platzhalter, sobald du sie hast.
