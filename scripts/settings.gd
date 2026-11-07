@@ -4,7 +4,7 @@ extends Node
 signal changed
 
 enum JoystickMode { FLOATING, FIXED }
-## Bildschirmseite, auf der der Joystick startet. Fester Joystick bei BOTH: unten links.
+## Bildschirmseite, auf der der Joystick startet. BOTH gibt es nur bei FLOATING.
 enum JoystickSide { LEFT, RIGHT, BOTH }
 
 const PATH := "user://settings.cfg"
@@ -32,6 +32,9 @@ func load_settings() -> void:
 	var side: int = config.get_value("controls", "joystick_side", joystick_side)
 	if side in JoystickSide.values():
 		joystick_side = side as JoystickSide
+	# Fester Joystick braucht eine eindeutige Seite
+	if joystick_mode == JoystickMode.FIXED and joystick_side == JoystickSide.BOTH:
+		joystick_side = JoystickSide.LEFT
 	var opacity: float = config.get_value("controls", "joystick_opacity", joystick_opacity)
 	joystick_opacity = clampf(opacity, MIN_JOYSTICK_OPACITY, 1.0)
 
@@ -58,11 +61,13 @@ func set_joystick_side(side: JoystickSide) -> void:
 	_apply()
 
 
-func set_joystick_opacity(opacity: float) -> void:
+## persist = false: nur übernehmen, nicht speichern (z. B. während ein Schieberegler gezogen wird)
+func set_joystick_opacity(opacity: float, persist := true) -> void:
 	joystick_opacity = clampf(opacity, MIN_JOYSTICK_OPACITY, 1.0)
-	_apply()
+	_apply(persist)
 
 
-func _apply() -> void:
-	save_settings()
+func _apply(persist := true) -> void:
+	if persist:
+		save_settings()
 	changed.emit()

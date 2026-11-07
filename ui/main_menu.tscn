@@ -72,3 +72,11 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 56
 text = "MENU_START_RUN"
+
+[node name="OptionsButton" type="Button" parent="Center/Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(480, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 56
+text = "MENU_OPTIONS"

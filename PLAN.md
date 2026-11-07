@@ -26,7 +26,7 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Waffen:** maximal 3. Das ist eine einzige Konstante im Code und lässt sich leicht auf 4 ändern. Bei Level-Up gibt es Waffen bzw. Waffen-Upgrades. Ab Waffenlevel 10 kann man die
   Waffe in 1 von 3 Varianten weiterentwickeln, später noch einmal in 1 von 3. Daraus ergeben sich 9 Endformen pro Waffe.
 - **Welt:** feste Maps (begrenzte Arena, größer als der Bildschirm), die Kamera folgt der Figur.
-- **Steuerung:** Joystick Floating oder Fest, linke/rechte/beide Bildschirmseiten, einstellbare Deckkraft.
+- **Steuerung:** Joystick Floating oder Fest, linke/rechte/beide Bildschirmseiten, einstellbare Transparenz.
 - **Grafik:** 2D Fantasy Pixel-Art. Die Platzhalter sind schon in Pixel-Optik, die echte Grafik folgt später.
 
 ## Lore: Der Waffenbann
@@ -154,6 +154,9 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
 | `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
 | `assets/ui/pause_button.png` | 16×16 | 1 | M2 |
+| `assets/ui/panel.png` | 16×16 (9-Slice, Rand 4) – Hintergrund für Menüfenster | 1 | M2 |
+| `assets/ui/slider_track.png` | 12×8 (9-Slice, Rand 3) – Schieberegler-Leiste | 1 | M2 |
+| `assets/ui/slider_grabber.png` | 16×16 – Schieberegler-Knopf | 1 | M2 |
 | `assets/sprites/enemies/skeleton_walk.png` | 16×16 | 4 | M3 |
 | `assets/sprites/characters/hero_hit.png` | 16×16 | 2 | M3 |
 | `assets/sprites/characters/hero_death.png` | 16×16 | 6 | M3 |
@@ -200,15 +203,15 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
   READMEs veröffentlichter Indie-Games: Titel, Kurzbeschreibung, Features, Lore-Teaser, Steuerung, Download, Tech-Stack, Lizenz.
 - Virtueller Joystick mit zwei Modi: **Floating** (erscheint an der Daumen-Position, Standard) und **Fest** (feste Position unten).
   Dazu die Option **Seite: Links / Rechts / Beide** (Standard: Beide). Beim festen Joystick legt sie fest, ob er unten links oder
-  unten rechts sitzt („Beide“ = unten links).
+  unten rechts sitzt. „Beide“ ist beim festen Joystick ausgegraut.
 - **Optionsmenü (Grundgerüst):** erreichbar aus dem Hauptmenü und aus der Pause. Erste Einträge unter Steuerung:
-  Joystick-Modus, Joystick-Seite und **Joystick-Deckkraft** (Schieberegler 20–100 %).
+  Joystick-Modus, Joystick-Seite und **Joystick-Transparenz** (Schieberegler 0–80 %, 0 % = voll sichtbar).
   Einstellungen werden gespeichert (`user://settings.cfg`) und bleiben nach einem Neustart erhalten.
 - **Pause-/Statusbildschirm (Grundgerüst):** Pause-Knopf oben rechts, am PC Esc, am Handy die Zurück-Geste.
   Knöpfe „Weiter“, „Optionen“ und „Run aufgeben“ (bis M8 geht der Run dabei verloren).
   Die drei Status-Spalten (siehe „UI-Konzepte“) sind schon angelegt und füllen sich ab M3.
 - **Auto-Pause:** Wechselt die App in den Hintergrund (andere App, Anruf), öffnet sich automatisch das Pausemenü.
-- **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere Modi, Seiten und Deckkraft im Optionsmenü aus
+- **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere Modi, Seiten und Transparenz im Optionsmenü aus
   und sag mir, was sich am besten anfühlt. Schließ die App und öffne sie neu: Die Einstellungen sind noch da.
   Pause-Knopf und Zurück-Geste öffnen die Pause. Wechsle während eines Runs kurz in eine andere App:
   Beim Zurückkommen ist das Spiel pausiert.
@@ -337,7 +340,7 @@ Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeicher
 |---|---|---|
 | Steuerung | Joystick-Modus (Floating / Fest) | M2 |
 | Steuerung | Joystick-Seite (Links / Rechts / Beide) | M2 |
-| Steuerung | Joystick-Deckkraft (Schieberegler) | M2 |
+| Steuerung | Joystick-Transparenz (Schieberegler) | M2 |
 | Anzeige | Lebensleiste Spieler an/aus | M3 |
 | Anzeige | Bildschirmwackeln an/aus | M3 |
 | Anzeige | Vibration an/aus | M3 |

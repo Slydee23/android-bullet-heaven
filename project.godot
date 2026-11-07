@@ -15,6 +15,7 @@ config/version="Alpha v0.1"
 run/main_scene="res://ui/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
+config/quit_on_go_back=false
 
 [autoload]
 
