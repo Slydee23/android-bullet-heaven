@@ -12,6 +12,8 @@ const GROUND_TEXTURE := preload("res://assets/tiles/forest_ground.png")
 const PROPS_TEXTURE := preload("res://assets/tiles/forest_props.png")
 const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
+## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (M3: = MAX_ALIVE, ab M7 aus den Wellen-Daten)
+const ZOOM_FULL_ENEMIES := 60
 ## Wie oft die FPS-Anzeige aktualisiert wird (Sekunden)
 const FPS_UPDATE_INTERVAL := 0.5
 
@@ -21,7 +23,7 @@ var _fps_timer := 0.0
 @onready var ground: TileMapLayer = $Ground
 @onready var props: Node2D = $Props
 @onready var player: Player = $Player
-@onready var camera: Camera2D = $Player/Camera2D
+@onready var camera: RunCamera = $Player/Camera2D
 @onready var joystick: TouchJoystick = $HUD/TouchJoystick
 @onready var hud: CanvasLayer = $HUD
 @onready var pause_button: TextureButton = $HUD/PauseButton
@@ -51,6 +53,7 @@ func _ready() -> void:
 	camera.limit_right = int(arena.size.x)
 	camera.limit_bottom = int(arena.size.y)
 	_apply_zoom()
+	camera.snap_zoom()
 	Settings.changed.connect(_apply_zoom)
 	camera.call_deferred("reset_smoothing")
 
@@ -58,6 +61,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	camera.pressure = enemy_manager.count / float(ZOOM_FULL_ENEMIES)
 	if not fps_label.visible:
 		return
 	_fps_timer -= delta
@@ -87,9 +91,13 @@ func open_pause_menu() -> void:
 	hud.add_child(_pause_menu)
 
 
-## Zoom-Testwert aus dem Debug-Menü übernehmen (Spawn-Abstand passt sich über das sichtbare Rechteck von selbst an)
+## Zoom-Testmodus aus dem Debug-Menü übernehmen (Spawn-Abstand passt sich über das sichtbare Rechteck von selbst an)
 func _apply_zoom() -> void:
-	camera.zoom = Vector2.ONE * Settings.camera_zoom
+	camera.dynamic = Settings.camera_zoom_mode == Settings.CameraZoomMode.DYNAMIC
+	if Settings.camera_zoom_mode == Settings.CameraZoomMode.FAR:
+		camera.fixed_zoom = RunCamera.ZOOM_FAR
+	else:
+		camera.fixed_zoom = RunCamera.ZOOM_NEAR
 
 
 func _build_ground() -> void:

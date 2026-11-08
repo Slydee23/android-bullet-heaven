@@ -74,6 +74,14 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_zoom")
 text = "DEBUG_ZOOM_FAR"
 
+[node name="ZoomDynamicButton" type="Button" parent="Center/Panel/Content/Grid/ZoomButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_zoom")
+text = "DEBUG_ZOOM_DYNAMIC"
+
 [node name="BackButton" type="Button" parent="Center/Panel/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 96)

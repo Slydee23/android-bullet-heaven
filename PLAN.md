@@ -1,6 +1,7 @@
 # Plan: Banebound (Codename) – Bullet-Heaven für Android (Querformat)
 
 ## Status
+
 - [x] M0 – Umstellung auf Querformat
 - [x] M1 – Hauptmenü, Arena, Spielfigur, Kamera
 - [x] M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
@@ -12,10 +13,12 @@
 - [ ] M8 – Run speichern & fortsetzen
 
 ## Ziel
+
 Zuerst entsteht ein kleines, spielbares Grundspiel (Bewegen, Gegner, Auto-Angriff, Level-Up, Wellen). Danach kommen die
 Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist einzeln am Handy testbar und wird danach committet.
 
 ## Spielkonzept
+
 - **Setting:** dunkle Fantasy. Die Runs sind Expeditionen zur Materialbeschaffung und Erkundung (z. B. ein Waldabschnitt).
 - **Meta:** Zwischen den Runs baut man ein altes Dorf wieder auf. Dort schaltet man Gebäude frei (Schmied,
   Alchemist, Enchanter …), kauft permanente Upgrades und schaltet Charaktere, Waffen und Maps frei.
@@ -30,6 +33,7 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Grafik:** 2D Fantasy Pixel-Art. Die Platzhalter sind schon in Pixel-Optik, die echte Grafik folgt später.
 
 ## Lore: Der Waffenbann
+
 *(Namen in [eckigen Klammern] sind Platzhalter)*
 
 > Vor langer Zeit versank die Welt im Krieg. Menschen, Elfen, Zwerge und die anderen Völker kämpften
@@ -47,12 +51,14 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 > aber noch wehren.
 
 **Was die Lore im Spiel erklärt:**
+
 - Waffen gibt es **nur im Run**, sie erscheinen über die Level-Up-Auswahl. Waffen kann man nicht kaufen.
 - Nach jedem Run **sind alle Waffen weg**.
 - **Rüstung** ist keine Waffe und **bleibt erhalten**. Deshalb wird sie im Dorf gekauft, verbessert und getauscht.
 - Gegner sind Monster und Ungeheuer, keine anderen Völker.
 
 ## Run-Ablauf: Expedition mit Rastplätzen
+
 - Ein Run ist eine Expedition, um Materialien zu beschaffen und die Gegend zu erkunden.
 - Am Ende jeder Welle findet man einen **Rastplatz** (Savezone). Dort erscheinen zufällige Händler, z. B. eine
   Karawane mit Tränkehändler und Artefakthändler.
@@ -63,6 +69,7 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - Welche Händler es gibt und was es außer Shops noch an Rastplätzen gibt, brainstormen wir später.
 
 ## Technische Grundentscheidungen
+
 - **Auflösung:** Viewport 1920×1080 mit Stretch `canvas_items` + Aspect `expand`. Breitere Handys (20:9) und
   Tablets zeigen etwas mehr Spielwelt, nichts wird verzerrt, und es gibt keine schwarzen Ränder.
   Das UI wird an den Rändern verankert und berücksichtigt die Safe Area (Kamera-Notch).
@@ -98,10 +105,11 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Ordnerstruktur:** `scenes/`, `scripts/`, `assets/sprites/`, `data/weapons/`, `data/enemies/`, `data/materials/`, `ui/`.
 
 ### Speicher-Architektur
+
 Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnummer und sicherem Schreiben:
 
 | Datei | Inhalt | Lebensdauer | Ab |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `settings.cfg` | Optionen (Joystick, Anzeige, Audio, Sprache) | dauerhaft | M2 |
 | `run.save` | **Run-Spielstand:** Waffen + Level, Spielerlevel/XP, HP, Welle, Artefakte, Tränke, Magie-Schrott, im Run gesammelte Materialien, gespeicherte Shop-Angebote und Level-Up-Karten, Run-Statistik | nur während eines Runs | M8 |
 | `profile.save` | **Profil-Spielstand:** Dorf-Ausbau, Material-Lager, Rüstungsbesitz + angelegte Rüstung, Verzauberungen, permanente Upgrades, Freischaltungen, Quests, Gesamtstatistik | dauerhaft, wird nie durch einen Run gelöscht | E5 |
@@ -110,7 +118,7 @@ Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnum
 - **Belohnungsregeln:**
 
   | | Tod / Run aufgeben | Expedition erfolgreich |
-  |---|---|---|
+  | --- | --- | --- |
   | Magie-Schrott | verloren | verloren |
   | Materialien (Artefakte, Verzauberungen, Schmied, Crafting) | verloren | **ins Profil** |
   | Quest-Items und Quest-Ressourcen | verloren | **ins Profil** |
@@ -131,14 +139,22 @@ Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnum
 - **PC-Test:** Am PC funktionieren zusätzlich WASD und die Pfeiltasten. F5 bleibt damit immer nutzbar.
 
 ## Grundsatzentscheidungen
+
 Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach Absprache.
 
 1. **Perspektive: Low Top-Down (3/4-Ansicht)**, wie Vampire Survivors oder Stardew Valley.
-   - Nur **2 Blickrichtungen**: Sprites schauen nach links, rechts ist gespiegelt. Keine Animationen nach oben/unten.
+   - Nur **2 Blickrichtungen**: Sprites schauen nach rechts (bzw. schräg nach vorne rechts), links ist gespiegelt. Keine Animationen nach oben/unten.
    - **Kollisionskreis an den Füßen**, nicht in der Sprite-Mitte. Dass sich Köpfe überlappen, ist gewollt.
    - Der **Held wird immer über den Gegnern** gezeichnet. Gegner untereinander werden nach Höhe sortiert (über die Grid-Zeilen).
    - Keine Höhenstauchung: Reichweiten sind echte Kreise.
-2. **Kamera-Zoom:** noch offen. Nah (4×) und Weit (3×) sind im Debug-Menü umschaltbar, Entscheidung nach dem Vergleichstest.
+2. **Kamera-Zoom: Dynamisch ist der Standard** (am PC und am Handy getestet). Nah (4×) und Weit (3×) bleiben im Debug-Menü zum Vergleichen.
+   - Dynamisch: Jede Wave startet bei 4×. Mit steigender Gegnerzahl zoomt die Kamera fließend bis maximal 3× heraus
+     (mehr Übersicht, wenn Waffen, Reichweiten und Gegnerzahl wachsen).
+   - Innerhalb einer Wave zoomt sie nur heraus, nie wieder herein (kein „Pumpen“ beim Töten). Zurück auf 4× zur nächsten Wave.
+   - Ab M7 kommen Start- und Endzoom bzw. der Gegnerdruck aus den Wellen-Daten (z. B. spätere Waves starten weiter draußen).
+     Dort stimmen wir auch die Feinwerte ab (aktuell: 60 Gegner = 3×).
+   - Bei Zwischenstufen (z. B. 3,4×) können Pixel leicht flimmern. Im Test trat das nicht auf. Falls es später stört:
+     „Sharp-Pixel“-Shader für die Spielwelt (Prüfpunkt in M5).
 3. **Rüstung ist nicht an der Spielfigur sichtbar**, sondern nur in Paperdoll und Icons (siehe „Ideen“ für ein mögliches Update).
 4. **Assets:** kostenlose Assets, KI-Tools (z. B. Pixellab) und selbst erstellte Platzhalter gemischt.
    - Lizenz je Asset prüfen und ab dem ersten fremden Asset in `CREDITS.md` eintragen.
@@ -176,10 +192,12 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
      physikfrei und meiden blockierte Grid-Zellen.
 
 ## Assets: Platzhalter → Alpha
+
 Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Assets überschreibst du einfach die Datei mit
 **demselben Namen am selben Ort**. Godot importiert sie dann automatisch neu, und am Code ändert sich nichts.
 
 **Vorgaben:**
+
 - PNG mit Transparenz, Pixel-Art ohne Anti-Aliasing, Grundraster 16×16, im Spiel 4× vergrößert.
 - Animationen als horizontaler Streifen: alle Frames gleich groß, eine Datei pro Animation.
 - Lizenz: CC0 oder ausdrücklich für kommerzielle Nutzung freigegeben (bei KI-Tools die Nutzungsbedingungen des Tarifs prüfen).
@@ -192,7 +210,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   sind also kein Problem. Nur bei einer anderen **Frame-Größe** (z. B. 16×24 statt 16×16) sag mir Bescheid.
 
 | Datei | Größe pro Frame | Frames | Ab |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `assets/ui/menu_background.png` | 600×270 (mind. 480×270) | 1 | M1 |
 | `assets/fonts/pixel_font.ttf` | – (mit ä, ö, ü, ß); noch kein Platzhalter, bis dahin Godot-Standardschrift | – | M1 |
 | `assets/ui/button.png` | 16×16 (9-Slice) | 1 | M1 |
@@ -225,6 +243,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 ## Meilensteine – Grundspiel
 
 ### M0 – Umstellung auf Querformat
+
 - `project.godot`: Viewport 1920×1080, `display/window/handheld/orientation = sensor_landscape`, Stretch
   `canvas_items`/`expand` beibehalten, Standard-Texturfilter `Nearest` (für Pixel-Art).
 - `CLAUDE.md`: „Hochformat (Portrait)“ wird zu „Querformat (Landscape)“, dazu ein kurzer Konzept-Abschnitt und der Satz zu PLAN.md.
@@ -234,6 +253,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   Projekt → Projekteinstellungen → Anzeige → Fenster, ob 1920×1080 und Landscape eingetragen sind.
 
 ### M1 – Hauptmenü, Arena, Spielfigur, Kamera
+
 - Hauptmenü als Startszene: Titel „Banebound“ und ein Knopf „Run starten“, der in die Arena führt. Mehr kann das Menü vorerst nicht.
 - Run-Szene mit einer Wald-Arena (Pixel-Bodenkacheln, Begrenzung durch Bäume oder Ränder), Held-Sprite in der Mitte,
   Kamera folgt mit Begrenzung am Arenarand. Bewegung vorerst nur per Tastatur.
@@ -246,8 +266,10 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   **Am PC (F5):** Der Held läuft mit WASD, die Kamera folgt und bleibt am Arenarand stehen.
 
 ### M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
+
 Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optionsmenü → 2c Pause-/Statusbildschirm →
 2d Auto-Pause → 2e README.
+
 - `README.md` für GitHub, geschrieben, als wäre das Spiel fertig und zum Download bereit. Aufbau orientiert an
   READMEs veröffentlichter Indie-Games: Titel, Kurzbeschreibung, Features, Lore-Teaser, Steuerung, Download, Tech-Stack, Lizenz.
 - Virtueller Joystick mit zwei Modi: **Floating** (erscheint an der Daumen-Position, Standard) und **Fest** (feste Position unten).
@@ -263,7 +285,7 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
   Die drei Status-Spalten (siehe „UI-Konzepte“) sind schon angelegt und füllen sich ab M3.
 - **Auto-Pause:** Wechselt die App in den Hintergrund (andere App, Anruf), öffnet sich automatisch das Pausemenü.
   Bekannte Einschränkung: Das Herunterziehen der Benachrichtigungsleiste meldet Android/Godot auf dem Testhandy nicht,
-  dort pausiert das Spiel nicht. Ab M3 (Gegner) prüfen, ob das stört; dann ggf. nachbessern.
+  dort pausiert das Spiel nicht. Beim Testen mit Gegnern (M3) hat das gestört → **in M8 beheben**.
 - **Am Handy testen:** Du kannst mit dem Daumen flüssig laufen, auch schräg. Probiere Modi, Seiten und Transparenz im Optionsmenü aus
   und sag mir, was sich am besten anfühlt. Schließ die App und öffne sie neu: Die Einstellungen sind noch da.
   Pause-Knopf und Zurück-Geste öffnen die Pause. Wechsle während eines Runs kurz in eine andere App:
@@ -271,10 +293,13 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
   **Auf GitHub:** Prüfe auf der Repo-Startseite, ob die README gut aussieht und dir der Text gefällt.
 
 ### M3 – Gegner (mit Performance-Grundlage) + Debug-Menü-Grundgerüst
+
 Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, Grid, FPS-Anzeige) →
-M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) →
+M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) → M3a++ dynamischer Zoom →
+M3a+++ Debug-Knopf direkt im Run, Option „Spiel weiterlaufen lassen“ →
 M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
 M3d HP im Statusbildschirm.
+
 - Kontaktschaden nach „Grundsatzentscheidungen“ Punkt 5: Der Held läuft durch Gegner, Gegner bleiben an seinem Rand stehen.
   Im Debug-Menü: „Unverwundbarkeit nach Treffer“ an/aus und Dauer (0,1–2,0 s) zum Ausprobieren.
 - `EnemyManager` mit Pooling und Spatial Grid. Gegner (z. B. Skelett) erscheinen außerhalb des Sichtfelds und laufen auf den
@@ -290,6 +315,7 @@ M3d HP im Statusbildschirm.
   Notiere dir den FPS-Wert.
 
 ### M4 – Auto-Angriff
+
 - Erste Waffe „Magiegeschoss“: Sie schießt automatisch auf den nächsten Gegner. Geschosse kommen aus einem Pool.
   Gegner haben HP, blinken kurz bei einem Treffer und sterben (mit kleinem Effekt).
 - Die Waffe ist als Resource-Datei angelegt (Grundlage für spätere Level und Evolutionen), mit **Zielmodus**
@@ -303,17 +329,22 @@ M3d HP im Statusbildschirm.
   Schadenszahlen und Gegner-Lebensleisten lassen sich einzeln abschalten.
 
 ### M5 – Debug-Menü erweitern, Stresstest & Optimierung
+
 - **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
-  Das Grundgerüst gibt es schon seit M3 (Zoom, Unverwundbarkeit nach Treffer). Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
+  Das Grundgerüst gibt es schon seit M3: erreichbar über den Debug-Knopf neben dem Pause-Knopf, das Spiel kann dabei weiterlaufen
+  (Zoom, Unverwundbarkeit nach Treffer). Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
   in M7 „Zu Welle X springen“, später z. B. „Magie-Schrott geben“.
 - Mit „+100 Gegner“ messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
   Bei Bedarf optimieren, z. B. mit MultiMesh-Rendering oder einem gröberen Grid.
+- Prüfpunkt: Flimmern beim dynamischen Zoom mit vielen Gegnern und mit echten Alpha-Assets erneut ansehen (ggf. „Sharp-Pixel“-Shader,
+  siehe Grundsatzentscheidung 2).
 - Zielwert: mindestens **500 gleichzeitige Gegner bei 60 FPS** auf dem Testhandy **Redmi Note 13 4G** (Snapdragon 685 / Adreno 610 GPU, Display 2400×1080 = 20:9).
   Das ist untere Mittelklasse: Läuft es dort flüssig, läuft es auf den meisten Handys.
   Den Wert passen wir nach der Messung an.
 - **Am Handy testen:** Spawne immer mehr Gegner und sag mir, ab welcher Anzahl es ruckelt und wie warm das Handy wird.
 
 ### M6 – XP & Level-Up
+
 - Gegner lassen XP-Kristalle fallen, die per Magnet eingesammelt werden. Am oberen Rand gibt es eine XP-Leiste.
 - Beim Level-Up pausiert das Spiel, und es erscheinen **3 Karten** zum Antippen: eine neue Waffe (maximal 3 Slots) oder
   das Upgrade einer vorhandenen Waffe.
@@ -325,7 +356,9 @@ M3d HP im Statusbildschirm.
   Mit 3 Waffen kommen keine neuen Waffen mehr, sondern nur noch Upgrades.
 
 ### M7 – Wellen & Run-Ende
+
 - Wellen-Timer (z. B. 60 s) mit Anzeige, z. B. „Welle 3 / 10“. Die Gegner werden pro Welle stärker und zahlreicher.
+- **Kamera:** `RunCamera.reset_wave()` beim Wave-Start, Zoomdruck und Zoomstufen aus den Wellen-Daten (siehe Grundsatzentscheidung 2).
 - **Spawn-Muster:** Neben zufälligen Spawns gibt es Formationen wie Ringe und Einkesselung. Sie werden mathematisch berechnet
   und in den Wellen-Dateien (`Resource`) festgelegt, nicht im Code.
 - Zwischen den Wellen gibt es einen Platzhalter-Rastplatz: eine Pause mit Wellen-Zusammenfassung und „Weiter“-Knopf.
@@ -339,11 +372,13 @@ M3d HP im Statusbildschirm.
   und klären, wofür die Props-Texturen stattdessen verwendet werden.
 
 ### M8 – Run speichern & fortsetzen
+
 - Die genaue technische Umsetzung planen wir zu Beginn von M8. Diese Grundsätze stehen schon fest:
   - Im Pausemenü wird „Run aufgeben“ ergänzt durch **„Speichern & Hauptmenü“**. Im Hauptmenü erscheint **„Fortsetzen“**,
     wenn ein Run gespeichert ist.
   - **Autosave nach jeder abgeschlossenen Welle** (beim Betreten des Rastplatzes).
   - **Autosave, wenn die App in den Hintergrund geht.** Android kann Apps im Hintergrund jederzeit beenden.
+  - **Pause beim Herunterziehen der Benachrichtigungsleiste** nachrüsten (meldet Godot auf dem Testhandy bisher nicht, siehe M2).
   - **Kein Save-Scumming:**
     - Shop-Angebote und Level-Up-Auswahlen werden beim Erzeugen mitgespeichert. Neuladen würfelt sie nicht neu.
     - Jeder Kauf wird sofort gespeichert und lässt sich durch Neuladen nicht rückgängig machen.
@@ -367,10 +402,11 @@ M3d HP im Statusbildschirm.
 ## UI-Konzepte
 
 ### Pause-/Statusbildschirm (im Run)
+
 Drei Spalten, damit im Querformat alles auf einen Blick sichtbar ist:
 
 | Links: Charakter | Mitte: Waffen | Rechts: Ausrüstung & Run |
-|---|---|---|
+| --- | --- | --- |
 | HP, Level, XP-Fortschritt | 3 Waffen-Slots: Icon, Level x/10, Evolutionsstufe und gewählter Zweig | **Paperdoll** mit angelegter Rüstung |
 | Spezialfähigkeit + Abklingzeit | Werte je Waffe: Schaden, Tempo, Reichweite | Aktive Artefakte mit Beschreibung |
 | Werte: Schaden %, Angriffstempo, Laufgeschwindigkeit, Krit, Rüstung, Regeneration, Sammelradius, Glück | Bisher verursachter Schaden je Waffe | Tränke im Inventar |
@@ -379,6 +415,7 @@ Drei Spalten, damit im Querformat alles auf einen Blick sichtbar ist:
 Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) · Run aufgeben**.
 
 **Paperdoll (Ausrüstungsanzeige):**
+
 - In der Mitte steht eine humanoide Charakter-Silhouette, die Rüstungs-Slots liegen direkt an der passenden Körperstelle:
   Helm am Kopf, Schultern an den Schultern, Brust am Oberkörper, Handschuhe an den Händen, Beine an den Beinen, Stiefel an den Füßen.
 - Antippen eines Slots öffnet ein Infofenster mit Name, Werten und Boni des Teils. Im Run kann man nur ansehen, nicht tauschen.
@@ -390,6 +427,7 @@ Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) 
   (Kategorie, Position an der Silhouette, erlaubte Teile). Eine neue Kategorie oder ein neuer Slot ist also eine neue Datei, kein Code.
 
 **Performance-Regeln für Ausrüstung und Inventar:**
+
 - **Register kennt nur die Liste, nicht den Inhalt:** Beim Start wird nur „ID → Dateipfad“ eingelesen. Eine Gegenstandsdatei
   samt Icon wird erst geladen, wenn sie gebraucht wird, und danach im Speicher behalten. Bei Tausenden Gegenständen bleibt der Start so schnell.
 - **Bildschirme nur bei Bedarf:** Pause-/Status- und Ausrüstungsbildschirm werden beim Öffnen erzeugt und beim Schließen freigegeben.
@@ -402,11 +440,12 @@ Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) 
   nur geschrieben, wenn sich etwas geändert hat.
 
 ### Optionsmenü
+
 Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeichert.
 **Regel: Jede Option kommt im selben Meilenstein wie das Feature, das sie steuert.**
 
 | Bereich | Option | Kommt in |
-|---|---|---|
+| --- | --- | --- |
 | Steuerung | Joystick-Modus (Floating / Fest) | M2 |
 | Steuerung | Joystick-Seite (Links / Rechts / Beide) | M2 |
 | Steuerung | Joystick-Transparenz (Schieberegler) | M2 |
@@ -421,7 +460,9 @@ Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeicher
 | Grafik | FPS-Limit 30 / 60 / 120 | E15 |
 
 ### Run-Zusammenfassung / Belohnungsbildschirm
+
 Erscheint nach jedem Run (Sieg oder Tod) und zeigt Run-Ergebnis und langfristigen Fortschritt.
+
 - **Basis (M7):** Kills, überstandene Wellen, Zeit, erreichtes Level, verwendete Waffen mit Level, Schaden pro Waffe.
 - **Voll (E5):**
   - Run-Statistiken: Kills nach Gegnertyp, erlittener und geheilter Schaden, höchster Einzeltreffer.
@@ -430,6 +471,7 @@ Erscheint nach jedem Run (Sieg oder Tod) und zeigt Run-Ergebnis und langfristige
 - **Quests (E9):** erhaltene Quest-Items und Questfortschritt.
 
 ## Hub-Stadt
+
 Die Stadt, die man nach und nach wieder aufbaut, ist ein **begehbarer Ort** und das Zentrum des Spiels, kein reines Menü.
 
 - **Einstieg:** Der Held erwacht im Wald → Intro-Level als Tutorial (E11) → am Ende entdeckt er eine zerstörte Dorf-Ruine,
@@ -447,7 +489,9 @@ Die Stadt, die man nach und nach wieder aufbaut, ist ein **begehbarer Ort** und 
 - Der Hub hat nur wenige Objekte, die Performance-Regeln für Gegnermassen gelten dort nicht in derselben Strenge.
 
 ## Erweiterungen (Alpha, nach M8)
+
 Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Beginn.
+
 1. **E1 – Rastplätze mit Händlern:** zufällige Händler (Tränke, Artefakte), Währung „Magie-Schrott“. Braucht Wellen (M7) und Speichern (M8).
 2. **E2 – Audio:** Musik und Soundeffekte, Lautstärke-Optionen.
 3. **E3 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm.
@@ -470,9 +514,11 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 15. **E15 – Erweiterte Optionen:** Joystick-Größe, FPS-Limit.
 16. **E16 – Credits-Bildschirm.** Ab dem ersten fremden Asset führen wir `CREDITS.md` mit Quelle und Lizenz,
     damit am Ende nichts fehlt.
+
 - **Laufend:** Alpha-Assets ersetzen die Platzhalter, sobald du sie hast.
 
 ## Beta (vor der Veröffentlichung, nicht Teil der Alpha)
+
 - **Monetarisierung** entscheiden (Einmalkauf, Werbung, In-App-Käufe oder kostenlos). Das beeinflusst das Design, z. B. ob es
   „Wiederbeleben gegen Werbung“ gibt.
 - **Play-Store-Pflichten:** App-Icon, Datenschutzerklärung (Pflicht, auch ohne Werbung), Altersfreigabe, Store-Texte, Screenshots.
@@ -480,18 +526,21 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
   Nach dem ersten Upload lässt sich der Paketname nie mehr ändern.
 
 ## Ideen (noch nicht eingeplant)
+
 - **Headstart-Perk:** Ein Teil des Magie-Schrotts aus dem vorherigen Run wird in den nächsten Run mitgenommen.
   Wie und ob das ins Spiel kommt, ist noch offen.
 - **Sichtbare Rüstung:** späteres Update, das angelegte Rüstung an der Spielfigur zeigt, mit Option an/aus.
 - **Rastplatz als begehbarer Ort:** Händler-Karawane als NPCs, die man ansprechen kann (nutzt die Hub-Interaktion).
 
 ## UI-Überarbeitung (später)
+
 - **Feedback zu M2c:** Das Design von Pausemenü, Status-Screen und Buttons wirkt kantig und nicht modern.
   Erst angehen, wenn die Menüs inhaltlich vollständig sind → **nach M8 gemeinsam besprechen**.
 - Technisch hängt die Optik vor allem an den UI-Texturen (`button.png`, `panel.png` …) und den Theme-Werten in
   `scripts/pixel_ui.gd` (`make_theme()`). Der Menü-Code bleibt bei einem Redesign weitgehend unberührt.
 
 ## Offene Designfragen
+
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
   exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit
   vollen HP vom Wellenanfang wiederholen. Ist das okay, oder braucht es eine Gegenmaßnahme? → vor M8 entscheiden
@@ -505,6 +554,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 - Details zu Dorf, Rüstung, Evolutionen → jeweils vor dem Meilenstein
 
 ## Verifikation
+
 - Nach jedem Meilenstein: F5 am PC, danach Remote-Deploy aufs Handy (Testpunkte siehe oben).
 - Erst wenn alles funktioniert: committen und pushen, `PLAN.md` abhaken bzw. aktualisieren.
 - Ab M3 dient die FPS-Anzeige als Performance-Kontrolle, ab M5 kommt der Stresstest dazu.

@@ -9,17 +9,20 @@ var _closing := false
 
 @onready var zoom_near_button: Button = %ZoomNearButton
 @onready var zoom_far_button: Button = %ZoomFarButton
+@onready var zoom_dynamic_button: Button = %ZoomDynamicButton
 @onready var back_button: Button = %BackButton
 
 
 func _ready() -> void:
 	theme = PixelUI.make_theme()
 
-	zoom_near_button.button_pressed = is_equal_approx(Settings.camera_zoom, Settings.ZOOM_NEAR)
-	zoom_far_button.button_pressed = is_equal_approx(Settings.camera_zoom, Settings.ZOOM_FAR)
+	zoom_near_button.button_pressed = Settings.camera_zoom_mode == Settings.CameraZoomMode.NEAR
+	zoom_far_button.button_pressed = Settings.camera_zoom_mode == Settings.CameraZoomMode.FAR
+	zoom_dynamic_button.button_pressed = Settings.camera_zoom_mode == Settings.CameraZoomMode.DYNAMIC
 
-	zoom_near_button.pressed.connect(Settings.set_camera_zoom.bind(Settings.ZOOM_NEAR))
-	zoom_far_button.pressed.connect(Settings.set_camera_zoom.bind(Settings.ZOOM_FAR))
+	zoom_near_button.pressed.connect(Settings.set_camera_zoom_mode.bind(Settings.CameraZoomMode.NEAR))
+	zoom_far_button.pressed.connect(Settings.set_camera_zoom_mode.bind(Settings.CameraZoomMode.FAR))
+	zoom_dynamic_button.pressed.connect(Settings.set_camera_zoom_mode.bind(Settings.CameraZoomMode.DYNAMIC))
 	back_button.pressed.connect(close)
 
 
