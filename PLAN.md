@@ -130,6 +130,51 @@ Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnum
   Zuerst gibt es nur Deutsch, Englisch kommt später dazu, ohne dass Code geändert werden muss.
 - **PC-Test:** Am PC funktionieren zusätzlich WASD und die Pfeiltasten. F5 bleibt damit immer nutzbar.
 
+## Grundsatzentscheidungen
+Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach Absprache.
+
+1. **Perspektive: Low Top-Down (3/4-Ansicht)**, wie Vampire Survivors oder Stardew Valley.
+   - Nur **2 Blickrichtungen**: Sprites schauen nach links, rechts ist gespiegelt. Keine Animationen nach oben/unten.
+   - **Kollisionskreis an den Füßen**, nicht in der Sprite-Mitte. Dass sich Köpfe überlappen, ist gewollt.
+   - Der **Held wird immer über den Gegnern** gezeichnet. Gegner untereinander werden nach Höhe sortiert (über die Grid-Zeilen).
+   - Keine Höhenstauchung: Reichweiten sind echte Kreise.
+2. **Kamera-Zoom:** noch offen. Nah (4×) und Weit (3×) sind im Debug-Menü umschaltbar, Entscheidung nach dem Vergleichstest.
+3. **Rüstung ist nicht an der Spielfigur sichtbar**, sondern nur in Paperdoll und Icons (siehe „Ideen“ für ein mögliches Update).
+4. **Assets:** kostenlose Assets, KI-Tools (z. B. Pixellab) und selbst erstellte Platzhalter gemischt.
+   - Lizenz je Asset prüfen und ab dem ersten fremden Asset in `CREDITS.md` eintragen.
+   - **Feste Farbpalette und feste Sprite-Größen**, damit Assets aus verschiedenen Quellen zusammenpassen.
+     Die Palette wählen wir, sobald das erste Alpha-Asset kommt.
+5. **Kollision und Schaden:**
+   - Der Held kann **durch Gegner hindurchlaufen**. Gegner bleiben am Rand seines Körperradius stehen, nicht in ihm, und werden
+     beiseitegeschoben, wenn er durch eine Gruppe läuft. Gegner können den Helden nie einsperren.
+   - Gegner verursachen **Kontaktschaden**. Jeder Gegnertyp hat eine Angriffsreichweite (`attack_range`, Nahkampf = Berührung)
+     und ein Angriffsintervall (`attack_interval`). Fernkämpfer bleiben später einfach weiter weg stehen.
+   - **Unverwundbarkeit nach Treffer: noch offen.** Im Debug-Menü umschaltbar (an/aus + Dauer):
+     an = nach einem Treffer kurz unverwundbar (Blinken), aus = jeder berührende Gegner trifft in seinem eigenen Intervall.
+6. **Werte-System (Stats):**
+   - Jeder Wert (Schaden, Angriffstempo, Rüstung …) ist eine **Stat-Definition** als Datendatei mit Mindest- und Höchstwert.
+   - Alles, was Werte verändert (Level-Up, Artefakt, Rüstung, Dorf-Upgrade, Status-Effekt), liefert **Modifikatoren**
+     (Stat, Art, Wert). Arten: fest (FLAT), Prozent (PERCENT), Sonder-Multiplikator (MULT).
+   - Ein **StatBlock** rechnet: `Endwert = (Grundwert + Σ FLAT) × (1 + Σ PERCENT) × Π MULT`, begrenzt auf Min/Max.
+   - Boni derselben Art **addieren** sich (+20 % und +15 % = +35 %). MULT nur für seltene Quellen (z. B. Evolutionen).
+   - Verteidigung mit **abnehmendem Ertrag**: Schadensreduktion = `Rüstung ÷ (Rüstung + K)` (z. B. K = 15). Dazu Obergrenzen
+     in den Stat-Definitionen (z. B. Ausweichen max. 60 %).
+   - **Schadens-Tags** (z. B. `fire`, `projectile`, `melee`), damit Boni nur bestimmte Waffen betreffen können.
+   - Neu gerechnet wird nur bei Änderungen. Geschosse tragen ihren fertigen Schadenswert.
+   - Beispiel: Magiegeschoss 10 Grundschaden, +3 durch Waffenlevel, Artefakt +20 %, Rune +15 % → (10 + 3) × 1,35 = 17,6.
+   - Einbau schrittweise: Grundschaden in M4, StatBlock und Modifikatoren in M6.
+7. **Zielen:** Gespielt wird mit einem Daumen, kein zweiter Stick.
+   - Der **Zielmodus ist eine Eigenschaft der Waffe** (Datendatei): `NEAREST` (nächster Gegner, Standard),
+     `FACING` (letzte Laufrichtung, stufenlos, nicht nur links/rechts), später z. B. `RANDOM`, `STRONGEST`, `DENSEST`.
+   - Bewusst **kein vom Spieler umschaltbarer Zielmodus**: Der Zielmodus macht jede Waffe einzigartig und situativ.
+8. **Begehbare Hub-Stadt** als Zentrum des Spiels (siehe „Hub-Stadt“). Die Architektur wird schon jetzt darauf vorbereitet:
+   - **Zentrale Szenensteuerung** (Autoload `SceneRouter`) für Hauptmenü, Run und später Hub/Innenräume. Kommt in M3b.
+   - **Der Held hat keine Waffen eingebaut.** Er kann laufen, hat HP und Animationen. Waffen hängt nur der Run als eigenen
+     Baustein an (M4). So läuft derselbe Held auch durch die Stadt, wo der Bann Waffen verhindert.
+   - **Der Run bekommt Parameter** (`ExpeditionData`: Map, Wellen, Beute) statt fest verdrahteter Werte. Kommt in M7.
+   - Später (mit der Map-Rand-Diskussion nach M7): Hindernis-Kollision für den Helden (`CharacterBody2D`). Gegner bleiben
+     physikfrei und meiden blockierte Grid-Zellen.
+
 ## Assets: Platzhalter → Alpha
 Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Assets überschreibst du einfach die Datei mit
 **demselben Namen am selben Ort**. Godot importiert sie dann automatisch neu, und am Code ändert sich nichts.
@@ -137,7 +182,9 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 **Vorgaben:**
 - PNG mit Transparenz, Pixel-Art ohne Anti-Aliasing, Grundraster 16×16, im Spiel 4× vergrößert.
 - Animationen als horizontaler Streifen: alle Frames gleich groß, eine Datei pro Animation.
-- Lizenz: CC0 oder ausdrücklich für kommerzielle Nutzung freigegeben.
+- Lizenz: CC0 oder ausdrücklich für kommerzielle Nutzung freigegeben (bei KI-Tools die Nutzungsbedingungen des Tarifs prüfen).
+  Jedes fremde Asset kommt mit Quelle und Lizenz in `CREDITS.md`.
+- Farben aus der gemeinsamen Palette (wird mit dem ersten Alpha-Asset festgelegt).
 - **Dateinamen auf Englisch, klein geschrieben, mit Unterstrich, ohne Umlaute und Leerzeichen**
   (z. B. `hero_run.png`, nicht `Held Laufen.png`). Android unterscheidet Groß- und Kleinschreibung,
   und Umlaute in Dateinamen machen Probleme.
@@ -225,8 +272,11 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
 
 ### M3 – Gegner (mit Performance-Grundlage)
 Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, Grid, FPS-Anzeige) →
-M3b Schaden, Lebensleiste, Game Over → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
+M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) →
+M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
 M3d HP im Statusbildschirm.
+- Kontaktschaden nach „Grundsatzentscheidungen“ Punkt 5: Der Held läuft durch Gegner, Gegner bleiben an seinem Rand stehen.
+  Im Debug-Menü: „Unverwundbarkeit nach Treffer“ an/aus und Dauer (0,1–2,0 s) zum Ausprobieren.
 - `EnemyManager` mit Pooling und Spatial Grid. Gegner (z. B. Skelett) erscheinen außerhalb des Sichtfelds und laufen auf den
   Helden zu, ohne sich alle auf einen Punkt zu stapeln.
 - Bei Berührung nimmt der Held Schaden. Es gibt eine Lebensleiste, und bei 0 HP kommt ein Game-Over-Bildschirm mit den Knöpfen „Nochmal“ und „Hauptmenü“.
@@ -242,7 +292,9 @@ M3d HP im Statusbildschirm.
 ### M4 – Auto-Angriff
 - Erste Waffe „Magiegeschoss“: Sie schießt automatisch auf den nächsten Gegner. Geschosse kommen aus einem Pool.
   Gegner haben HP, blinken kurz bei einem Treffer und sterben (mit kleinem Effekt).
-- Die Waffe ist als Resource-Datei angelegt (Grundlage für spätere Level und Evolutionen).
+- Die Waffe ist als Resource-Datei angelegt (Grundlage für spätere Level und Evolutionen), mit **Zielmodus**
+  (`NEAREST` für das Magiegeschoss) und Grundschaden.
+- Waffen sind ein eigener Baustein, den die Run-Szene dem Helden anhängt. `player.gd` bleibt waffenfrei.
 - **Schadenszahlen** über getroffenen Gegnern (Option „Schadenszahlen“), aus einem Pool.
 - **Lebensleisten über Gegnern** (Option „Lebensleisten Gegner“). Sie erscheinen nur bei bereits verletzten Gegnern und
   werden alle in einem einzigen Zeichenaufruf des EnemyManagers gezeichnet, nicht als eigene Nodes. Das ist wichtig für die Performance.
@@ -251,8 +303,8 @@ M3d HP im Statusbildschirm.
   Schadenszahlen und Gegner-Lebensleisten lassen sich einzeln abschalten.
 
 ### M5 – Debug-Menü, Stresstest & Optimierung
-- **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release):
-  FPS und Gegnerzahl, „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
+- **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
+  Das Grundgerüst gibt es schon seit M3 (Zoom, Unverwundbarkeit nach Treffer). Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
   in M7 „Zu Welle X springen“, später z. B. „Magie-Schrott geben“.
 - Mit „+100 Gegner“ messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
   Bei Bedarf optimieren, z. B. mit MultiMesh-Rendering oder einem gröberen Grid.
@@ -266,6 +318,8 @@ M3d HP im Statusbildschirm.
 - Beim Level-Up pausiert das Spiel, und es erscheinen **3 Karten** zum Antippen: eine neue Waffe (maximal 3 Slots) oder
   das Upgrade einer vorhandenen Waffe.
 - Im Grundspiel gibt es 3 Waffen, z. B. Magiegeschoss, kreisende Klingen und Feuer-Aura.
+- **Werte-System** nach „Grundsatzentscheidungen“ Punkt 6: Stat-Definitionen, Modifikatoren und StatBlock.
+  Level-Up-Upgrades sind Modifikatoren.
 - Statusbildschirm zeigt Level, XP, alle Waffen-Slots mit Level und Werten sowie die Spielerwerte.
 - **Am Handy testen:** Kristalle werden eingesammelt, das Level-Up-Menü lässt sich gut antippen und die Karten sind lesbar.
   Mit 3 Waffen kommen keine neuen Waffen mehr, sondern nur noch Upgrades.
@@ -375,6 +429,23 @@ Erscheint nach jedem Run (Sieg oder Tod) und zeigt Run-Ergebnis und langfristige
   - Belohnungen: erhaltene Materialien und Ressourcen, was davon ins Dorf geht.
 - **Quests (E9):** erhaltene Quest-Items und Questfortschritt.
 
+## Hub-Stadt
+Die Stadt, die man nach und nach wieder aufbaut, ist ein **begehbarer Ort** und das Zentrum des Spiels, kein reines Menü.
+
+- **Einstieg:** Der Held erwacht im Wald → Intro-Level als Tutorial (E11) → am Ende entdeckt er eine zerstörte Dorf-Ruine,
+  die als Hub freigeschaltet wird.
+- **Eigenes Haus:** von Anfang an vorhanden, betretbar, dient als **Lager**.
+- **Gebäude als Daten** (`BuildingData`): Zustände (Ruine → Stufe 1 → 2 …) mit Grafik je Zustand, Freischalt-Bedingungen
+  (Materialien, Quests), Innenraum-Szene. Die Stadt-Karte hat feste Bauplätze und liest beim Betreten aus dem Profil-Spielstand,
+  welcher Zustand gilt. Ein neues Gebäude ist also vor allem eine neue Datendatei und eine Innenraum-Szene.
+- **Betretbare Gebäude:** Wiederaufgebaute Gebäude und das eigene Haus haben einen **eigenen Innenraum** (kleine eigene Szene,
+  geladen über den `SceneRouter`). Durch die Tür hinein, beim Hinausgehen steht man wieder vor der Tür (Spawn-Marker).
+  Drinnen stehen NPCs bzw. Objekte, die die Menüs öffnen (z. B. Amboss beim Schmied, Lagertruhe im Haus). Ruinen sind nicht betretbar.
+- **NPCs als Daten** (`NpcData`): Dialog-Texte (Übersetzungs-Schlüssel), Bedingungen, was sie anbieten.
+- **Interaktion:** In die Nähe laufen → ein Knopf („Sprechen“, „Betreten“ …) erscheint.
+- **Übergang zu Expeditionen:** Stadttor bzw. Expeditionstafel → Map-Auswahl → Run. Nach dem Run: Zusammenfassung → zurück in den Hub.
+- Der Hub hat nur wenige Objekte, die Performance-Regeln für Gegnermassen gelten dort nicht in derselben Strenge.
+
 ## Erweiterungen (Alpha, nach M8)
 Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Beginn.
 1. **E1 – Rastplätze mit Händlern:** zufällige Händler (Tränke, Artefakte), Währung „Magie-Schrott“. Braucht Wellen (M7) und Speichern (M8).
@@ -383,12 +454,16 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 4. **E4 – Waffen-Evolutionen:** Level 10 → 1 von 3 Varianten → 2. Evolution → 1 von 3 = 9 Endformen.
 5. **E5 – Meta-Spielstand + Belohnungsbildschirm:** Profil-Spielstand (`profile.save`), Material-Register und erste Materialien
    aus Runs, volle Run-Zusammenfassung.
-6. **E6 – Dorf-Hub:** Gebäude wieder aufbauen (Schmied, Alchemist, Enchanter …), NPCs, Story-Dialoge.
+6. **E6 – Begehbare Hub-Stadt** (siehe „Hub-Stadt“). Ab hier startet das Hauptmenü in den Hub statt direkt in einen Run.
+   - **E6a Grundgerüst:** Stadt begehen, eigenes Haus (betretbar, Lager), Stadttor/Expeditionstafel → Run → zurück in den Hub.
+   - **E6b Ausbau:** Gebäude wieder aufbauen (Schmied, Alchemist, Enchanter …) und betreten, NPCs, Story-Dialoge.
 7. **E7 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und über die Paperdoll anlegen, im Run ansehen.
 8. **E8 – Permanente Upgrades** über Dorf-Gebäude.
 9. **E9 – Questsystem:** Quest-Items und Questfortschritt, Anzeige im Belohnungsbildschirm.
 10. **E10 – Mehrere Charaktere** mit eigener Startwaffe und Spezialfähigkeit.
-11. **E11 – Tutorial / erster Start:** braucht Level-Up, Rastplatz und Spezialfähigkeit. Den Inhalt besprechen wir vorher gemeinsam.
+11. **E11 – Intro-Level / Tutorial:** Der Held erwacht im Wald, das erste Level bringt schrittweise die Grundlagen bei
+    (die erste Waffe materialisiert sich in höchster Not). Am Ende entdeckt er die Dorf-Ruine, die zum Hub wird.
+    Braucht Level-Up, Rastplatz, Spezialfähigkeit und den Hub. Den Inhalt besprechen wir vorher gemeinsam.
 12. **E12 – Weitere Maps/Biome, Gegnertypen, Bosse.**
 13. **E13 – Endlos-Modus** nach der letzten Welle.
 14. **E14 – Englisch** + Sprach-Option.
@@ -407,6 +482,8 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 ## Ideen (noch nicht eingeplant)
 - **Headstart-Perk:** Ein Teil des Magie-Schrotts aus dem vorherigen Run wird in den nächsten Run mitgenommen.
   Wie und ob das ins Spiel kommt, ist noch offen.
+- **Sichtbare Rüstung:** späteres Update, das angelegte Rüstung an der Spielfigur zeigt, mit Option an/aus.
+- **Rastplatz als begehbarer Ort:** Händler-Karawane als NPCs, die man ansprechen kann (nutzt die Hub-Interaktion).
 
 ## UI-Überarbeitung (später)
 - **Feedback zu M2c:** Das Design von Pausemenü, Status-Screen und Buttons wirkt kantig und nicht modern.
