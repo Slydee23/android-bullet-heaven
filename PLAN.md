@@ -4,9 +4,9 @@
 - [x] M0 – Umstellung auf Querformat
 - [x] M1 – Hauptmenü, Arena, Spielfigur, Kamera
 - [x] M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
-- [ ] M3 – Gegner (mit Performance-Grundlage)
+- [ ] M3 – Gegner (mit Performance-Grundlage) + Debug-Menü-Grundgerüst
 - [ ] M4 – Auto-Angriff
-- [ ] M5 – Debug-Menü, Stresstest & Optimierung
+- [ ] M5 – Debug-Menü erweitern, Stresstest & Optimierung
 - [ ] M6 – XP & Level-Up
 - [ ] M7 – Wellen & Run-Ende
 - [ ] M8 – Run speichern & fortsetzen
@@ -270,7 +270,7 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
   Beim Zurückkommen ist das Spiel pausiert.
   **Auf GitHub:** Prüfe auf der Repo-Startseite, ob die README gut aussieht und dir der Text gefällt.
 
-### M3 – Gegner (mit Performance-Grundlage)
+### M3 – Gegner (mit Performance-Grundlage) + Debug-Menü-Grundgerüst
 Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, Grid, FPS-Anzeige) →
 M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) →
 M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
@@ -302,7 +302,7 @@ M3d HP im Statusbildschirm.
 - **Am Handy testen:** Der Held schießt von allein, Treffer und Tode sind gut zu erkennen, und das Spiel fühlt sich an wie ein Survivor-Like.
   Schadenszahlen und Gegner-Lebensleisten lassen sich einzeln abschalten.
 
-### M5 – Debug-Menü, Stresstest & Optimierung
+### M5 – Debug-Menü erweitern, Stresstest & Optimierung
 - **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
   Das Grundgerüst gibt es schon seit M3 (Zoom, Unverwundbarkeit nach Treffer). Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
   in M7 „Zu Welle X springen“, später z. B. „Magie-Schrott geben“.

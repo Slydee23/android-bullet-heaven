@@ -21,3 +21,8 @@ PAUSE_RESUME,Weiter
 PAUSE_ABANDON,Run aufgeben
 PAUSE_ABANDON_CONFIRM,Wirklich aufgeben?
 DEBUG_FPS,%d FPS · %d Gegner
+PAUSE_DEBUG,Debug
+DEBUG_TITLE,Debug-Menü
+DEBUG_CAMERA_ZOOM,Kamera-Zoom
+DEBUG_ZOOM_NEAR,Nah (4×)
+DEBUG_ZOOM_FAR,Weit (3×)

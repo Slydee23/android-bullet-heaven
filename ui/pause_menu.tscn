@@ -125,6 +125,12 @@ custom_minimum_size = Vector2(320, 96)
 layout_mode = 2
 text = "MENU_OPTIONS"
 
+[node name="DebugButton" type="Button" parent="Margin/Layout/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 96)
+layout_mode = 2
+text = "PAUSE_DEBUG"
+
 [node name="AbandonButton" type="Button" parent="Margin/Layout/Buttons"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 96)

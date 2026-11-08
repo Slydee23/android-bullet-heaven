@@ -5,6 +5,7 @@ signal closed
 
 const PixelUI := preload("res://scripts/pixel_ui.gd")
 const OPTIONS_MENU := preload("res://ui/options_menu.tscn")
+const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
 const MAIN_MENU := "res://ui/main_menu.tscn"
 
 ## Zweites Antippen von „Run aufgeben“ bestätigt (schützt vor versehentlichem Aufgeben)
@@ -12,6 +13,7 @@ var _abandon_armed := false
 
 @onready var resume_button: Button = %ResumeButton
 @onready var options_button: Button = %OptionsButton
+@onready var debug_button: Button = %DebugButton
 @onready var abandon_button: Button = %AbandonButton
 
 
@@ -21,6 +23,9 @@ func _ready() -> void:
 	resume_button.pressed.connect(close)
 	options_button.pressed.connect(_on_options_pressed)
 	abandon_button.pressed.connect(_on_abandon_pressed)
+	# Debug-Menü nur in Test-Builds, nicht in einer späteren Veröffentlichung
+	debug_button.visible = OS.is_debug_build()
+	debug_button.pressed.connect(func() -> void: add_child(DEBUG_MENU.instantiate()))
 
 
 func close() -> void:

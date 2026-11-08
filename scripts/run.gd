@@ -50,6 +50,8 @@ func _ready() -> void:
 	camera.limit_top = 0
 	camera.limit_right = int(arena.size.x)
 	camera.limit_bottom = int(arena.size.y)
+	_apply_zoom()
+	Settings.changed.connect(_apply_zoom)
 	camera.call_deferred("reset_smoothing")
 
 	pause_button.pressed.connect(open_pause_menu)
@@ -83,6 +85,11 @@ func open_pause_menu() -> void:
 	_pause_menu = PAUSE_MENU.instantiate()
 	_pause_menu.tree_exited.connect(func() -> void: _pause_menu = null)
 	hud.add_child(_pause_menu)
+
+
+## Zoom-Testwert aus dem Debug-Menü übernehmen (Spawn-Abstand passt sich über das sichtbare Rechteck von selbst an)
+func _apply_zoom() -> void:
+	camera.zoom = Vector2.ONE * Settings.camera_zoom
 
 
 func _build_ground() -> void:
