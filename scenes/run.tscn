@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://scripts/touch_joystick.gd" id="3_joystick"]
 [ext_resource type="Texture2D" path="res://assets/ui/pause_button.png" id="4_pause"]
 [ext_resource type="Script" path="res://scripts/enemy_manager.gd" id="5_enemies"]
+[ext_resource type="Texture2D" path="res://assets/ui/debug_button.png" id="6_debug"]
 
 [node name="Run" type="Node2D" unique_id=439059942]
 script = ExtResource("1_script")
@@ -30,7 +31,23 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("3_joystick")
 
+[node name="DebugButton" type="TextureButton" parent="HUD" groups=["joystick_blocker"]]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -224.0
+offset_top = 48.0
+offset_right = -144.0
+offset_bottom = 128.0
+grow_horizontal = 0
+texture_normal = ExtResource("6_debug")
+ignore_texture_size = true
+stretch_mode = 0
+
 [node name="PauseButton" type="TextureButton" parent="HUD" groups=["joystick_blocker"]]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 1
 anchor_left = 1.0

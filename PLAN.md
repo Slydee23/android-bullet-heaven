@@ -221,6 +221,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
 | `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
 | `assets/ui/pause_button.png` | 16×16 | 1 | M2 |
+| `assets/ui/debug_button.png` | 16×16 (nur Test-Builds, muss nicht ersetzt werden) | 1 | M3 |
 | `assets/ui/panel.png` | 16×16 (9-Slice, Rand 4) – Hintergrund für Menüfenster | 1 | M2 |
 | `assets/ui/slider_track.png` | 12×8 (9-Slice, Rand 3) – Schieberegler-Leiste | 1 | M2 |
 | `assets/ui/slider_grabber.png` | 16×16 – Schieberegler-Knopf | 1 | M2 |

@@ -11,6 +11,7 @@ const MAIN_GROUND_SHARE := 0.7
 const GROUND_TEXTURE := preload("res://assets/tiles/forest_ground.png")
 const PROPS_TEXTURE := preload("res://assets/tiles/forest_props.png")
 const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
+const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (M3: = MAX_ALIVE, ab M7 aus den Wellen-Daten)
 const ZOOM_FULL_ENEMIES := 60
@@ -18,6 +19,7 @@ const ZOOM_FULL_ENEMIES := 60
 const FPS_UPDATE_INTERVAL := 0.5
 
 var _pause_menu: Control
+var _debug_menu: Control
 var _fps_timer := 0.0
 
 @onready var ground: TileMapLayer = $Ground
@@ -27,6 +29,7 @@ var _fps_timer := 0.0
 @onready var joystick: TouchJoystick = $HUD/TouchJoystick
 @onready var hud: CanvasLayer = $HUD
 @onready var pause_button: TextureButton = $HUD/PauseButton
+@onready var debug_button: TextureButton = $HUD/DebugButton
 @onready var enemy_manager: EnemyManager = $EnemyManager
 @onready var fps_label: Label = $HUD/FpsLabel
 
@@ -54,10 +57,13 @@ func _ready() -> void:
 	camera.limit_bottom = int(arena.size.y)
 	_apply_zoom()
 	camera.snap_zoom()
-	Settings.changed.connect(_apply_zoom)
+	Settings.changed.connect(_on_settings_changed)
 	camera.call_deferred("reset_smoothing")
 
 	pause_button.pressed.connect(open_pause_menu)
+	# Debug-Menü nur in Test-Builds, nicht in einer späteren Veröffentlichung
+	debug_button.visible = OS.is_debug_build()
+	debug_button.pressed.connect(_toggle_debug_menu)
 
 
 func _process(delta: float) -> void:
@@ -87,8 +93,41 @@ func open_pause_menu() -> void:
 	if _pause_menu:
 		return
 	_pause_menu = PAUSE_MENU.instantiate()
-	_pause_menu.tree_exited.connect(func() -> void: _pause_menu = null)
+	_pause_menu.tree_exited.connect(_on_pause_menu_closed)
 	hud.add_child(_pause_menu)
+
+
+func _on_pause_menu_closed() -> void:
+	_pause_menu = null
+	_update_pause()
+
+
+func _toggle_debug_menu() -> void:
+	if _debug_menu:
+		_debug_menu.queue_free()
+		return
+	_debug_menu = DEBUG_MENU.instantiate()
+	_debug_menu.tree_exited.connect(_on_debug_menu_closed)
+	hud.add_child(_debug_menu)
+	_update_pause()
+
+
+func _on_debug_menu_closed() -> void:
+	_debug_menu = null
+	_update_pause()
+
+
+## Das Spiel steht, solange die Pause offen ist oder das Debug-Menü offen ist und nicht weiterlaufen soll.
+func _update_pause() -> void:
+	# Beim Verlassen des Runs schließen sich die Menüs mit, dann gibt es hier nichts mehr zu steuern
+	if not is_inside_tree():
+		return
+	get_tree().paused = _pause_menu != null or (_debug_menu != null and not Settings.debug_keep_running)
+
+
+func _on_settings_changed() -> void:
+	_apply_zoom()
+	_update_pause()
 
 
 ## Zoom-Testmodus aus dem Debug-Menü übernehmen (Spawn-Abstand passt sich über das sichtbare Rechteck von selbst an)

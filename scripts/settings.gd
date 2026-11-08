@@ -20,6 +20,8 @@ var joystick_side := JoystickSide.BOTH
 var joystick_opacity := 1.0
 ## Nur Testwert (Debug-Menü), bis der Zoom entschieden ist
 var camera_zoom_mode := CameraZoomMode.DYNAMIC
+## Nur Testwert (Debug-Menü): Spiel läuft weiter, während das Debug-Menü offen ist
+var debug_keep_running := false
 
 
 func _ready() -> void:
@@ -44,6 +46,8 @@ func load_settings() -> void:
 	var zoom_mode: int = config.get_value("debug", "camera_zoom_mode", camera_zoom_mode)
 	if zoom_mode in CameraZoomMode.values():
 		camera_zoom_mode = zoom_mode as CameraZoomMode
+	var keep_running: bool = config.get_value("debug", "keep_running", debug_keep_running)
+	debug_keep_running = keep_running
 
 
 func save_settings() -> void:
@@ -53,6 +57,7 @@ func save_settings() -> void:
 	config.set_value("controls", "joystick_side", joystick_side)
 	config.set_value("controls", "joystick_opacity", joystick_opacity)
 	config.set_value("debug", "camera_zoom_mode", camera_zoom_mode)
+	config.set_value("debug", "keep_running", debug_keep_running)
 	# Sicher schreiben: erst temporäre Datei, dann ersetzen
 	var temp_path := PATH + ".tmp"
 	if config.save(temp_path) == OK:
@@ -77,6 +82,11 @@ func set_joystick_opacity(opacity: float, persist := true) -> void:
 
 func set_camera_zoom_mode(mode: CameraZoomMode) -> void:
 	camera_zoom_mode = mode
+	_apply()
+
+
+func set_debug_keep_running(keep_running: bool) -> void:
+	debug_keep_running = keep_running
 	_apply()
 
 

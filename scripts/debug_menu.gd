@@ -1,5 +1,6 @@
 extends Control
-## Debug-Menü: nur in Test-Builds (aus Godot gestartet) erreichbar. Testwerte zum Ausprobieren, wächst mit dem Spiel.
+## Debug-Menü: kleines Fenster im Run, nur in Test-Builds (aus Godot gestartet) erreichbar.
+## Testwerte zum Ausprobieren, wächst mit dem Spiel. Das Spiel kann dabei weiterlaufen (siehe Settings.debug_keep_running).
 
 signal closed
 
@@ -10,6 +11,8 @@ var _closing := false
 @onready var zoom_near_button: Button = %ZoomNearButton
 @onready var zoom_far_button: Button = %ZoomFarButton
 @onready var zoom_dynamic_button: Button = %ZoomDynamicButton
+@onready var game_paused_button: Button = %GamePausedButton
+@onready var game_running_button: Button = %GameRunningButton
 @onready var back_button: Button = %BackButton
 
 
@@ -23,6 +26,12 @@ func _ready() -> void:
 	zoom_near_button.pressed.connect(Settings.set_camera_zoom_mode.bind(Settings.CameraZoomMode.NEAR))
 	zoom_far_button.pressed.connect(Settings.set_camera_zoom_mode.bind(Settings.CameraZoomMode.FAR))
 	zoom_dynamic_button.pressed.connect(Settings.set_camera_zoom_mode.bind(Settings.CameraZoomMode.DYNAMIC))
+
+	game_paused_button.button_pressed = not Settings.debug_keep_running
+	game_running_button.button_pressed = Settings.debug_keep_running
+	game_paused_button.pressed.connect(Settings.set_debug_keep_running.bind(false))
+	game_running_button.pressed.connect(Settings.set_debug_keep_running.bind(true))
+
 	back_button.pressed.connect(close)
 
 
