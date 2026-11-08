@@ -77,6 +77,8 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
     ständig neu erzeugt und gelöscht. Das verhindert Ruckler.
   - Ein FPS-Zähler und ein Stresstest-Knopf sind ab Meilenstein 3 dabei.
   - Als spätere Option, falls nötig: Gegner per `MultiMeshInstance2D` zeichnen (Tausende in einem Draw-Call).
+- **Code-Regeln** (Details in CLAUDE.md): Funktionsparameter und Rückgabewerte immer typisiert. Häufige Objekte kommen aus Pools,
+  Massenobjekte werden zentral gezeichnet. Menüs dürfen beim Öffnen erzeugt werden.
 - **Daten statt Code:** Waffen und Gegner werden als `Resource`-Dateien (`.tres`) beschrieben, mit Werten wie Schaden,
   Tempo und Sprite. Neue Waffen, Evolutionen und Rüstungen sind dann vor allem neue Datendateien.
 - **Run-Zustand und dauerhafter Zustand getrennt:** Alles, was nur im Run gilt (Waffen, Level, XP, Artefakte,
@@ -270,6 +272,8 @@ M3d HP im Statusbildschirm.
 
 ### M7 – Wellen & Run-Ende
 - Wellen-Timer (z. B. 60 s) mit Anzeige, z. B. „Welle 3 / 10“. Die Gegner werden pro Welle stärker und zahlreicher.
+- **Spawn-Muster:** Neben zufälligen Spawns gibt es Formationen wie Ringe und Einkesselung. Sie werden mathematisch berechnet
+  und in den Wellen-Dateien (`Resource`) festgelegt, nicht im Code.
 - Zwischen den Wellen gibt es einen Platzhalter-Rastplatz: eine Pause mit Wellen-Zusammenfassung und „Weiter“-Knopf.
   Die echten Händler kommen später.
 - Nach der letzten Welle erscheint ein Sieg-Bildschirm, bei Tod ein Game-Over-Bildschirm. Beide zeigen die
