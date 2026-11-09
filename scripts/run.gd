@@ -2,14 +2,25 @@ extends Node2D
 ## Run-Szene: baut die Wald-Arena auf und richtet Spieler und Kamera ein.
 
 const TILE_SIZE := 32
-const PROP_SIZE := 64
-## Arena-Größe in Kacheln (40×28 Kacheln = 1280×896 Welt-Pixel)
-const ARENA_TILES := Vector2i(40, 28)
-## Anteil der Bodenkacheln mit der ersten (häufigsten) Variante
-const MAIN_GROUND_SHARE := 0.7
+## Begehbare Fläche in Kacheln (36×24 Kacheln = 1152×768 Welt-Pixel)
+const WALKABLE_TILES := Vector2i(36, 24)
+## Dichter Wald rund um die begehbare Fläche (Kacheln je Seite)
+const FOREST_TILES := 5
+## Anteil der begehbaren Kacheln mit einem zufälligen Bodendetail (Steine, Laub, Pilze …)
+const GROUND_DETAIL_SHARE := 0.1
 
+## Waldrand-Stücke in forest_edge.png: je 32×32, Fußpunkt unten in der Mitte
+const EDGE_PIECE_SIZE := 32
+const EDGE_CROWNS := Vector2i(0, 3)
+const EDGE_BUSHES := Vector2i(4, 5)
+const EDGE_TREES := Vector2i(6, 7)
+const EDGE_SHADOW := 8
+
+## Boden und Kronendach sind nahtlose Muster aus mehreren Kacheln (Wiederholung erst nach der ganzen Bildgröße)
 const GROUND_TEXTURE := preload("res://assets/tiles/forest_ground.png")
-const PROPS_TEXTURE := preload("res://assets/tiles/forest_props.png")
+const GROUND_DETAILS_TEXTURE := preload("res://assets/tiles/forest_ground_details.png")
+const CANOPY_TEXTURE := preload("res://assets/tiles/forest_canopy.png")
+const FOREST_EDGE_TEXTURE := preload("res://assets/tiles/forest_edge.png")
 const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
 const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
 const GAME_OVER_MENU := preload("res://ui/game_over_menu.tscn")
@@ -26,7 +37,10 @@ var _game_over := false
 var _fps_timer := 0.0
 
 @onready var ground: TileMapLayer = $Ground
-@onready var props: Node2D = $Props
+@onready var ground_details: TileMapLayer = $GroundDetails
+@onready var canopy: TileMapLayer = $Canopy
+@onready var forest_edge: Node2D = $ForestEdge
+@onready var forest_edge_front: Node2D = $ForestEdgeFront
 @onready var player: Player = $Player
 @onready var camera: RunCamera = $Player/Camera2D
 @onready var joystick: TouchJoystick = $HUD/TouchJoystick
@@ -38,13 +52,16 @@ var _fps_timer := 0.0
 
 
 func _ready() -> void:
-	var arena := Rect2(Vector2.ZERO, Vector2(ARENA_TILES * TILE_SIZE))
-	_build_ground()
-	_build_border(arena)
+	var arena_tiles := WALKABLE_TILES + Vector2i.ONE * FOREST_TILES * 2
+	var arena := Rect2(Vector2.ZERO, Vector2(arena_tiles * TILE_SIZE))
+	var walkable := Rect2(Vector2.ONE * FOREST_TILES * TILE_SIZE, Vector2(WALKABLE_TILES * TILE_SIZE))
+	_build_ground(arena_tiles)
+	_build_canopy(arena_tiles)
+	_build_forest_edge(walkable)
 
-	# Der Spieler bleibt innerhalb des Baumrings
-	player.bounds = arena.grow(-PROP_SIZE)
-	player.position = arena.get_center()
+	# Der Spieler bleibt innerhalb des Waldes
+	player.bounds = walkable
+	player.position = walkable.get_center()
 	player.joystick = joystick
 	player.died.connect(_on_player_died)
 
@@ -150,46 +167,121 @@ func _apply_zoom() -> void:
 		camera.fixed_zoom = RunCamera.ZOOM_NEAR
 
 
-func _build_ground() -> void:
-	# Erste Reihe des Tilesets = Bodenvarianten
+## TileSet mit allen 32×32-Kacheln eines Bildes (Quelle 0, Kachel = Spalte/Zeile im Bild).
+func _make_tile_set(texture: Texture2D) -> TileSet:
 	var source := TileSetAtlasSource.new()
-	source.texture = GROUND_TEXTURE
+	source.texture = texture
 	source.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
-	var variants := int(GROUND_TEXTURE.get_width() / float(TILE_SIZE))
-	for x in variants:
-		source.create_tile(Vector2i(x, 0))
-
+	var grid := _tile_grid(texture)
+	for y in grid.y:
+		for x in grid.x:
+			source.create_tile(Vector2i(x, y))
 	var tile_set := TileSet.new()
 	tile_set.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
-	var source_id := tile_set.add_source(source)
-	ground.tile_set = tile_set
-
-	for y in ARENA_TILES.y:
-		for x in ARENA_TILES.x:
-			var variant := 0
-			if variants > 1 and randf() > MAIN_GROUND_SHARE:
-				variant = randi_range(1, variants - 1)
-			ground.set_cell(Vector2i(x, y), source_id, Vector2i(variant, 0))
+	tile_set.add_source(source)
+	return tile_set
 
 
-func _build_border(arena: Rect2) -> void:
-	# Ring aus zufälligen Bäumen, Felsen und Büschen am Arenarand
-	var cells := int(PROPS_TEXTURE.get_width() / float(PROP_SIZE))
-	var right := int(arena.size.x) - PROP_SIZE
-	var bottom := int(arena.size.y) - PROP_SIZE
-	for x in range(0, right + 1, PROP_SIZE):
-		_add_prop(Vector2(x, 0), cells)
-		_add_prop(Vector2(x, bottom), cells)
-	for y in range(PROP_SIZE, bottom, PROP_SIZE):
-		_add_prop(Vector2(0, y), cells)
-		_add_prop(Vector2(right, y), cells)
+func _tile_grid(texture: Texture2D) -> Vector2i:
+	# Nur ganze Kacheln zählen (Abrunden ist gewollt)
+	return Vector2i((texture.get_size() / TILE_SIZE).floor())
 
 
-func _add_prop(pos: Vector2, cells: int) -> void:
+func _is_walkable_cell(cell: Vector2i) -> bool:
+	var local := cell - Vector2i.ONE * FOREST_TILES
+	return local.x >= 0 and local.y >= 0 and local.x < WALKABLE_TILES.x and local.y < WALKABLE_TILES.y
+
+
+## Boden als nahtloses Muster: Jede Zelle nimmt die Kachel an ihrer Position im Muster, dazu zufällige Details.
+func _build_ground(arena_tiles: Vector2i) -> void:
+	ground.tile_set = _make_tile_set(GROUND_TEXTURE)
+	var pattern := _tile_grid(GROUND_TEXTURE)
+	ground_details.tile_set = _make_tile_set(GROUND_DETAILS_TEXTURE)
+	var detail_count := _tile_grid(GROUND_DETAILS_TEXTURE).x
+	for y in arena_tiles.y:
+		for x in arena_tiles.x:
+			var cell := Vector2i(x, y)
+			ground.set_cell(cell, 0, Vector2i(x % pattern.x, y % pattern.y))
+			if _is_walkable_cell(cell) and randf() < GROUND_DETAIL_SHARE:
+				ground_details.set_cell(cell, 0, Vector2i(randi() % detail_count, 0))
+
+
+## Dichtes Kronendach außerhalb der begehbaren Fläche. Die Reihe direkt über ihr bleibt frei:
+## Dort stehen die Stämme des oberen Waldrands (man schaut von vorne in den Wald).
+func _build_canopy(arena_tiles: Vector2i) -> void:
+	canopy.tile_set = _make_tile_set(CANOPY_TEXTURE)
+	var pattern := _tile_grid(CANOPY_TEXTURE)
+	for y in arena_tiles.y:
+		for x in arena_tiles.x:
+			var cell := Vector2i(x, y)
+			if _is_walkable_cell(cell) or _is_walkable_cell(cell + Vector2i.DOWN):
+				continue
+			canopy.set_cell(cell, 0, Vector2i(x % pattern.x, y % pattern.y))
+
+
+## Organischer Waldrand: Kronen, Büsche und Bäume mit zufälligem Abstand, Versatz und Spiegelung verdecken die
+## geraden Kanten des Kronendachs. Unten liegen sie vor den Figuren (man läuft „hinter“ die Bäume).
+## Entsteht einmal beim Start (ca. 300 Sprites mit derselben Textur, die Godot gemeinsam zeichnet).
+func _build_forest_edge(walkable: Rect2) -> void:
+	var back: Array[Sprite2D] = []
+	var front: Array[Sprite2D] = []
+	var top := walkable.position.y
+	var bottom := walkable.end.y
+	var left := walkable.position.x
+	var right := walkable.end.x
+
+	# Oben: Schatten unter dem Kronendach, eine Reihe Kronen, davor Bäume mit sichtbarem Stamm
+	for x in range(int(left) - TILE_SIZE, int(right) + TILE_SIZE, TILE_SIZE):
+		forest_edge.add_child(_edge_sprite(EDGE_SHADOW, Vector2(x + TILE_SIZE * 0.5, top), false))
+	var x_pos := left - 24.0
+	while x_pos < right + 24.0:
+		back.append(_edge_sprite(_pick(EDGE_CROWNS), Vector2(x_pos, top - 14.0 + randi_range(-4, 4)), randf() < 0.5))
+		x_pos += randi_range(16, 22)
+	x_pos = left - 16.0
+	while x_pos < right + 16.0:
+		back.append(_edge_sprite(_pick(EDGE_TREES), Vector2(x_pos, top + randi_range(0, 3)), randf() < 0.5))
+		x_pos += randi_range(17, 24)
+
+	# Links und rechts: Kronen, die leicht in die Fläche ragen, dazu einzelne weiter außen
+	var y_pos := top - 8.0
+	while y_pos < bottom + 24.0:
+		back.append(_edge_sprite(_pick(EDGE_CROWNS), Vector2(left - 3.0 + randi_range(-4, 3), y_pos + 16.0), randf() < 0.5))
+		back.append(_edge_sprite(_pick(EDGE_CROWNS), Vector2(right + 3.0 + randi_range(-3, 4), y_pos + 16.0), randf() < 0.5))
+		if randf() < 0.5:
+			back.append(_edge_sprite(_pick(EDGE_CROWNS), Vector2(left - 20.0, y_pos + 8.0), randf() < 0.5))
+		if randf() < 0.5:
+			back.append(_edge_sprite(_pick(EDGE_CROWNS), Vector2(right + 20.0, y_pos + 8.0), randf() < 0.5))
+		y_pos += randi_range(16, 20)
+
+	# Unten: Kronen und Büsche vor den Figuren
+	x_pos = left - 24.0
+	while x_pos < right + 24.0:
+		var bush := randf() < 0.3
+		var piece := _pick(EDGE_BUSHES) if bush else _pick(EDGE_CROWNS)
+		var base := bottom + (8.0 if bush else 18.0) + randi_range(-3, 3)
+		front.append(_edge_sprite(piece, Vector2(x_pos, base), randf() < 0.5))
+		x_pos += randi_range(15, 20)
+
+	# Weiter unten stehende Stücke werden später gezeichnet und verdecken die oberen
+	for list: Array[Sprite2D] in [back, front]:
+		list.sort_custom(func(a: Sprite2D, b: Sprite2D) -> bool: return a.position.y < b.position.y)
+	for sprite in back:
+		forest_edge.add_child(sprite)
+	for sprite in front:
+		forest_edge_front.add_child(sprite)
+
+
+func _pick(pieces: Vector2i) -> int:
+	return randi_range(pieces.x, pieces.y)
+
+
+## Ein Waldrand-Stück, dessen Fußpunkt (unten in der Mitte) auf base steht.
+func _edge_sprite(piece: int, base: Vector2, flip: bool) -> Sprite2D:
 	var sprite := Sprite2D.new()
-	sprite.texture = PROPS_TEXTURE
-	sprite.hframes = cells
-	sprite.frame = randi() % cells
-	sprite.centered = false
-	sprite.position = pos
-	props.add_child(sprite)
+	sprite.texture = FOREST_EDGE_TEXTURE
+	sprite.hframes = int(FOREST_EDGE_TEXTURE.get_width() / float(EDGE_PIECE_SIZE))
+	sprite.frame = piece
+	sprite.offset = Vector2(0.0, -EDGE_PIECE_SIZE * 0.5)
+	sprite.position = base
+	sprite.flip_h = flip
+	return sprite

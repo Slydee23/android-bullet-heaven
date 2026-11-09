@@ -13,7 +13,11 @@ script = ExtResource("1_script")
 
 [node name="Ground" type="TileMapLayer" parent="." unique_id=1398712046]
 
-[node name="Props" type="Node2D" parent="." unique_id=561007299]
+[node name="GroundDetails" type="TileMapLayer" parent="."]
+
+[node name="Canopy" type="TileMapLayer" parent="."]
+
+[node name="ForestEdge" type="Node2D" parent="."]
 
 [node name="EnemyManager" type="Node2D" parent="."]
 texture_filter = 2
@@ -21,6 +25,8 @@ material = ExtResource("7_sharp")
 script = ExtResource("5_enemies")
 
 [node name="Player" parent="." unique_id=1281301606 instance=ExtResource("2_player")]
+
+[node name="ForestEdgeFront" type="Node2D" parent="."]
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

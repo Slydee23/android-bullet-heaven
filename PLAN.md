@@ -162,7 +162,9 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - Zwischenstufen sind nicht ganzzahlig, deshalb der Sharp-Pixel-Shader für Held und Gegner (siehe „Technische Grundentscheidungen“).
 3. **Rüstung ist nicht an der Spielfigur sichtbar**, sondern nur in Paperdoll und Icons (siehe „Ideen“ für ein mögliches Update).
 4. **Assets:** kostenlose Assets, KI-Tools (z. B. Pixellab) und selbst erstellte Platzhalter gemischt.
-   - Lizenz je Asset prüfen und ab dem ersten fremden Asset in `CREDITS.md` eintragen.
+   - **Pixellab ist bevorzugte Quelle:** Laut Nutzungsbedingungen (Punkt 1.3) gehören uns die Rechte an allen damit erstellten
+     Grafiken, kommerzielle und nicht kommerzielle Nutzung ohne Genehmigung (vom Nutzer am 2026-11-09 geprüft).
+   - Lizenz je fremdem Asset prüfen und in `CREDITS.md` eintragen (dort stehen auch Engine und Pixellab).
    - **Feste Farbpalette und feste Sprite-Größen**, damit Assets aus verschiedenen Quellen zusammenpassen.
      Die Palette wählen wir, sobald das erste Alpha-Asset kommt.
 5. **Kollision und Schaden:**
@@ -228,10 +230,13 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/menu_background.png` | 600×270 (mind. 480×270) | 1 | M1 |
 | `assets/fonts/pixel_font.ttf` | – (mit ä, ö, ü, ß); noch kein Platzhalter, bis dahin Godot-Standardschrift | – | M1 |
 | `assets/ui/button.png` | 16×16 (9-Slice) | 1 | M1 |
-| `assets/sprites/characters/hero_idle.png` | 32×32, Blick nach Osten (Pixellab, Lizenz prüfen) | 1 (später gern Atem-Animation, beliebig viele) | M1 |
-| `assets/sprites/characters/hero_run.png` | 32×32, Blick nach Osten (Pixellab, Lizenz prüfen) | 8 (beliebig) | M1 |
-| `assets/tiles/forest_ground.png` | Kacheln 32×32 in **einer Reihe** = Bodenvarianten; die erste Kachel wird am häufigsten benutzt | beliebig viele | M1 |
-| `assets/tiles/forest_props.png` | Reihe aus 64×64-Zellen (Bäume, Felsen, Büsche; unten bündig) | beliebig viele | M1 |
+| `assets/sprites/characters/hero_idle.png` | 32×32, Blick nach Osten (Pixellab) | 1 (später gern Atem-Animation, beliebig viele) | M1 |
+| `assets/sprites/characters/hero_run.png` | 32×32, Blick nach Osten (Pixellab) | 8 (beliebig) | M1 |
+| `assets/tiles/forest_ground.png` | **Nahtloses Bodenmuster** aus 32×32-Kacheln (jetzt 256×256 = 8×8 Kacheln). Jede Zelle nimmt die Kachel an ihrer Position im Muster. Beliebig groß, solange Breite und Höhe Vielfache von 32 sind und das Bild als Ganzes nahtlos ist | 1 Muster | M1 |
+| `assets/tiles/forest_ground_details.png` | Reihe transparenter 32×32-Details (Steine, Laub, Pilze, Blumen …), zufällig auf ca. 10 % der Kacheln | beliebig viele | M3 |
+| `assets/tiles/forest_canopy.png` | Nahtloses, dichtes Kronendach aus 32×32-Kacheln (jetzt 128×128), füllt alles außerhalb der begehbaren Fläche | 1 Muster | M3 |
+| `assets/tiles/forest_edge.png` | Reihe transparenter 32×32-Waldrand-Stücke, Fußpunkt unten Mitte. Feste Reihenfolge: 0–3 Kronen, 4–5 Büsche, 6–7 Bäume mit Stamm (oberer Rand), 8 Schattenverlauf | 9 | M3 |
+| `assets/tiles/forest_props.png` | Reihe aus 64×64-Zellen (Bäume, Felsen, Büsche; unten bündig). **Derzeit ungenutzt**, für Deko nach M7 | beliebig viele | M1 |
 | `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
 | `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
 | `assets/ui/pause_button.png` | 16×16 | 1 | M2 |
@@ -239,7 +244,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/panel.png` | 16×16 (9-Slice, Rand 4) – Hintergrund für Menüfenster | 1 | M2 |
 | `assets/ui/slider_track.png` | 12×8 (9-Slice, Rand 3) – Schieberegler-Leiste | 1 | M2 |
 | `assets/ui/slider_grabber.png` | 16×16 – Schieberegler-Knopf | 1 | M2 |
-| `assets/sprites/enemies/skeleton_walk.png` | 32×32 (Pixellab, Lizenz prüfen) | 8 | M3 |
+| `assets/sprites/enemies/skeleton_walk.png` | 32×32 (Pixellab) | 8 | M3 |
 | `assets/sprites/characters/hero_hit.png` | 32×32 | 2 | M3 |
 | `assets/sprites/characters/hero_death.png` | 32×32 | 6 | M3 |
 | `assets/ui/bar_frame.png` | 16×4 (Lebensleiste über dem Helden, im Spiel 2× skaliert) | 1 | M3 |
@@ -273,9 +278,14 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 - Hauptmenü als Startszene: Titel „Banebound“ und ein Knopf „Run starten“, der in die Arena führt. Mehr kann das Menü vorerst nicht.
 - Run-Szene mit einer Wald-Arena (Pixel-Bodenkacheln, Begrenzung durch Bäume oder Ränder), Held-Sprite in der Mitte,
   Kamera folgt mit Begrenzung am Arenarand. Bewegung vorerst nur per Tastatur.
-- Versionsanzeige unten rechts im Hauptmenü (aus Projekteinstellungen → `application/config/version`, aktuell „Alpha v0.1“).
-- Die Arena-Begrenzung durch Bäume, Büsche und Steine ist **vorläufig**. Du hast eine andere Idee für die Map-Abgrenzung,
-  die Props-Texturen werden dann anderweitig verwendet. → Thema nach M7 (siehe dort).
+- Versionsanzeige unten rechts im Hauptmenü (aus Projekteinstellungen → `application/config/version`, aktuell „Alpha v0.3“).
+- Die Arena-Begrenzung durch Bäume, Büsche und Steine war vorläufig. **Seit M3 (nach der 32×32-Umstellung):**
+  - Neuer Waldboden und ein **dichter Wald als natürliche Map-Grenze**.
+  - Die begehbare Fläche ist unverändert 1152×768 (36×24 Kacheln), rundherum 5 Kacheln Wald.
+  - Aufbau in `run.gd`: Ebenen `Ground`, `GroundDetails`, `Canopy`, `ForestEdge` (hinter den Figuren) und `ForestEdgeFront`
+    (unterer Rand, vor den Figuren).
+  - Der Rand besteht aus zufällig versetzten und gespiegelten Kronen, Büschen und Bäumen. Oben sieht man Stämme, dort schaut man von vorne in den Wald.
+  - Die Props-Texturen werden anderweitig verwendet → Thema nach M7 (siehe dort).
 - **Am Handy testen:** Das Spiel startet im Hauptmenü, „Run starten“ lässt sich antippen und führt in die Arena.
   Das Bild ist im Querformat und füllt den ganzen Bildschirm. Die Pixel sind scharf (nicht verschwommen).
   Das Bild dreht sich mit, wenn du das Handy umdrehst.
@@ -387,8 +397,8 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 - Statusbildschirm zeigt Welle, Zeit und Kills.
 - **Am Handy testen:** Ein kompletter Run lässt sich durchspielen, gewinnen und verlieren. Ist die Länge von 10–15 Minuten angenehm?
   Stimmen die Zahlen in der Zusammenfassung?
-- ⚠ **Erinnerung nach Abschluss von M7:** Neue Idee für die **Map-Abgrenzung** besprechen (ersetzt den Rand aus Bäumen/Büschen/Steinen)
-  und klären, wofür die Props-Texturen stattdessen verwendet werden.
+- ⚠ **Erinnerung nach Abschluss von M7:** Die neue Map-Abgrenzung (dichter Wald) ist seit M3 eingebaut. Offen bleibt:
+  Wofür die Props-Texturen (`forest_props.png`: Bäume, Felsen, Büsche) stattdessen verwendet werden, z. B. als Deko oder Hindernisse in der Map.
 
 ### M8 – Run speichern & fortsetzen
 
@@ -582,7 +592,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 ## Offene Designfragen
 
 - ~~Sprite-Auflösung 16×16 oder 32×32~~ → **entschieden: 32×32, Figurengröße 1,5×** (siehe „Technische Grundentscheidungen“).
-  Offen: Lizenz der Pixellab-Assets (Skelett, Held) prüfen und mit dem ersten fremden Asset `CREDITS.md` anlegen.
+  ~~Lizenz der Pixellab-Assets~~ → geklärt: Rechte liegen bei uns (Pixellab-Nutzungsbedingungen 1.3), siehe `CREDITS.md`.
   Ob die Figuren bei vielen Gegnern groß genug wirken, prüfen wir beim Testen. Feinwerte (Zoom, Geschwindigkeiten) beim Balancing.
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
   exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit
