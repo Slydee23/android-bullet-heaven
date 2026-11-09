@@ -1,7 +1,7 @@
 ## Hilfsfunktionen für Pixel-Art-UI: vergrößert kleine UI-Texturen pixelgenau
 ## und baut daraus das gemeinsame Theme für alle Menüs.
 
-## UI-Texturen werden wie die Spielwelt 4× vergrößert
+## UI-Texturen werden 4× vergrößert
 const UI_SCALE := 4
 
 const BUTTON_TEXTURE := preload("res://assets/ui/button.png")

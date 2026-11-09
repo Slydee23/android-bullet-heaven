@@ -7,7 +7,7 @@ extends Node2D
 signal died
 
 ## Breite eines Animationsframes im Spritesheet (Pixel)
-const FRAME_WIDTH := 16
+const FRAME_WIDTH := 32
 const ANIMATION_FPS := 8.0
 ## Wie schnell der Held während der Unverwundbarkeit blinkt (Sekunden pro Phase)
 const BLINK_INTERVAL := 0.08
@@ -21,10 +21,10 @@ const IDLE_TEXTURE := preload("res://assets/sprites/characters/hero_idle.png")
 const RUN_TEXTURE := preload("res://assets/sprites/characters/hero_run.png")
 
 ## Laufgeschwindigkeit in Welt-Pixeln pro Sekunde
-@export var speed := 90.0
+@export var speed := 120.0
 @export var max_hp := 100.0
 ## Körperradius in Welt-Pixeln um die Füße: Bis hierhin kommen Gegner heran
-@export var body_radius := 5.0
+@export var body_radius := 10.0
 ## Wie lange der Held nach einem Treffer unverwundbar ist
 @export var base_iframe_rule: IFrameRule
 

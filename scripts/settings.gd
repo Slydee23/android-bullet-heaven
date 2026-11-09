@@ -18,7 +18,7 @@ const MIN_IFRAME_SHARE := 0.05
 const MAX_IFRAME_SHARE := 0.5
 ## Kein Testwert gesetzt: Es gilt data/combat/player_iframes.tres
 const IFRAME_NOT_SET := -1.0
-## Kamera-Zoom zum Vergleichen (Debug-Menü): Nah 4×, Weit 3×, Dynamisch nach Gegnerdruck (siehe RunCamera)
+## Kamera-Zoom zum Vergleichen (Debug-Menü): Nah 3×, Weit 2,25×, Dynamisch nach Gegnerdruck (siehe RunCamera)
 enum CameraZoomMode { NEAR, FAR, DYNAMIC }
 
 var joystick_mode := JoystickMode.FLOATING

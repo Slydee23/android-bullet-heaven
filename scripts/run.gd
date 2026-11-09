@@ -1,10 +1,10 @@
 extends Node2D
 ## Run-Szene: baut die Wald-Arena auf und richtet Spieler und Kamera ein.
 
-const TILE_SIZE := 16
-const PROP_SIZE := 32
-## Arena-Größe in Kacheln (60×40 Kacheln = 960×640 Welt-Pixel)
-const ARENA_TILES := Vector2i(60, 40)
+const TILE_SIZE := 32
+const PROP_SIZE := 64
+## Arena-Größe in Kacheln (40×28 Kacheln = 1280×896 Welt-Pixel)
+const ARENA_TILES := Vector2i(40, 28)
 ## Anteil der Bodenkacheln mit der ersten (häufigsten) Variante
 const MAIN_GROUND_SHARE := 0.7
 

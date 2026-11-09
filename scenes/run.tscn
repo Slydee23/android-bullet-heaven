@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/pause_button.png" id="4_pause"]
 [ext_resource type="Script" path="res://scripts/enemy_manager.gd" id="5_enemies"]
 [ext_resource type="Texture2D" path="res://assets/ui/debug_button.png" id="6_debug"]
+[ext_resource type="Material" path="res://assets/shaders/sharp_pixel_material.tres" id="7_sharp"]
 
 [node name="Run" type="Node2D" unique_id=439059942]
 script = ExtResource("1_script")
@@ -15,6 +16,8 @@ script = ExtResource("1_script")
 [node name="Props" type="Node2D" parent="." unique_id=561007299]
 
 [node name="EnemyManager" type="Node2D" parent="."]
+texture_filter = 2
+material = ExtResource("7_sharp")
 script = ExtResource("5_enemies")
 
 [node name="Player" parent="." unique_id=1281301606 instance=ExtResource("2_player")]

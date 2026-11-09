@@ -6,21 +6,25 @@
 [ext_resource type="Texture2D" path="res://assets/ui/bar_frame.png" id="4_bar_frame"]
 [ext_resource type="Texture2D" path="res://assets/ui/bar_fill.png" id="5_bar_fill"]
 [ext_resource type="Resource" path="res://data/combat/player_iframes.tres" id="6_iframes"]
+[ext_resource type="Material" path="res://assets/shaders/sharp_pixel_material.tres" id="7_sharp"]
 
 [node name="Player" type="Node2D"]
 script = ExtResource("1_script")
 base_iframe_rule = ExtResource("6_iframes")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, -7)
+texture_filter = 2
+material = ExtResource("7_sharp")
+position = Vector2(0, -15)
 texture = ExtResource("2_idle")
 hframes = 4
 
 [node name="HealthBar" type="TextureProgressBar" parent="."]
-offset_left = -8.0
-offset_top = -20.0
-offset_right = 8.0
-offset_bottom = -16.0
+offset_left = -16.0
+offset_top = -40.0
+offset_right = 0.0
+offset_bottom = -36.0
+scale = Vector2(2, 2)
 mouse_filter = 2
 step = 0.1
 texture_under = ExtResource("4_bar_frame")
@@ -28,8 +32,8 @@ texture_progress = ExtResource("5_bar_fill")
 texture_progress_offset = Vector2(1, 1)
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(0, -7)
-zoom = Vector2(4, 4)
+position = Vector2(0, -15)
+zoom = Vector2(3, 3)
 script = ExtResource("3_camera")
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0

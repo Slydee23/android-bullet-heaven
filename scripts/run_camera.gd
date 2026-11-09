@@ -4,8 +4,9 @@ extends Camera2D
 ## Innerhalb einer Wave zoomt sie nie wieder herein (sonst „pumpt“ das Bild beim Töten von Gegnern).
 
 ## Kamera-Zoom-Stufen: Nah zeigt weniger, Weit mehr Spielwelt
-const ZOOM_NEAR := 4.0
-const ZOOM_FAR := 3.0
+## (32×32-Figuren: Nah = 96, Weit = 72 Bildschirmpixel hoch)
+const ZOOM_NEAR := 3.0
+const ZOOM_FAR := 2.25
 ## Wie schnell sich der Zoom dem Ziel nähert (klein = langsam und weich)
 const ZOOM_SPEED := 0.4
 

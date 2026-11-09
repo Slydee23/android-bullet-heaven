@@ -16,7 +16,7 @@ const SPAWN_INTERVAL := 0.5
 ## Maximal gleichzeitig lebende Gegner (M3: fester Wert, ab M7 aus den Wellen)
 const MAX_ALIVE := 60
 ## So weit außerhalb des sichtbaren Bereichs erscheinen neue Gegner (Welt-Pixel)
-const SPAWN_MARGIN := 24.0
+const SPAWN_MARGIN := 32.0
 const SPAWN_ATTEMPTS := 8
 ## Spielraum, ab dem ein stehender Gegner den Helden noch erreicht (Welt-Pixel)
 const ATTACK_TOLERANCE := 1.0
@@ -190,7 +190,7 @@ func _draw() -> void:
 		var frames := maxi(1, int(texture.get_width() / float(data.frame_width)))
 		var frame := int((_time + _anim_offsets[i]) * data.animation_fps) % frames
 		var source := Rect2(Vector2(frame * data.frame_width, 0), frame_size)
-		var flip_scale := Vector2(-1.0 if _flipped[i] else 1.0, 1.0)
+		var flip_scale := Vector2(-1.0 if _flipped[i] else 1.0, 1.0) * data.draw_scale
 		draw_set_transform(_positions[i], 0.0, flip_scale)
 		# Die Position sind die Füße: Das Bild steht unten bündig darauf
 		var frame_rect := Rect2(Vector2(-frame_size.x * 0.5, 1.0 - frame_size.y), frame_size)

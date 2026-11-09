@@ -75,7 +75,12 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
   Das UI wird an den Rändern verankert und berücksichtigt die Safe Area (Kamera-Notch).
 - **Orientation:** `sensor_landscape`. Querformat bleibt fest, und das Bild dreht sich mit, egal wie herum man das Handy hält.
 - **Pixel-Art:** Die Texturen werden ohne Glättung skaliert (Filter `Nearest`) und erscheinen dadurch scharf und pixelig.
-  Platzhalter-Sprites sind 16×16 bzw. 32×32 Pixel und werden im Spiel 4× vergrößert angezeigt.
+  **Sprite-Auflösung 32×32** (nach Vergleichstest am Handy entschieden, Größe „1,5×“): Figuren sind 32×32, Bodenkacheln 32×32,
+  Props 64×64. Die Kamera zeigt sie mit Zoom 3× (Nah) bis 2,25× (Weit), eine Figur ist also 96 bis 72 Bildschirmpixel hoch.
+  Weil diese Zoomstufen nicht immer ganzzahlig sind, nutzen Held und Gegner den **Sharp-Pixel-Shader**
+  (`assets/shaders/sharp_pixel_material.tres`, Texturfilter „Linear“): Alle Pixel bleiben gleich breit und flimmern nicht.
+  Boden und Props vorerst ohne Shader (bei Kachel-Atlanten würden sonst Nachbarkacheln an den Rändern durchscheinen); Prüfpunkt in M5.
+  UI-Texturen bleiben klein und werden 4× vergrößert.
   Ich erstelle sie selbst als kleine PNGs (Liste und Vorgaben siehe „Assets: Platzhalter → Alpha“).
 - **Performance von Anfang an:**
   - Gegner sind **keine** Physik-Körper. Ein zentraler `EnemyManager` bewegt alle Gegner in einer einzigen Schleife.
@@ -147,14 +152,14 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - **Kollisionskreis an den Füßen**, nicht in der Sprite-Mitte. Dass sich Köpfe überlappen, ist gewollt.
    - Der **Held wird immer über den Gegnern** gezeichnet. Gegner untereinander werden nach Höhe sortiert (über die Grid-Zeilen).
    - Keine Höhenstauchung: Reichweiten sind echte Kreise.
-2. **Kamera-Zoom: Dynamisch ist der Standard** (am PC und am Handy getestet). Nah (4×) und Weit (3×) bleiben im Debug-Menü zum Vergleichen.
-   - Dynamisch: Jede Wave startet bei 4×. Mit steigender Gegnerzahl zoomt die Kamera fließend bis maximal 3× heraus
+2. **Kamera-Zoom: Dynamisch ist der Standard** (am PC und am Handy getestet). Nah (3×) und Weit (2,25×) bleiben im Debug-Menü zum Vergleichen.
+   - Dynamisch: Jede Wave startet bei 3×. Mit steigender Gegnerzahl zoomt die Kamera fließend bis maximal 2,25× heraus
      (mehr Übersicht, wenn Waffen, Reichweiten und Gegnerzahl wachsen).
-   - Innerhalb einer Wave zoomt sie nur heraus, nie wieder herein (kein „Pumpen“ beim Töten). Zurück auf 4× zur nächsten Wave.
+   - Innerhalb einer Wave zoomt sie nur heraus, nie wieder herein (kein „Pumpen“ beim Töten). Zurück auf 3× zur nächsten Wave.
    - Ab M7 kommen Start- und Endzoom bzw. der Gegnerdruck aus den Wellen-Daten (z. B. spätere Waves starten weiter draußen).
-     Dort stimmen wir auch die Feinwerte ab (aktuell: 60 Gegner = 3×).
-   - Bei Zwischenstufen (z. B. 3,4×) können Pixel leicht flimmern. Im Test trat das nicht auf. Falls es später stört:
-     „Sharp-Pixel“-Shader für die Spielwelt (Prüfpunkt in M5).
+     Dort stimmen wir auch die Feinwerte ab (aktuell: 60 Gegner = 2,25×).
+   - (Bis zur 32×32-Umstellung waren es 4× bis 3× mit 16×16-Figuren. Auf dem Bildschirm sind die Figuren jetzt 1,5× so groß.)
+   - Zwischenstufen sind nicht ganzzahlig, deshalb der Sharp-Pixel-Shader für Held und Gegner (siehe „Technische Grundentscheidungen“).
 3. **Rüstung ist nicht an der Spielfigur sichtbar**, sondern nur in Paperdoll und Icons (siehe „Ideen“ für ein mögliches Update).
 4. **Assets:** kostenlose Assets, KI-Tools (z. B. Pixellab) und selbst erstellte Platzhalter gemischt.
    - Lizenz je Asset prüfen und ab dem ersten fremden Asset in `CREDITS.md` eintragen.
@@ -204,7 +209,10 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 
 **Vorgaben:**
 
-- PNG mit Transparenz, Pixel-Art ohne Anti-Aliasing, Grundraster 16×16, im Spiel 4× vergrößert.
+- PNG mit Transparenz, Pixel-Art ohne Anti-Aliasing. **Grundraster 32×32** für Spielwelt-Sprites (seit der Umstellung in M3),
+  UI-Texturen bleiben klein (16er-Raster, im Spiel 4× vergrößert).
+- Figuren schauen **nach rechts (Osten)**, links wird automatisch gespiegelt. Keine Animationen nach oben/unten
+  (siehe Grundsatzentscheidung 1). Die Füße stehen unten bündig im Frame.
 - Animationen als horizontaler Streifen: alle Frames gleich groß, eine Datei pro Animation.
 - Lizenz: CC0 oder ausdrücklich für kommerzielle Nutzung freigegeben (bei KI-Tools die Nutzungsbedingungen des Tarifs prüfen).
   Jedes fremde Asset kommt mit Quelle und Lizenz in `CREDITS.md`.
@@ -213,17 +221,17 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   (z. B. `hero_run.png`, nicht `Held Laufen.png`). Android unterscheidet Groß- und Kleinschreibung,
   und Umlaute in Dateinamen machen Probleme.
 - Die **Frame-Anzahl** wird automatisch aus der Bildbreite berechnet (Breite ÷ Frame-Breite). Mehr oder weniger Frames
-  sind also kein Problem. Nur bei einer anderen **Frame-Größe** (z. B. 16×24 statt 16×16) sag mir Bescheid.
+  sind also kein Problem. Nur bei einer anderen **Frame-Größe** (z. B. 32×48 statt 32×32) sag mir Bescheid.
 
 | Datei | Größe pro Frame | Frames | Ab |
 | --- | --- | --- | --- |
 | `assets/ui/menu_background.png` | 600×270 (mind. 480×270) | 1 | M1 |
 | `assets/fonts/pixel_font.ttf` | – (mit ä, ö, ü, ß); noch kein Platzhalter, bis dahin Godot-Standardschrift | – | M1 |
 | `assets/ui/button.png` | 16×16 (9-Slice) | 1 | M1 |
-| `assets/sprites/characters/hero_idle.png` | 16×16 | 4 | M1 |
-| `assets/sprites/characters/hero_run.png` | 16×16 | 6 | M1 |
-| `assets/tiles/forest_ground.png` | Kacheln 16×16 in **einer Reihe** = Bodenvarianten; die erste Kachel wird am häufigsten benutzt | beliebig viele | M1 |
-| `assets/tiles/forest_props.png` | Reihe aus 32×32-Zellen (Bäume, Felsen, Büsche; unten bündig) | beliebig viele | M1 |
+| `assets/sprites/characters/hero_idle.png` | 32×32 | 4 (beliebig) | M1 |
+| `assets/sprites/characters/hero_run.png` | 32×32 | 6 (beliebig) | M1 |
+| `assets/tiles/forest_ground.png` | Kacheln 32×32 in **einer Reihe** = Bodenvarianten; die erste Kachel wird am häufigsten benutzt | beliebig viele | M1 |
+| `assets/tiles/forest_props.png` | Reihe aus 64×64-Zellen (Bäume, Felsen, Büsche; unten bündig) | beliebig viele | M1 |
 | `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
 | `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
 | `assets/ui/pause_button.png` | 16×16 | 1 | M2 |
@@ -231,21 +239,21 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/panel.png` | 16×16 (9-Slice, Rand 4) – Hintergrund für Menüfenster | 1 | M2 |
 | `assets/ui/slider_track.png` | 12×8 (9-Slice, Rand 3) – Schieberegler-Leiste | 1 | M2 |
 | `assets/ui/slider_grabber.png` | 16×16 – Schieberegler-Knopf | 1 | M2 |
-| `assets/sprites/enemies/skeleton_walk.png` | 16×16 | 4 | M3 |
-| `assets/sprites/characters/hero_hit.png` | 16×16 | 2 | M3 |
-| `assets/sprites/characters/hero_death.png` | 16×16 | 6 | M3 |
-| `assets/ui/bar_frame.png` | 16×4 (Lebensleiste über dem Helden) | 1 | M3 |
+| `assets/sprites/enemies/skeleton_walk.png` | 32×32 (Pixellab, Lizenz prüfen) | 8 | M3 |
+| `assets/sprites/characters/hero_hit.png` | 32×32 | 2 | M3 |
+| `assets/sprites/characters/hero_death.png` | 32×32 | 6 | M3 |
+| `assets/ui/bar_frame.png` | 16×4 (Lebensleiste über dem Helden, im Spiel 2× skaliert) | 1 | M3 |
 | `assets/ui/bar_fill.png` | 14×2 (sitzt 1 Pixel innerhalb des Rahmens) | 1 | M3 |
-| `assets/sprites/weapons/magic_bolt.png` | 8×8 | 4 | M4 |
-| `assets/sprites/effects/hit.png` | 16×16 | 4 | M4 |
-| `assets/sprites/effects/death.png` | 16×16 | 6 | M4 |
-| `assets/sprites/pickups/xp_crystal.png` | 8×8 | 4 | M6 |
-| `assets/sprites/weapons/spinning_blade.png` | 16×16 | 1 | M6 |
-| `assets/sprites/weapons/fire_aura.png` | 64×64 | 8 | M6 |
+| `assets/sprites/weapons/magic_bolt.png` | 16×16 | 4 | M4 |
+| `assets/sprites/effects/hit.png` | 32×32 | 4 | M4 |
+| `assets/sprites/effects/death.png` | 32×32 | 6 | M4 |
+| `assets/sprites/pickups/xp_crystal.png` | 16×16 | 4 | M6 |
+| `assets/sprites/weapons/spinning_blade.png` | 32×32 | 1 | M6 |
+| `assets/sprites/weapons/fire_aura.png` | 128×128 | 8 | M6 |
 | `assets/sprites/icons/weapon_magic_bolt.png` (usw. je Waffe) | 16×16 | 1 | M6 |
 | `assets/ui/card_frame.png` | 32×32 (9-Slice) | 1 | M6 |
-| `assets/sprites/enemies/bat_fly.png` | 16×16 | 4 | M7 |
-| `assets/sprites/enemies/slime_hop.png` | 16×16 | 4 | M7 |
+| `assets/sprites/enemies/bat_fly.png` | 32×32 | 4 | M7 |
+| `assets/sprites/enemies/slime_hop.png` | 32×32 | 4 | M7 |
 | `assets/ui/paperdoll.png` | Silhouette ca. 64×96 | 1 | E7 |
 
 ## Meilensteine – Grundspiel
@@ -306,7 +314,7 @@ Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, G
 M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) → M3a++ dynamischer Zoom →
 M3a+++ Debug-Knopf direkt im Run, Option „Spiel weiterlaufen lassen“ →
 M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3b+ I-Frames nach Schaden (`IFrameRule`), Selbstschaden →
-Vergleichstest 16×16 / 32×32 (siehe „Offene Designfragen“) → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
+Vergleichstest 16×16 / 32×32 → Umstellung auf 32×32 → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
 M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-Animation des Helden (`hero_hit`, `hero_death`).
 
 - Kontaktschaden nach „Grundsatzentscheidungen“ Punkt 5: Der Held läuft durch Gegner, Gegner bleiben an seinem Rand stehen.
@@ -341,12 +349,13 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 
 - **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
   Das Grundgerüst gibt es schon seit M3: erreichbar über den Debug-Knopf neben dem Pause-Knopf, das Spiel kann dabei weiterlaufen
-  (Zoom, I-Frames). Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
+  (Zoom, I-Frames). Das Fenster ist scrollbar: Neue Einträge kommen in den Scrollbereich, Titel und „Zurück“ bleiben fest.
+  Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
   in M7 „Zu Welle X springen“, später z. B. „Magie-Schrott geben“.
 - Mit „+100 Gegner“ messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
   Bei Bedarf optimieren, z. B. mit MultiMesh-Rendering oder einem gröberen Grid.
-- Prüfpunkt: Flimmern beim dynamischen Zoom mit vielen Gegnern und mit echten Alpha-Assets erneut ansehen (ggf. „Sharp-Pixel“-Shader,
-  siehe Grundsatzentscheidung 2).
+- Prüfpunkt: Flimmern beim dynamischen Zoom mit vielen Gegnern und mit echten Alpha-Assets erneut ansehen. Held und Gegner haben
+  den Sharp-Pixel-Shader schon. Flimmern Boden oder Props sichtbar, bekommen sie ihn auch (dann Kachel-Atlas mit Abstand zwischen den Kacheln).
 - Zielwert: mindestens **500 gleichzeitige Gegner bei 60 FPS** auf dem Testhandy **Redmi Note 13 4G** (Snapdragon 685 / Adreno 610 GPU, Display 2400×1080 = 20:9).
   Das ist untere Mittelklasse: Läuft es dort flüssig, läuft es auf den meisten Handys.
   Den Wert passen wir nach der Messung an.
@@ -572,8 +581,9 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 
 ## Offene Designfragen
 
-- **Sprite-Auflösung 16×16 oder 32×32:** Tendenz 32×32, wird per Vergleichstest am Handy entschieden → **vor M4**.
-  Bei 32×32 läuft der Zoom von 2× auf 1,5×, Pixel flimmern dabei stärker, und der „Sharp-Pixel“-Shader wird wohl Pflicht. Die Asset-Tabelle oben gilt bis dahin vorläufig.
+- ~~Sprite-Auflösung 16×16 oder 32×32~~ → **entschieden: 32×32, Figurengröße 1,5×** (siehe „Technische Grundentscheidungen“).
+  Offen: Lizenz des Pixellab-Skeletts prüfen und mit dem ersten fremden Asset `CREDITS.md` anlegen.
+  Ob die Figuren bei vielen Gegnern groß genug wirken, prüfen wir beim Testen. Feinwerte (Zoom, Geschwindigkeiten) beim Balancing.
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
   exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit
   vollen HP vom Wellenanfang wiederholen. Ist das okay, oder braucht es eine Gegenmaßnahme? → vor M8 entscheiden

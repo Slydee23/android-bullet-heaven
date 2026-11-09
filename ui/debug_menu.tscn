@@ -19,14 +19,16 @@ script = ExtResource("1_script")
 
 [node name="Panel" type="PanelContainer" parent="." groups=["joystick_blocker"]]
 layout_mode = 1
-anchors_preset = 1
+anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = -48.0
 offset_top = 144.0
 offset_right = -48.0
-offset_bottom = 144.0
+offset_bottom = -48.0
 grow_horizontal = 0
+grow_vertical = 2
 
 [node name="Content" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
@@ -38,15 +40,25 @@ theme_override_font_sizes/font_size = 40
 text = "DEBUG_TITLE"
 horizontal_alignment = 1
 
-[node name="ZoomLabel" type="Label" parent="Panel/Content"]
+[node name="Scroll" type="ScrollContainer" parent="Panel/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Rows" type="VBoxContainer" parent="Panel/Content/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="ZoomLabel" type="Label" parent="Panel/Content/Scroll/Rows"]
 layout_mode = 2
 text = "DEBUG_CAMERA_ZOOM"
 
-[node name="ZoomButtons" type="HBoxContainer" parent="Panel/Content"]
+[node name="ZoomButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ZoomNearButton" type="Button" parent="Panel/Content/ZoomButtons"]
+[node name="ZoomNearButton" type="Button" parent="Panel/Content/Scroll/Rows/ZoomButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -54,7 +66,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_zoom")
 text = "DEBUG_ZOOM_NEAR"
 
-[node name="ZoomFarButton" type="Button" parent="Panel/Content/ZoomButtons"]
+[node name="ZoomFarButton" type="Button" parent="Panel/Content/Scroll/Rows/ZoomButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -62,7 +74,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_zoom")
 text = "DEBUG_ZOOM_FAR"
 
-[node name="ZoomDynamicButton" type="Button" parent="Panel/Content/ZoomButtons"]
+[node name="ZoomDynamicButton" type="Button" parent="Panel/Content/Scroll/Rows/ZoomButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -70,15 +82,15 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_zoom")
 text = "DEBUG_ZOOM_DYNAMIC"
 
-[node name="GameLabel" type="Label" parent="Panel/Content"]
+[node name="GameLabel" type="Label" parent="Panel/Content/Scroll/Rows"]
 layout_mode = 2
 text = "DEBUG_GAME_STATE"
 
-[node name="GameButtons" type="HBoxContainer" parent="Panel/Content"]
+[node name="GameButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="GamePausedButton" type="Button" parent="Panel/Content/GameButtons"]
+[node name="GamePausedButton" type="Button" parent="Panel/Content/Scroll/Rows/GameButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -86,7 +98,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_game")
 text = "DEBUG_GAME_PAUSED"
 
-[node name="GameRunningButton" type="Button" parent="Panel/Content/GameButtons"]
+[node name="GameRunningButton" type="Button" parent="Panel/Content/Scroll/Rows/GameButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -94,104 +106,98 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_game")
 text = "DEBUG_GAME_RUNNING"
 
-[node name="IFrameMinRow" type="HBoxContainer" parent="Panel/Content"]
+[node name="IFrameMinRow" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="Label" type="Label" parent="Panel/Content/IFrameMinRow"]
+[node name="Label" type="Label" parent="Panel/Content/Scroll/Rows/IFrameMinRow"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 text = "DEBUG_IFRAME_MIN"
 
-[node name="IFrameMinSlider" type="HSlider" parent="Panel/Content/IFrameMinRow"]
+[node name="IFrameMinSlider" type="HSlider" parent="Panel/Content/Scroll/Rows/IFrameMinRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 64)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="IFrameMinValue" type="Label" parent="Panel/Content/IFrameMinRow"]
+[node name="IFrameMinValue" type="Label" parent="Panel/Content/Scroll/Rows/IFrameMinRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="IFrameMaxRow" type="HBoxContainer" parent="Panel/Content"]
+[node name="IFrameMaxRow" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="Label" type="Label" parent="Panel/Content/IFrameMaxRow"]
+[node name="Label" type="Label" parent="Panel/Content/Scroll/Rows/IFrameMaxRow"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 text = "DEBUG_IFRAME_MAX"
 
-[node name="IFrameMaxSlider" type="HSlider" parent="Panel/Content/IFrameMaxRow"]
+[node name="IFrameMaxSlider" type="HSlider" parent="Panel/Content/Scroll/Rows/IFrameMaxRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 64)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="IFrameMaxValue" type="Label" parent="Panel/Content/IFrameMaxRow"]
+[node name="IFrameMaxValue" type="Label" parent="Panel/Content/Scroll/Rows/IFrameMaxRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="IFrameShareRow" type="HBoxContainer" parent="Panel/Content"]
+[node name="IFrameShareRow" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="Label" type="Label" parent="Panel/Content/IFrameShareRow"]
+[node name="Label" type="Label" parent="Panel/Content/Scroll/Rows/IFrameShareRow"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 text = "DEBUG_IFRAME_SHARE"
 
-[node name="IFrameShareSlider" type="HSlider" parent="Panel/Content/IFrameShareRow"]
+[node name="IFrameShareSlider" type="HSlider" parent="Panel/Content/Scroll/Rows/IFrameShareRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 64)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="IFrameShareValue" type="Label" parent="Panel/Content/IFrameShareRow"]
+[node name="IFrameShareValue" type="Label" parent="Panel/Content/Scroll/Rows/IFrameShareRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="IFrameLastLabel" type="Label" parent="Panel/Content"]
+[node name="IFrameLastLabel" type="Label" parent="Panel/Content/Scroll/Rows"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="TestButtons" type="HBoxContainer" parent="Panel/Content"]
+[node name="TestButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TestHitButton" type="Button" parent="Panel/Content/TestButtons"]
+[node name="TestHitButton" type="Button" parent="Panel/Content/Scroll/Rows/TestButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_TEST_HIT"
 
-[node name="TestSelfDamageButton" type="Button" parent="Panel/Content/TestButtons"]
+[node name="TestSelfDamageButton" type="Button" parent="Panel/Content/Scroll/Rows/TestButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_TEST_SELF_DAMAGE"
 
-[node name="BottomButtons" type="HBoxContainer" parent="Panel/Content"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="IFrameResetButton" type="Button" parent="Panel/Content/BottomButtons"]
+[node name="IFrameResetButton" type="Button" parent="Panel/Content/Scroll/Rows"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
 text = "DEBUG_IFRAME_RESET"
 
-[node name="BackButton" type="Button" parent="Panel/Content/BottomButtons"]
+[node name="BackButton" type="Button" parent="Panel/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
 text = "BUTTON_BACK"
