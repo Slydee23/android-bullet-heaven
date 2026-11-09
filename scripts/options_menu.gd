@@ -14,6 +14,8 @@ var _closing := false
 @onready var both_button: Button = %BothButton
 @onready var opacity_slider: HSlider = %OpacitySlider
 @onready var opacity_value: Label = %OpacityValue
+@onready var health_bar_on_button: Button = %HealthBarOnButton
+@onready var health_bar_off_button: Button = %HealthBarOffButton
 @onready var back_button: Button = %BackButton
 
 
@@ -40,6 +42,10 @@ func _ready() -> void:
 	opacity_slider.value_changed.connect(_on_transparency_changed)
 	# Beim Ziehen nicht ständig speichern, erst beim Loslassen
 	opacity_slider.drag_ended.connect(func(_changed: bool) -> void: Settings.save_settings())
+	health_bar_on_button.button_pressed = Settings.show_player_health_bar
+	health_bar_off_button.button_pressed = not Settings.show_player_health_bar
+	health_bar_on_button.pressed.connect(Settings.set_show_player_health_bar.bind(true))
+	health_bar_off_button.pressed.connect(Settings.set_show_player_health_bar.bind(false))
 	back_button.pressed.connect(close)
 
 

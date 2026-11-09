@@ -11,5 +11,9 @@ extends Resource
 @export var speed := 40.0
 @export var max_hp := 10.0
 @export var contact_damage := 5.0
-## Körperradius in Welt-Pixeln: Abstand zu anderen Gegnern und Trefferfläche
+## Sekunden zwischen zwei Angriffen dieses Gegners (gilt, wenn die Unverwundbarkeit nach Treffer aus ist)
+@export var attack_interval := 1.0
+## Zusätzlicher Abstand zum Helden, aus dem angegriffen wird (0 = Nahkampf, also bei Berührung)
+@export var attack_range := 0.0
+## Körperradius in Welt-Pixeln um die Füße: Abstand zu anderen Gegnern und zum Helden, Trefferfläche
 @export var radius := 5.0

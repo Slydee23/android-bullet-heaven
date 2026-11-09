@@ -228,7 +228,8 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/sprites/enemies/skeleton_walk.png` | 16×16 | 4 | M3 |
 | `assets/sprites/characters/hero_hit.png` | 16×16 | 2 | M3 |
 | `assets/sprites/characters/hero_death.png` | 16×16 | 6 | M3 |
-| `assets/ui/bar_frame.png` / `bar_fill.png` | 48×8 | 1 | M3 |
+| `assets/ui/bar_frame.png` | 16×4 (Lebensleiste über dem Helden) | 1 | M3 |
+| `assets/ui/bar_fill.png` | 14×2 (sitzt 1 Pixel innerhalb des Rahmens) | 1 | M3 |
 | `assets/sprites/weapons/magic_bolt.png` | 8×8 | 4 | M4 |
 | `assets/sprites/effects/hit.png` | 16×16 | 4 | M4 |
 | `assets/sprites/effects/death.png` | 16×16 | 6 | M4 |
@@ -299,7 +300,7 @@ Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, G
 M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) → M3a++ dynamischer Zoom →
 M3a+++ Debug-Knopf direkt im Run, Option „Spiel weiterlaufen lassen“ →
 M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
-M3d HP im Statusbildschirm.
+M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-Animation des Helden (`hero_hit`, `hero_death`).
 
 - Kontaktschaden nach „Grundsatzentscheidungen“ Punkt 5: Der Held läuft durch Gegner, Gegner bleiben an seinem Rand stehen.
   Im Debug-Menü: „Unverwundbarkeit nach Treffer“ an/aus und Dauer (0,1–2,0 s) zum Ausprobieren.

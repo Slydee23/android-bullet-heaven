@@ -6,6 +6,8 @@
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_game"]
 
+[sub_resource type="ButtonGroup" id="ButtonGroup_invulnerability"]
+
 [node name="DebugMenu" type="Control"]
 process_mode = 3
 layout_mode = 3
@@ -93,6 +95,49 @@ size_flags_horizontal = 3
 toggle_mode = true
 button_group = SubResource("ButtonGroup_game")
 text = "DEBUG_GAME_RUNNING"
+
+[node name="InvulnerabilityLabel" type="Label" parent="Panel/Content"]
+layout_mode = 2
+text = "DEBUG_HIT_INVULNERABILITY"
+
+[node name="InvulnerabilityButtons" type="HBoxContainer" parent="Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="InvulnerabilityOnButton" type="Button" parent="Panel/Content/InvulnerabilityButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_invulnerability")
+text = "OPTIONS_ON"
+
+[node name="InvulnerabilityOffButton" type="Button" parent="Panel/Content/InvulnerabilityButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_invulnerability")
+text = "OPTIONS_OFF"
+
+[node name="DurationRow" type="HBoxContainer" parent="Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="DurationSlider" type="HSlider" parent="Panel/Content/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 0.1
+
+[node name="DurationValue" type="Label" parent="Panel/Content/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "0.5 s"
+horizontal_alignment = 2
 
 [node name="BackButton" type="Button" parent="Panel/Content"]
 unique_name_in_owner = true

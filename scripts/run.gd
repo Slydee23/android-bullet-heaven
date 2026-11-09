@@ -12,6 +12,7 @@ const GROUND_TEXTURE := preload("res://assets/tiles/forest_ground.png")
 const PROPS_TEXTURE := preload("res://assets/tiles/forest_props.png")
 const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
 const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
+const GAME_OVER_MENU := preload("res://ui/game_over_menu.tscn")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (M3: = MAX_ALIVE, ab M7 aus den Wellen-Daten)
 const ZOOM_FULL_ENEMIES := 60
@@ -20,6 +21,7 @@ const FPS_UPDATE_INTERVAL := 0.5
 
 var _pause_menu: Control
 var _debug_menu: Control
+var _game_over := false
 var _fps_timer := 0.0
 
 @onready var ground: TileMapLayer = $Ground
@@ -43,6 +45,7 @@ func _ready() -> void:
 	player.bounds = arena.grow(-PROP_SIZE)
 	player.position = arena.get_center()
 	player.joystick = joystick
+	player.died.connect(_on_player_died)
 
 	enemy_manager.set_bounds(player.bounds)
 	enemy_manager.target = player
@@ -90,11 +93,17 @@ func _notification(what: int) -> void:
 
 
 func open_pause_menu() -> void:
-	if _pause_menu:
+	if _pause_menu or _game_over:
 		return
 	_pause_menu = PAUSE_MENU.instantiate()
 	_pause_menu.tree_exited.connect(_on_pause_menu_closed)
 	hud.add_child(_pause_menu)
+
+
+func _on_player_died() -> void:
+	_game_over = true
+	# Das Pausemenü kann hier nicht offen sein: Bei Pause greift niemand an
+	hud.add_child(GAME_OVER_MENU.instantiate())
 
 
 func _on_pause_menu_closed() -> void:
@@ -117,12 +126,12 @@ func _on_debug_menu_closed() -> void:
 	_update_pause()
 
 
-## Das Spiel steht, solange die Pause offen ist oder das Debug-Menü offen ist und nicht weiterlaufen soll.
+## Das Spiel steht bei Game Over, solange die Pause offen ist oder das Debug-Menü offen ist und nicht weiterlaufen soll.
 func _update_pause() -> void:
 	# Beim Verlassen des Runs schließen sich die Menüs mit, dann gibt es hier nichts mehr zu steuern
 	if not is_inside_tree():
 		return
-	get_tree().paused = _pause_menu != null or (_debug_menu != null and not Settings.debug_keep_running)
+	get_tree().paused = _game_over or _pause_menu != null or (_debug_menu != null and not Settings.debug_keep_running)
 
 
 func _on_settings_changed() -> void:

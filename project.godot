@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 
 Settings="*res://scripts/settings.gd"
 BackGesture="*res://scripts/back_gesture.gd"
+SceneRouter="*res://scripts/scene_router.gd"
 
 [display]
 

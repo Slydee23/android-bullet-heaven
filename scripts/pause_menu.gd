@@ -5,7 +5,6 @@ signal closed
 
 const PixelUI := preload("res://scripts/pixel_ui.gd")
 const OPTIONS_MENU := preload("res://ui/options_menu.tscn")
-const MAIN_MENU := "res://ui/main_menu.tscn"
 
 ## Zweites Antippen von „Run aufgeben“ bestätigt (schützt vor versehentlichem Aufgeben)
 var _abandon_armed := false
@@ -46,5 +45,4 @@ func _on_abandon_pressed() -> void:
 		abandon_button.text = "PAUSE_ABANDON_CONFIRM"
 		return
 	# Bis M8 geht der Run dabei verloren
-	get_tree().paused = false
-	get_tree().change_scene_to_file(MAIN_MENU)
+	SceneRouter.go_to_main_menu()

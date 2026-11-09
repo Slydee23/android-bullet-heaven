@@ -3,7 +3,6 @@ extends Control
 
 const PixelUI := preload("res://scripts/pixel_ui.gd")
 
-const RUN_SCENE := "res://scenes/run.tscn"
 const OPTIONS_MENU := preload("res://ui/options_menu.tscn")
 
 @onready var start_button: Button = %StartButton
@@ -16,12 +15,8 @@ func _ready() -> void:
 	# Version steht zentral in Projekteinstellungen → Anwendung → Konfiguration → Version
 	version_label.text = ProjectSettings.get_setting("application/config/version", "")
 
-	start_button.pressed.connect(_on_start_button_pressed)
+	start_button.pressed.connect(SceneRouter.start_run)
 	options_button.pressed.connect(_on_options_button_pressed)
-
-
-func _on_start_button_pressed() -> void:
-	get_tree().change_scene_to_file(RUN_SCENE)
 
 
 func _on_options_button_pressed() -> void:

@@ -11,6 +11,8 @@ const PATH := "user://settings.cfg"
 ## Erhöhen, wenn sich das Dateiformat ändert (alte Dateien lassen sich dann umwandeln)
 const FILE_VERSION := 1
 const MIN_JOYSTICK_OPACITY := 0.2
+const MIN_INVULNERABILITY := 0.1
+const MAX_INVULNERABILITY := 2.0
 ## Kamera-Zoom zum Vergleichen (Debug-Menü): Nah 4×, Weit 3×, Dynamisch nach Gegnerdruck (siehe RunCamera)
 enum CameraZoomMode { NEAR, FAR, DYNAMIC }
 
@@ -22,6 +24,11 @@ var joystick_opacity := 1.0
 var camera_zoom_mode := CameraZoomMode.DYNAMIC
 ## Nur Testwert (Debug-Menü): Spiel läuft weiter, während das Debug-Menü offen ist
 var debug_keep_running := false
+## Nur Testwert (Debug-Menü): Nach einem Treffer kurz unverwundbar? Noch nicht entschieden, siehe PLAN.md
+var debug_hit_invulnerability := true
+## Nur Testwert (Debug-Menü): Dauer der Unverwundbarkeit in Sekunden
+var debug_invulnerability_duration := 0.5
+var show_player_health_bar := true
 
 
 func _ready() -> void:
@@ -48,6 +55,12 @@ func load_settings() -> void:
 		camera_zoom_mode = zoom_mode as CameraZoomMode
 	var keep_running: bool = config.get_value("debug", "keep_running", debug_keep_running)
 	debug_keep_running = keep_running
+	var invulnerability: bool = config.get_value("debug", "hit_invulnerability", debug_hit_invulnerability)
+	debug_hit_invulnerability = invulnerability
+	var duration: float = config.get_value("debug", "invulnerability_duration", debug_invulnerability_duration)
+	debug_invulnerability_duration = clampf(duration, MIN_INVULNERABILITY, MAX_INVULNERABILITY)
+	var health_bar: bool = config.get_value("display", "player_health_bar", show_player_health_bar)
+	show_player_health_bar = health_bar
 
 
 func save_settings() -> void:
@@ -58,6 +71,9 @@ func save_settings() -> void:
 	config.set_value("controls", "joystick_opacity", joystick_opacity)
 	config.set_value("debug", "camera_zoom_mode", camera_zoom_mode)
 	config.set_value("debug", "keep_running", debug_keep_running)
+	config.set_value("debug", "hit_invulnerability", debug_hit_invulnerability)
+	config.set_value("debug", "invulnerability_duration", debug_invulnerability_duration)
+	config.set_value("display", "player_health_bar", show_player_health_bar)
 	# Sicher schreiben: erst temporäre Datei, dann ersetzen
 	var temp_path := PATH + ".tmp"
 	if config.save(temp_path) == OK:
@@ -87,6 +103,22 @@ func set_camera_zoom_mode(mode: CameraZoomMode) -> void:
 
 func set_debug_keep_running(keep_running: bool) -> void:
 	debug_keep_running = keep_running
+	_apply()
+
+
+func set_debug_hit_invulnerability(enabled: bool) -> void:
+	debug_hit_invulnerability = enabled
+	_apply()
+
+
+## persist = false: nur übernehmen, nicht speichern (z. B. während ein Schieberegler gezogen wird)
+func set_debug_invulnerability_duration(duration: float, persist := true) -> void:
+	debug_invulnerability_duration = clampf(duration, MIN_INVULNERABILITY, MAX_INVULNERABILITY)
+	_apply(persist)
+
+
+func set_show_player_health_bar(show_bar: bool) -> void:
+	show_player_health_bar = show_bar
 	_apply()
 
 

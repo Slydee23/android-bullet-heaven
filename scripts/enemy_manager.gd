@@ -18,9 +18,11 @@ const MAX_ALIVE := 60
 ## So weit außerhalb des sichtbaren Bereichs erscheinen neue Gegner (Welt-Pixel)
 const SPAWN_MARGIN := 24.0
 const SPAWN_ATTEMPTS := 8
+## Spielraum, ab dem ein stehender Gegner den Helden noch erreicht (Welt-Pixel)
+const ATTACK_TOLERANCE := 1.0
 
-## Ziel, auf das alle Gegner zulaufen (der Held)
-var target: Node2D
+## Ziel, auf das alle Gegner zulaufen und das sie angreifen (der Held)
+var target: Player
 ## Gegnertypen, aus denen zufällig gespawnt wird
 var spawn_types: Array[EnemyData] = []
 ## Anzahl lebender Gegner (belegt sind die Plätze 0 bis count-1)
@@ -33,6 +35,7 @@ var _positions := PackedVector2Array()
 var _hp := PackedFloat32Array()
 var _anim_offsets := PackedFloat32Array()
 var _flipped := PackedByteArray()
+var _attack_timers := PackedFloat32Array()
 var _grid_size := Vector2i.ONE
 var _cell_head := PackedInt32Array()
 var _cell_next := PackedInt32Array()
@@ -46,6 +49,7 @@ func _ready() -> void:
 	_hp.resize(MAX_ENEMIES)
 	_anim_offsets.resize(MAX_ENEMIES)
 	_flipped.resize(MAX_ENEMIES)
+	_attack_timers.resize(MAX_ENEMIES)
 	_cell_next.resize(MAX_ENEMIES)
 
 
@@ -68,6 +72,7 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 	_hp[count] = data.max_hp
 	_anim_offsets[count] = randf() * 10.0  # damit nicht alle im Gleichschritt laufen
 	_flipped[count] = 0
+	_attack_timers[count] = 0.0
 	count += 1
 
 
@@ -81,6 +86,7 @@ func kill(i: int) -> void:
 	_hp[i] = _hp[count]
 	_anim_offsets[i] = _anim_offsets[count]
 	_flipped[i] = _flipped[count]
+	_attack_timers[i] = _attack_timers[count]
 
 
 func _process(delta: float) -> void:
@@ -128,11 +134,17 @@ func _build_grid() -> void:
 
 func _move(delta: float) -> void:
 	var target_pos := target.global_position if target else _bounds.get_center()
+	var target_radius := target.body_radius if target else 0.0
 	for i in count:
 		var data := _type_list[_types[i]]
 		var pos := _positions[i]
 		var direction := pos.direction_to(target_pos)
-		pos += direction * data.speed * delta
+		# Am Rand des Helden bzw. in Angriffsreichweite stehen bleiben
+		var contact_distance := data.radius + target_radius
+		var stop_distance := contact_distance + data.attack_range
+		var target_distance := pos.distance_to(target_pos)
+		if target_distance > stop_distance:
+			pos += direction * minf(data.speed * delta, target_distance - stop_distance)
 		_flipped[i] = 1 if direction.x < 0.0 else 0
 
 		# Abstand zu Nachbarn halten, damit sie sich nicht auf einem Punkt stapeln
@@ -151,7 +163,24 @@ func _move(delta: float) -> void:
 							push += offset / distance * (min_distance - distance)
 					j = _cell_next[j]
 		pos += push * SEPARATION_STRENGTH
-		_positions[i] = pos.clamp(_bounds.position, _bounds.end)
+
+		# Nie im Helden stehen: Läuft er in Gegner hinein, weichen sie zur Seite. Ihn selbst bremst das nicht.
+		var away := pos - target_pos
+		if away.length_squared() < contact_distance * contact_distance:
+			pos = target_pos + (away.normalized() if away != Vector2.ZERO else Vector2.RIGHT) * contact_distance
+		pos = pos.clamp(_bounds.position, _bounds.end)
+		_positions[i] = pos
+
+		_update_attack(i, data, pos.distance_to(target_pos) <= stop_distance + ATTACK_TOLERANCE, delta)
+
+
+func _update_attack(i: int, data: EnemyData, in_range: bool, delta: float) -> void:
+	if _attack_timers[i] > 0.0:
+		_attack_timers[i] -= delta
+	elif in_range and target and target.take_damage(data.contact_damage):
+		# Mit Unverwundbarkeit begrenzt der Held selbst, wie oft er getroffen wird
+		if not Settings.debug_hit_invulnerability:
+			_attack_timers[i] = data.attack_interval
 
 
 func _draw() -> void:
@@ -164,5 +193,7 @@ func _draw() -> void:
 		var source := Rect2(Vector2(frame * data.frame_width, 0), frame_size)
 		var flip_scale := Vector2(-1.0 if _flipped[i] else 1.0, 1.0)
 		draw_set_transform(_positions[i], 0.0, flip_scale)
-		draw_texture_rect_region(texture, Rect2(-frame_size * 0.5, frame_size), source)
+		# Die Position sind die Füße: Das Bild steht unten bündig darauf
+		var frame_rect := Rect2(Vector2(-frame_size.x * 0.5, 1.0 - frame_size.y), frame_size)
+		draw_texture_rect_region(texture, frame_rect, source)
 	draw_set_transform(Vector2.ZERO)
