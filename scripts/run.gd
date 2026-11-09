@@ -20,7 +20,7 @@ const ZOOM_FULL_ENEMIES := 60
 const FPS_UPDATE_INTERVAL := 0.5
 
 var _pause_menu: Control
-var _debug_menu: Control
+var _debug_menu: DebugMenu
 var _game_over := false
 var _fps_timer := 0.0
 
@@ -116,6 +116,7 @@ func _toggle_debug_menu() -> void:
 		_debug_menu.queue_free()
 		return
 	_debug_menu = DEBUG_MENU.instantiate()
+	_debug_menu.player = player
 	_debug_menu.tree_exited.connect(_on_debug_menu_closed)
 	hud.add_child(_debug_menu)
 	_update_pause()

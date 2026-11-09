@@ -165,8 +165,14 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
      beiseitegeschoben, wenn er durch eine Gruppe läuft. Gegner können den Helden nie einsperren.
    - Gegner verursachen **Kontaktschaden**. Jeder Gegnertyp hat eine Angriffsreichweite (`attack_range`, Nahkampf = Berührung)
      und ein Angriffsintervall (`attack_interval`). Fernkämpfer bleiben später einfach weiter weg stehen.
-   - **Unverwundbarkeit nach Treffer: noch offen.** Im Debug-Menü umschaltbar (an/aus + Dauer):
-     an = nach einem Treffer kurz unverwundbar (Blinken), aus = jeder berührende Gegner trifft in seinem eigenen Intervall.
+   - **I-Frames nach einem Treffer sind fest eingeplant** (im Test fühlte sich das Spiel ohne sie merkwürdig an), der Held blinkt dabei.
+     Die Dauer hängt am Schaden, Formel wie in Brotato: `Dauer = 0,4 s × Schadensanteil an Max-HP ÷ 15 %`, begrenzt auf 0,2–0,4 s.
+     Es zählt der tatsächlich erlittene Schaden nach Rüstung. Formel und Grenzen liegen nur in `IFrameRule` (`data/combat/player_iframes.tres`).
+     Am Handy getestet: Das Blinken bleibt sichtbar, die Werte bleiben vorerst so. Feinabstimmung beim allgemeinen Balancing (Regler im Debug-Menü).
+   - **Das Angriffsintervall gilt immer:** Ein einzelner Gegner trifft nur alle `attack_interval` Sekunden, viele Gegner zusammen so oft, wie
+     die I-Frames es erlauben. Die Gefahr wächst also mit der Gegnerzahl.
+   - **Selbstschaden** (`take_self_damage`) wirkt auch während der I-Frames und löst keine aus.
+     Vorläufig tötet er nicht (bleibt bei 1 HP). Endgültig entscheiden wir das beim ersten Effekt, der ihn nutzt.
 6. **Werte-System (Stats):**
    - Jeder Wert (Schaden, Angriffstempo, Rüstung …) ist eine **Stat-Definition** als Datendatei mit Mindest- und Höchstwert.
    - Alles, was Werte verändert (Level-Up, Artefakt, Rüstung, Dorf-Upgrade, Status-Effekt), liefert **Modifikatoren**
@@ -299,11 +305,12 @@ Umsetzung in Teilschritten: 2a Joystick + Einstellungs-Grundgerüst → 2b Optio
 Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, Grid, FPS-Anzeige) →
 M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) → M3a++ dynamischer Zoom →
 M3a+++ Debug-Knopf direkt im Run, Option „Spiel weiterlaufen lassen“ →
-M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
+M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3b+ I-Frames nach Schaden (`IFrameRule`), Selbstschaden →
+Vergleichstest 16×16 / 32×32 (siehe „Offene Designfragen“) → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
 M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-Animation des Helden (`hero_hit`, `hero_death`).
 
 - Kontaktschaden nach „Grundsatzentscheidungen“ Punkt 5: Der Held läuft durch Gegner, Gegner bleiben an seinem Rand stehen.
-  Im Debug-Menü: „Unverwundbarkeit nach Treffer“ an/aus und Dauer (0,1–2,0 s) zum Ausprobieren.
+  Im Debug-Menü: Regler für die I-Frames sowie Testknöpfe „Treffer 20 %“ und „Selbstschaden 10 %“.
 - `EnemyManager` mit Pooling und Spatial Grid. Gegner (z. B. Skelett) erscheinen außerhalb des Sichtfelds und laufen auf den
   Helden zu, ohne sich alle auf einen Punkt zu stapeln.
 - Bei Berührung nimmt der Held Schaden. Es gibt eine Lebensleiste, und bei 0 HP kommt ein Game-Over-Bildschirm mit den Knöpfen „Nochmal“ und „Hauptmenü“.
@@ -334,7 +341,7 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 
 - **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
   Das Grundgerüst gibt es schon seit M3: erreichbar über den Debug-Knopf neben dem Pause-Knopf, das Spiel kann dabei weiterlaufen
-  (Zoom, Unverwundbarkeit nach Treffer). Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
+  (Zoom, I-Frames). Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
   in M7 „Zu Welle X springen“, später z. B. „Magie-Schrott geben“.
 - Mit „+100 Gegner“ messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
   Bei Bedarf optimieren, z. B. mit MultiMesh-Rendering oder einem gröberen Grid.
@@ -347,12 +354,13 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 
 ### M6 – XP & Level-Up
 
+- **Zuerst das HUD-Grundgerüst** nach „UI-Konzepte → HUD“: HUD-Szene mit Bereichen, feste HP-Leiste, XP-Leiste, Level und Waffen-Icons.
 - Gegner lassen XP-Kristalle fallen, die per Magnet eingesammelt werden. Am oberen Rand gibt es eine XP-Leiste.
 - Beim Level-Up pausiert das Spiel, und es erscheinen **3 Karten** zum Antippen: eine neue Waffe (maximal 3 Slots) oder
   das Upgrade einer vorhandenen Waffe.
 - Im Grundspiel gibt es 3 Waffen, z. B. Magiegeschoss, kreisende Klingen und Feuer-Aura.
 - **Werte-System** nach „Grundsatzentscheidungen“ Punkt 6: Stat-Definitionen, Modifikatoren und StatBlock.
-  Level-Up-Upgrades sind Modifikatoren.
+  Level-Up-Upgrades sind Modifikatoren. Kommt Ausweichen dazu: Ein ausgewichener Treffer gibt die Mindestdauer der I-Frames.
 - Statusbildschirm zeigt Level, XP, alle Waffen-Slots mit Level und Werten sowie die Spielerwerte.
 - **Am Handy testen:** Kristalle werden eingesammelt, das Level-Up-Menü lässt sich gut antippen und die Karten sind lesbar.
   Mit 3 Waffen kommen keine neuen Waffen mehr, sondern nur noch Upgrades.
@@ -402,6 +410,26 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 ➡ **Nach M8 ist das Grundspiel fertig.**
 
 ## UI-Konzepte
+
+### HUD (im Run)
+
+Modular aufgebaut, damit sich Anzeigen leicht ergänzen, ändern und entfernen lassen. **Gebaut wird es zu Beginn von M6**, wenn die ersten
+festen Anzeigen gebraucht werden. Ein zentrales Datensystem fürs HUD selbst gibt es bewusst nicht: Jede Anzeige braucht ohnehin eigenen Code,
+und Szenen lassen sich im Editor direkt sehen und verschieben.
+
+- **Jede Anzeige ist eine eigene kleine Szene** in `ui/hud/`. Neue Anzeige = neue Szene, Entfernen = Szene löschen.
+- **Bereiche in der HUD-Szene:** oben links, oben Mitte, oben rechts, unten links, unten rechts. Position ändern = in einen anderen Bereich ziehen.
+- **Anzeigen lauschen auf Signale** (z. B. `hp_changed`) und fragen nicht in jedem Frame ab, das schont den Handy-Prozessor.
+- **Spiel-Systeme kennen das HUD nicht.** Deshalb lässt sich jede Anzeige gefahrlos entfernen.
+- **Safe Area** (Kamera-Notch) wird nur einmal zentral in der HUD-Wurzel behandelt.
+- **Berührungen:** Reine Anzeigen lassen sie durch, damit der Joystick nicht blockiert wird. Knöpfe kommen in die Gruppe `joystick_blocker`.
+- **Daten nur dort, wo Listen wachsen:** Waffen-Slots und Ressourcen lesen Icon und Namen aus den Datendateien.
+
+| Wann | Anzeigen |
+| --- | --- |
+| M6 | Feste HP-Leiste (die Leiste über dem Helden bleibt zusätzlich abschaltbar), XP-Leiste, Level, Waffen-Icons |
+| M7 | Welle, Zeit, Kills |
+| E1 / E3 / E5 | Magie-Schrott / Spezialfähigkeit mit Abklingzeit / Materialien |
 
 ### Pause-/Statusbildschirm (im Run)
 
@@ -511,7 +539,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
     (die erste Waffe materialisiert sich in höchster Not). Am Ende entdeckt er die Dorf-Ruine, die zum Hub wird.
     Braucht Level-Up, Rastplatz, Spezialfähigkeit und den Hub. Den Inhalt besprechen wir vorher gemeinsam.
 12. **E12 – Weitere Maps/Biome, Gegnertypen, Bosse.**
-13. **E13 – Endlos-Modus** nach der letzten Welle.
+13. **E13 – Endlos-Modus** nach der letzten Welle. Brotato verkürzt dort die I-Frames, bei uns ginge das über eine eigene `IFrameRule`.
 14. **E14 – Englisch** + Sprach-Option.
 15. **E15 – Erweiterte Optionen:** Joystick-Größe, FPS-Limit.
 16. **E16 – Credits-Bildschirm.** Ab dem ersten fremden Asset führen wir `CREDITS.md` mit Quelle und Lizenz,
@@ -533,6 +561,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
   Wie und ob das ins Spiel kommt, ist noch offen.
 - **Sichtbare Rüstung:** späteres Update, das angelegte Rüstung an der Spielfigur zeigt, mit Option an/aus.
 - **Rastplatz als begehbarer Ort:** Händler-Karawane als NPCs, die man ansprechen kann (nutzt die Hub-Interaktion).
+- **Frei verschiebbares HUD:** Der Spieler ordnet Anzeigen selbst an, ließe sich später als gespeichertes Layout ergänzen.
 
 ## UI-Überarbeitung (später)
 
@@ -543,6 +572,8 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 
 ## Offene Designfragen
 
+- **Sprite-Auflösung 16×16 oder 32×32:** Tendenz 32×32, wird per Vergleichstest am Handy entschieden → **vor M4**.
+  Bei 32×32 läuft der Zoom von 2× auf 1,5×, Pixel flimmern dabei stärker, und der „Sharp-Pixel“-Shader wird wohl Pflicht. Die Asset-Tabelle oben gilt bis dahin vorläufig.
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
   exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit
   vollen HP vom Wellenanfang wiederholen. Ist das okay, oder braucht es eine Gegenmaßnahme? → vor M8 entscheiden

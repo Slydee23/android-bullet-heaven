@@ -178,9 +178,8 @@ func _update_attack(i: int, data: EnemyData, in_range: bool, delta: float) -> vo
 	if _attack_timers[i] > 0.0:
 		_attack_timers[i] -= delta
 	elif in_range and target and target.take_damage(data.contact_damage):
-		# Mit Unverwundbarkeit begrenzt der Held selbst, wie oft er getroffen wird
-		if not Settings.debug_hit_invulnerability:
-			_attack_timers[i] = data.attack_interval
+		# Trifft der Angriff nicht (I-Frames des Helden), bleibt der Gegner bereit und versucht es weiter
+		_attack_timers[i] = data.attack_interval
 
 
 func _draw() -> void:

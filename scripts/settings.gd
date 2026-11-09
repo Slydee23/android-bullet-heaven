@@ -11,8 +11,13 @@ const PATH := "user://settings.cfg"
 ## Erhöhen, wenn sich das Dateiformat ändert (alte Dateien lassen sich dann umwandeln)
 const FILE_VERSION := 1
 const MIN_JOYSTICK_OPACITY := 0.2
-const MIN_INVULNERABILITY := 0.1
-const MAX_INVULNERABILITY := 2.0
+## Regler-Grenzen der I-Frames im Debug-Menü
+const MIN_IFRAME_DURATION := 0.05
+const MAX_IFRAME_DURATION := 2.0
+const MIN_IFRAME_SHARE := 0.05
+const MAX_IFRAME_SHARE := 0.5
+## Kein Testwert gesetzt: Es gilt data/combat/player_iframes.tres
+const IFRAME_NOT_SET := -1.0
 ## Kamera-Zoom zum Vergleichen (Debug-Menü): Nah 4×, Weit 3×, Dynamisch nach Gegnerdruck (siehe RunCamera)
 enum CameraZoomMode { NEAR, FAR, DYNAMIC }
 
@@ -24,10 +29,10 @@ var joystick_opacity := 1.0
 var camera_zoom_mode := CameraZoomMode.DYNAMIC
 ## Nur Testwert (Debug-Menü): Spiel läuft weiter, während das Debug-Menü offen ist
 var debug_keep_running := false
-## Nur Testwert (Debug-Menü): Nach einem Treffer kurz unverwundbar? Noch nicht entschieden, siehe PLAN.md
-var debug_hit_invulnerability := true
-## Nur Testwert (Debug-Menü): Dauer der Unverwundbarkeit in Sekunden
-var debug_invulnerability_duration := 0.5
+## Nur Testwerte (Debug-Menü): I-Frames ausprobieren, ohne die Datendatei zu ändern
+var debug_iframe_min := IFRAME_NOT_SET
+var debug_iframe_max := IFRAME_NOT_SET
+var debug_iframe_share := IFRAME_NOT_SET
 var show_player_health_bar := true
 
 
@@ -55,10 +60,11 @@ func load_settings() -> void:
 		camera_zoom_mode = zoom_mode as CameraZoomMode
 	var keep_running: bool = config.get_value("debug", "keep_running", debug_keep_running)
 	debug_keep_running = keep_running
-	var invulnerability: bool = config.get_value("debug", "hit_invulnerability", debug_hit_invulnerability)
-	debug_hit_invulnerability = invulnerability
-	var duration: float = config.get_value("debug", "invulnerability_duration", debug_invulnerability_duration)
-	debug_invulnerability_duration = clampf(duration, MIN_INVULNERABILITY, MAX_INVULNERABILITY)
+	var iframe_min: float = config.get_value("debug", "iframe_min", IFRAME_NOT_SET)
+	var iframe_max: float = config.get_value("debug", "iframe_max", IFRAME_NOT_SET)
+	var iframe_share: float = config.get_value("debug", "iframe_share", IFRAME_NOT_SET)
+	if iframe_min >= 0.0 and iframe_max >= 0.0 and iframe_share >= 0.0:
+		_store_debug_iframes(iframe_min, iframe_max, iframe_share)
 	var health_bar: bool = config.get_value("display", "player_health_bar", show_player_health_bar)
 	show_player_health_bar = health_bar
 
@@ -71,8 +77,9 @@ func save_settings() -> void:
 	config.set_value("controls", "joystick_opacity", joystick_opacity)
 	config.set_value("debug", "camera_zoom_mode", camera_zoom_mode)
 	config.set_value("debug", "keep_running", debug_keep_running)
-	config.set_value("debug", "hit_invulnerability", debug_hit_invulnerability)
-	config.set_value("debug", "invulnerability_duration", debug_invulnerability_duration)
+	config.set_value("debug", "iframe_min", debug_iframe_min)
+	config.set_value("debug", "iframe_max", debug_iframe_max)
+	config.set_value("debug", "iframe_share", debug_iframe_share)
 	config.set_value("display", "player_health_bar", show_player_health_bar)
 	# Sicher schreiben: erst temporäre Datei, dann ersetzen
 	var temp_path := PATH + ".tmp"
@@ -106,15 +113,28 @@ func set_debug_keep_running(keep_running: bool) -> void:
 	_apply()
 
 
-func set_debug_hit_invulnerability(enabled: bool) -> void:
-	debug_hit_invulnerability = enabled
-	_apply()
+func has_debug_iframes() -> bool:
+	return debug_iframe_min >= 0.0
 
 
 ## persist = false: nur übernehmen, nicht speichern (z. B. während ein Schieberegler gezogen wird)
-func set_debug_invulnerability_duration(duration: float, persist := true) -> void:
-	debug_invulnerability_duration = clampf(duration, MIN_INVULNERABILITY, MAX_INVULNERABILITY)
+func set_debug_iframes(minimum: float, maximum: float, share: float, persist := true) -> void:
+	_store_debug_iframes(minimum, maximum, share)
 	_apply(persist)
+
+
+## Testwerte verwerfen: Es gilt wieder die Datendatei.
+func reset_debug_iframes() -> void:
+	debug_iframe_min = IFRAME_NOT_SET
+	debug_iframe_max = IFRAME_NOT_SET
+	debug_iframe_share = IFRAME_NOT_SET
+	_apply()
+
+
+func _store_debug_iframes(minimum: float, maximum: float, share: float) -> void:
+	debug_iframe_min = clampf(minimum, MIN_IFRAME_DURATION, MAX_IFRAME_DURATION)
+	debug_iframe_max = clampf(maximum, debug_iframe_min, MAX_IFRAME_DURATION)
+	debug_iframe_share = clampf(share, MIN_IFRAME_SHARE, MAX_IFRAME_SHARE)
 
 
 func set_show_player_health_bar(show_bar: bool) -> void:

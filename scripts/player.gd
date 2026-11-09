@@ -14,6 +14,8 @@ const BLINK_INTERVAL := 0.08
 ## So lange leuchtet der Held nach einem Treffer rot auf (Sekunden)
 const HIT_FLASH_TIME := 0.1
 const HIT_FLASH_COLOR := Color(1.0, 0.35, 0.35)
+## Selbstschaden tötet vorläufig nicht: So viele HP bleiben mindestens übrig (endgültig entschieden wird beim ersten Effekt)
+const SELF_DAMAGE_MIN_HP := 1.0
 
 const IDLE_TEXTURE := preload("res://assets/sprites/characters/hero_idle.png")
 const RUN_TEXTURE := preload("res://assets/sprites/characters/hero_run.png")
@@ -23,12 +25,18 @@ const RUN_TEXTURE := preload("res://assets/sprites/characters/hero_run.png")
 @export var max_hp := 100.0
 ## Körperradius in Welt-Pixeln um die Füße: Bis hierhin kommen Gegner heran
 @export var body_radius := 5.0
+## Wie lange der Held nach einem Treffer unverwundbar ist
+@export var base_iframe_rule: IFrameRule
 
 ## Bereich, den der Spieler nicht verlassen kann (setzt die Run-Szene)
 var bounds := Rect2()
 ## Touch-Joystick (setzt die Run-Szene)
 var joystick: TouchJoystick
 var hp := max_hp
+## Geltende Regel: Kopie von base_iframe_rule, in Test-Builds mit den Werten aus dem Debug-Menü
+var iframe_rule: IFrameRule
+## Dauer der letzten I-Frames in Sekunden (Anzeige im Debug-Menü)
+var last_iframe_duration := 0.0
 
 var _current_texture: Texture2D
 var _animation_time := 0.0
@@ -43,26 +51,47 @@ func _ready() -> void:
 	hp = max_hp
 	health_bar.max_value = max_hp
 	health_bar.value = hp
+	iframe_rule = base_iframe_rule.duplicate()
 	_apply_settings()
 	Settings.changed.connect(_apply_settings)
 
 
-## Zieht Lebenspunkte ab. Gibt false zurück, wenn der Treffer nicht zählt (unverwundbar oder schon tot).
+## Treffer von außen: Zieht Lebenspunkte ab und startet die I-Frames.
+## Gibt false zurück, wenn der Treffer nicht zählt (unverwundbar oder schon tot).
 func take_damage(amount: float) -> bool:
 	if hp <= 0.0 or _invulnerable_left > 0.0:
 		return false
-	hp = maxf(hp - amount, 0.0)
-	health_bar.value = hp
+	last_iframe_duration = iframe_rule.duration_for(amount, max_hp)
+	_invulnerable_left = last_iframe_duration
 	_hit_flash_left = HIT_FLASH_TIME
-	if Settings.debug_hit_invulnerability:
-		_invulnerable_left = Settings.debug_invulnerability_duration
+	_set_hp(maxf(hp - amount, 0.0))
 	if hp <= 0.0:
 		died.emit()
 	return true
 
 
+## Selbstschaden (z. B. durch Boni): Wirkt auch während der I-Frames und löst selbst keine aus.
+func take_self_damage(amount: float) -> void:
+	if hp <= 0.0:
+		return
+	_set_hp(maxf(hp - amount, minf(hp, SELF_DAMAGE_MIN_HP)))
+
+
+func _set_hp(value: float) -> void:
+	hp = value
+	health_bar.value = hp
+
+
 func _apply_settings() -> void:
 	health_bar.visible = Settings.show_player_health_bar
+	iframe_rule.min_duration = base_iframe_rule.min_duration
+	iframe_rule.max_duration = base_iframe_rule.max_duration
+	iframe_rule.reference_share = base_iframe_rule.reference_share
+	# Testwerte aus dem Debug-Menü gelten nur in Test-Builds
+	if OS.is_debug_build() and Settings.has_debug_iframes():
+		iframe_rule.min_duration = Settings.debug_iframe_min
+		iframe_rule.max_duration = Settings.debug_iframe_max
+		iframe_rule.reference_share = Settings.debug_iframe_share
 
 
 func _process(delta: float) -> void:
