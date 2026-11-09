@@ -14,8 +14,9 @@ const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
 const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
 const GAME_OVER_MENU := preload("res://ui/game_over_menu.tscn")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
-## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (M3: = MAX_ALIVE, ab M7 aus den Wellen-Daten)
-const ZOOM_FULL_ENEMIES := 60
+## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
+## Bewusst fest und nicht von den Waves abhängig: Ab 50 Gegnern ist der Bildschirm voll genug für den weitesten Zoom.
+const ZOOM_FULL_ENEMIES := 50
 ## Wie oft die FPS-Anzeige aktualisiert wird (Sekunden)
 const FPS_UPDATE_INTERVAL := 0.5
 

@@ -76,7 +76,7 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Orientation:** `sensor_landscape`. Querformat bleibt fest, und das Bild dreht sich mit, egal wie herum man das Handy hält.
 - **Pixel-Art:** Die Texturen werden ohne Glättung skaliert (Filter `Nearest`) und erscheinen dadurch scharf und pixelig.
   **Sprite-Auflösung 32×32** (nach Vergleichstest am Handy entschieden, Größe „1,5×“): Figuren sind 32×32, Bodenkacheln 32×32,
-  Props 64×64. Die Kamera zeigt sie mit Zoom 3× (Nah) bis 2,25× (Weit), eine Figur ist also 96 bis 72 Bildschirmpixel hoch.
+  Props 64×64. Die Kamera zeigt sie mit Zoom 3× (Nah) bis 2× (Weit), eine Figur ist also 96 bis 64 Bildschirmpixel hoch (2× am Handy getestet: Bei beiden Endstufen sind die Pixel ganzzahlig und ganz scharf).
   Weil diese Zoomstufen nicht immer ganzzahlig sind, nutzen Held und Gegner den **Sharp-Pixel-Shader**
   (`assets/shaders/sharp_pixel_material.tres`, Texturfilter „Linear“): Alle Pixel bleiben gleich breit und flimmern nicht.
   Boden und Props vorerst ohne Shader (bei Kachel-Atlanten würden sonst Nachbarkacheln an den Rändern durchscheinen); Prüfpunkt in M5.
@@ -152,12 +152,12 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - **Kollisionskreis an den Füßen**, nicht in der Sprite-Mitte. Dass sich Köpfe überlappen, ist gewollt.
    - Der **Held wird immer über den Gegnern** gezeichnet. Gegner untereinander werden nach Höhe sortiert (über die Grid-Zeilen).
    - Keine Höhenstauchung: Reichweiten sind echte Kreise.
-2. **Kamera-Zoom: Dynamisch ist der Standard** (am PC und am Handy getestet). Nah (3×) und Weit (2,25×) bleiben im Debug-Menü zum Vergleichen.
-   - Dynamisch: Jede Wave startet bei 3×. Mit steigender Gegnerzahl zoomt die Kamera fließend bis maximal 2,25× heraus
+2. **Kamera-Zoom: Dynamisch ist der Standard** (am PC und am Handy getestet). Nah (3×) und Weit (2×) bleiben im Debug-Menü zum Vergleichen.
+   - Dynamisch: Jede Wave startet bei 3×. Mit steigender Gegnerzahl zoomt die Kamera fließend bis maximal 2× heraus
      (mehr Übersicht, wenn Waffen, Reichweiten und Gegnerzahl wachsen).
    - Innerhalb einer Wave zoomt sie nur heraus, nie wieder herein (kein „Pumpen“ beim Töten). Zurück auf 3× zur nächsten Wave.
-   - Ab M7 kommen Start- und Endzoom bzw. der Gegnerdruck aus den Wellen-Daten (z. B. spätere Waves starten weiter draußen).
-     Dort stimmen wir auch die Feinwerte ab (aktuell: 60 Gegner = 2,25×).
+   - **Ab 50 lebenden Gegnern ist der Zoom immer ganz draußen (2×)**, fest und unabhängig von den Waves
+     (am Handy getestet: ab 50 Gegnern ist der Bildschirm voll genug).
    - (Bis zur 32×32-Umstellung waren es 4× bis 3× mit 16×16-Figuren. Auf dem Bildschirm sind die Figuren jetzt 1,5× so groß.)
    - Zwischenstufen sind nicht ganzzahlig, deshalb der Sharp-Pixel-Shader für Held und Gegner (siehe „Technische Grundentscheidungen“).
 3. **Rüstung ist nicht an der Spielfigur sichtbar**, sondern nur in Paperdoll und Icons (siehe „Ideen“ für ein mögliches Update).
@@ -228,8 +228,8 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/menu_background.png` | 600×270 (mind. 480×270) | 1 | M1 |
 | `assets/fonts/pixel_font.ttf` | – (mit ä, ö, ü, ß); noch kein Platzhalter, bis dahin Godot-Standardschrift | – | M1 |
 | `assets/ui/button.png` | 16×16 (9-Slice) | 1 | M1 |
-| `assets/sprites/characters/hero_idle.png` | 32×32 | 4 (beliebig) | M1 |
-| `assets/sprites/characters/hero_run.png` | 32×32 | 6 (beliebig) | M1 |
+| `assets/sprites/characters/hero_idle.png` | 32×32, Blick nach Osten (Pixellab, Lizenz prüfen) | 1 (später gern Atem-Animation, beliebig viele) | M1 |
+| `assets/sprites/characters/hero_run.png` | 32×32, Blick nach Osten (Pixellab, Lizenz prüfen) | 8 (beliebig) | M1 |
 | `assets/tiles/forest_ground.png` | Kacheln 32×32 in **einer Reihe** = Bodenvarianten; die erste Kachel wird am häufigsten benutzt | beliebig viele | M1 |
 | `assets/tiles/forest_props.png` | Reihe aus 64×64-Zellen (Bäume, Felsen, Büsche; unten bündig) | beliebig viele | M1 |
 | `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
@@ -314,7 +314,7 @@ Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, G
 M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) → M3a++ dynamischer Zoom →
 M3a+++ Debug-Knopf direkt im Run, Option „Spiel weiterlaufen lassen“ →
 M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3b+ I-Frames nach Schaden (`IFrameRule`), Selbstschaden →
-Vergleichstest 16×16 / 32×32 → Umstellung auf 32×32 → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
+Vergleichstest 16×16 / 32×32 → Umstellung auf 32×32 → neues Heldenmodell (Pixellab), vorübergehend max. 120 Gegner → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
 M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-Animation des Helden (`hero_hit`, `hero_death`).
 
 - Kontaktschaden nach „Grundsatzentscheidungen“ Punkt 5: Der Held läuft durch Gegner, Gegner bleiben an seinem Rand stehen.
@@ -377,7 +377,7 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 ### M7 – Wellen & Run-Ende
 
 - Wellen-Timer (z. B. 60 s) mit Anzeige, z. B. „Welle 3 / 10“. Die Gegner werden pro Welle stärker und zahlreicher.
-- **Kamera:** `RunCamera.reset_wave()` beim Wave-Start, Zoomdruck und Zoomstufen aus den Wellen-Daten (siehe Grundsatzentscheidung 2).
+- **Kamera:** `RunCamera.reset_wave()` beim Wave-Start (zurück auf 3×). Zoomstufen und Grenze von 50 Gegnern bleiben fest (siehe Grundsatzentscheidung 2).
 - **Spawn-Muster:** Neben zufälligen Spawns gibt es Formationen wie Ringe und Einkesselung. Sie werden mathematisch berechnet
   und in den Wellen-Dateien (`Resource`) festgelegt, nicht im Code.
 - Zwischen den Wellen gibt es einen Platzhalter-Rastplatz: eine Pause mit Wellen-Zusammenfassung und „Weiter“-Knopf.
@@ -582,7 +582,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 ## Offene Designfragen
 
 - ~~Sprite-Auflösung 16×16 oder 32×32~~ → **entschieden: 32×32, Figurengröße 1,5×** (siehe „Technische Grundentscheidungen“).
-  Offen: Lizenz des Pixellab-Skeletts prüfen und mit dem ersten fremden Asset `CREDITS.md` anlegen.
+  Offen: Lizenz der Pixellab-Assets (Skelett, Held) prüfen und mit dem ersten fremden Asset `CREDITS.md` anlegen.
   Ob die Figuren bei vielen Gegnern groß genug wirken, prüfen wir beim Testen. Feinwerte (Zoom, Geschwindigkeiten) beim Balancing.
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
   exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit

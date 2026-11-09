@@ -14,7 +14,7 @@ const SEPARATION_STRENGTH := 0.5
 ## Sekunden zwischen zwei Spawns (M3: fester Wert, ab M7 aus den Wellen)
 const SPAWN_INTERVAL := 0.5
 ## Maximal gleichzeitig lebende Gegner (M3: fester Wert, ab M7 aus den Wellen)
-const MAX_ALIVE := 60
+const MAX_ALIVE := 120
 ## So weit außerhalb des sichtbaren Bereichs erscheinen neue Gegner (Welt-Pixel)
 const SPAWN_MARGIN := 32.0
 const SPAWN_ATTEMPTS := 8
