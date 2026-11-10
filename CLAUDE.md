@@ -38,7 +38,8 @@ Der aktuelle Plan steht in PLAN.md, halte ihn aktuell.
 
 ## Android-Export
 - Bereits eingerichtet in `export_presets.cfg`, Paketname `com.slydee23.bulletheaven`
-- `export_presets.cfg` **nicht verändern**
+- `export_presets.cfg` darf bei Bedarf geändert werden (z. B. Berechtigungen wie VIBRATE). Jede Änderung dem Nutzer nennen,
+  keine Passwörter oder Keystore-Daten eintragen (die gehören in `export_credentials.cfg`)
 - Android-SDK: `D:\Android\SDK`, JDK 17 ist installiert
 - Keystores, `export_credentials.cfg`, `*.apk` und `*.aab` gehören nicht ins Repo (siehe `.gitignore`)
 

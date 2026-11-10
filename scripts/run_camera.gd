@@ -9,6 +9,12 @@ const ZOOM_NEAR := 3.0
 const ZOOM_FAR := 2.0
 ## Wie schnell sich der Zoom dem Ziel nähert (klein = langsam und weich)
 const ZOOM_SPEED := 0.4
+## Bildschirmwackeln: größter Versatz in Welt-Pixeln (bei Zoom 3× also 12 Bildschirmpixel)
+const SHAKE_MAX_OFFSET := 4.0
+## Kleinster Versatz, solange es wackelt. Sonst runden leichte Treffer auf 0 Pixel und man sieht nichts.
+const SHAKE_MIN_OFFSET := 1.5
+## So schnell klingt das Wackeln ab (Stärke pro Sekunde, 1.0 → 0 in ca. 0,3 s)
+const SHAKE_DECAY := 3.3
 
 var zoom_near := ZOOM_NEAR
 var zoom_far := ZOOM_FAR
@@ -20,12 +26,31 @@ var pressure := 0.0
 
 ## Höchster Druck der aktuellen Wave
 var _peak := 0.0
+## Aktuelle Wackel-Stärke 0..1 (fällt mit der Zeit auf 0)
+var _trauma := 0.0
 
 
 func _process(delta: float) -> void:
 	if dynamic:
 		_peak = maxf(_peak, clampf(pressure, 0.0, 1.0))
 	zoom = zoom.lerp(Vector2.ONE * _target_zoom(), 1.0 - exp(-ZOOM_SPEED * delta))
+	_update_shake(delta)
+
+
+## Lässt das Bild kurz wackeln. strength 0..1, mehrere Treffer kurz hintereinander addieren sich (bis 1).
+func shake(strength: float) -> void:
+	_trauma = minf(_trauma + strength, 1.0)
+
+
+func _update_shake(delta: float) -> void:
+	if _trauma <= 0.0:
+		offset = Vector2.ZERO
+		return
+	_trauma = maxf(_trauma - SHAKE_DECAY * delta, 0.0)
+	# Quadratisch: Starke Treffer wackeln deutlich mehr als schwache
+	var amount := lerpf(SHAKE_MIN_OFFSET, SHAKE_MAX_OFFSET, _trauma * _trauma)
+	# Ganze Pixel, damit die Pixel-Art scharf bleibt
+	offset = Vector2(randf_range(-amount, amount), randf_range(-amount, amount)).round()
 
 
 ## Springt sofort auf den Zielzoom (z. B. beim Run-Start), statt langsam dorthin zu zoomen.

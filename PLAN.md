@@ -334,7 +334,7 @@ Umsetzung in Teilschritten: M3a Gegner erscheinen und verfolgen (EnemyManager, G
 M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) → M3a++ dynamischer Zoom →
 M3a+++ Debug-Knopf direkt im Run, Option „Spiel weiterlaufen lassen“ →
 M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3b+ I-Frames nach Schaden (`IFrameRule`), Selbstschaden →
-Vergleichstest 16×16 / 32×32 → Umstellung auf 32×32 → neues Heldenmodell (Pixellab), vorübergehend max. 120 Gegner → M3c Bildschirmwackeln + Vibration (Optionen, Berechtigung vorher fragen) →
+Vergleichstest 16×16 / 32×32 → Umstellung auf 32×32 → neues Heldenmodell (Pixellab), vorübergehend max. 120 Gegner → Optionsmenü mit Kategorie-Reitern → M3c Bildschirmwackeln + Vibration (erledigt) →
 M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-Animation des Helden (`hero_hit`, `hero_death`).
 
 - Kontaktschaden nach „Grundsatzentscheidungen“ Punkt 5: Der Held läuft durch Gegner, Gegner bleiben an seinem Rand stehen.
@@ -344,7 +344,11 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 - Bei Berührung nimmt der Held Schaden. Es gibt eine Lebensleiste, und bei 0 HP kommt ein Game-Over-Bildschirm mit den Knöpfen „Nochmal“ und „Hauptmenü“.
 - **Lebensleiste über dem Helden** (Option „Lebensleiste Spieler“ an/aus).
 - **Treffer-Feedback beim Helden:** kurzes Bildschirmwackeln und Vibration (Optionen „Bildschirmwackeln“ und „Vibration“).
-  Für Vibration braucht der Android-Export die Berechtigung VIBRATE. Das ist eine Änderung an `export_presets.cfg`, vorher fragen.
+  Stärke nach Trefferanteil an den max. HP (Wackeln über `RunCamera.shake()` mit 1,5–4 Welt-Pixeln, damit auch leichte Treffer sichtbar wackeln; Vibration 40–120 ms). Selbstschaden löst nichts aus.
+  Die Android-Berechtigung VIBRATE ist in `export_presets.cfg` gesetzt.
+  Vibriert wird über `scripts/haptics.gd`: Ab Android 13 direkt über die Android-Vibration mit der Kategorie „Medien“.
+  Godots `Input.vibrate_handheld` zählt als Touch-Feedback und wird auf Handys mit ausgeschalteter Touch-Vibration verworfen
+  (am Redmi getestet). Ältere Android-Versionen und der PC nutzen weiter den Godot-Weg.
 - Statusbildschirm zeigt HP.
 - FPS-Anzeige in der Ecke.
 - **Am Handy testen:** Die Gegner kommen von außen herein und verfolgen dich. Du verlierst Leben, Game Over und Neustart funktionieren.
@@ -505,18 +509,23 @@ Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) 
 Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeichert.
 **Regel: Jede Option kommt im selben Meilenstein wie das Feature, das sie steuert.**
 
+- **Kategorien als Reiter oben.** Alle Kategorien und Optionen stehen nur in `scripts/options_catalog.gd`. Das Menü baut
+  Reiter und Zeilen daraus selbst (Typen: An/Aus, Auswahl-Knöpfe, Schieberegler, siehe `scripts/option_def.gd`).
+  Kategorie hinzufügen, verschieben oder löschen heißt also eine Zeile im Katalog ändern. Kategorien ohne Optionen werden ausgeblendet.
+- Kategorien: Steuerung, Anzeige, Grafik, Audio, Allgemein.
+
 | Bereich | Option | Kommt in |
 | --- | --- | --- |
 | Steuerung | Joystick-Modus (Floating / Fest) | M2 |
 | Steuerung | Joystick-Seite (Links / Rechts / Beide) | M2 |
 | Steuerung | Joystick-Transparenz (Schieberegler) | M2 |
+| Steuerung | Vibration an/aus | M3 |
 | Anzeige | Lebensleiste Spieler an/aus | M3 |
 | Anzeige | Bildschirmwackeln an/aus | M3 |
-| Anzeige | Vibration an/aus | M3 |
 | Anzeige | Schadenszahlen an/aus | M4 |
 | Anzeige | Lebensleisten Gegner an/aus | M4 |
 | Audio | Lautstärke Gesamt / Musik / Effekte | E2 |
-| Sprache | Deutsch / Englisch | E14 |
+| Allgemein | Sprache Deutsch / Englisch | E14 |
 | Steuerung | Joystick-Größe | E15 |
 | Grafik | FPS-Limit 30 / 60 / 120 | E15 |
 

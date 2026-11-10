@@ -7,6 +7,7 @@ signal closed
 
 const PixelUI := preload("res://scripts/pixel_ui.gd")
 ## Testknöpfe: Anteil der maximalen HP
+const TEST_SMALL_HIT_SHARE := 0.05
 const TEST_HIT_SHARE := 0.2
 const TEST_SELF_DAMAGE_SHARE := 0.1
 
@@ -28,6 +29,7 @@ var _shown_iframes := -1.0
 @onready var iframe_share_slider: HSlider = %IFrameShareSlider
 @onready var iframe_share_value: Label = %IFrameShareValue
 @onready var iframe_last_label: Label = %IFrameLastLabel
+@onready var test_small_hit_button: Button = %TestSmallHitButton
 @onready var test_hit_button: Button = %TestHitButton
 @onready var test_self_damage_button: Button = %TestSelfDamageButton
 @onready var iframe_reset_button: Button = %IFrameResetButton
@@ -58,7 +60,8 @@ func _ready() -> void:
 	iframe_max_slider.value_changed.connect(_on_iframe_max_changed)
 	iframe_share_slider.value_changed.connect(_on_iframe_slider_changed)
 
-	test_hit_button.pressed.connect(_on_test_hit_pressed)
+	test_small_hit_button.pressed.connect(_on_test_hit_pressed.bind(TEST_SMALL_HIT_SHARE))
+	test_hit_button.pressed.connect(_on_test_hit_pressed.bind(TEST_HIT_SHARE))
 	test_self_damage_button.pressed.connect(_on_test_self_damage_pressed)
 	iframe_reset_button.pressed.connect(_on_iframe_reset_pressed)
 	back_button.pressed.connect(close)
@@ -107,8 +110,8 @@ func _on_iframe_slider_changed(_value: float) -> void:
 	_show_iframe_rule()
 
 
-func _on_test_hit_pressed() -> void:
-	player.take_damage(player.max_hp * TEST_HIT_SHARE)
+func _on_test_hit_pressed(share: float) -> void:
+	player.take_damage(player.max_hp * share)
 
 
 func _on_test_self_damage_pressed() -> void:

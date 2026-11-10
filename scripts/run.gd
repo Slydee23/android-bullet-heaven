@@ -30,6 +30,17 @@ const SKELETON := preload("res://data/enemies/skeleton.tres")
 const ZOOM_FULL_ENEMIES := 50
 ## Wie oft die FPS-Anzeige aktualisiert wird (Sekunden)
 const FPS_UPDATE_INTERVAL := 0.5
+## Treffer-Feedback: Mindeststärke (kleine Treffer) und wie stark der Trefferanteil an max_hp dazukommt
+## (5 % Treffer → 0,43 leicht, 20 % Treffer → 0,95 kräftig)
+const HIT_FEEDBACK_MIN := 0.25
+const HIT_FEEDBACK_PER_SHARE := 3.5
+## Vibrationsdauer in Millisekunden für schwache bzw. stärkste Treffer
+const VIBRATION_MIN_MS := 40
+const VIBRATION_MAX_MS := 120
+## Vibrationsstärke 0..1 für schwache bzw. stärkste Treffer (nur Handys, die die Stärke regeln können).
+## -1 = Standard-Stärke des Handys. Zum Vergleich getestet: 0,7 bis 1,0 bei 60–150 ms.
+const VIBRATION_MIN_AMPLITUDE := -1.0
+const VIBRATION_MAX_AMPLITUDE := -1.0
 
 var _pause_menu: Control
 var _debug_menu: DebugMenu
@@ -64,6 +75,7 @@ func _ready() -> void:
 	player.position = walkable.get_center()
 	player.joystick = joystick
 	player.died.connect(_on_player_died)
+	player.damaged.connect(_on_player_damaged)
 
 	enemy_manager.set_bounds(player.bounds)
 	enemy_manager.target = player
@@ -122,6 +134,16 @@ func _on_player_died() -> void:
 	_game_over = true
 	# Das Pausemenü kann hier nicht offen sein: Bei Pause greift niemand an
 	hud.add_child(GAME_OVER_MENU.instantiate())
+
+
+## Treffer-Feedback: Bild wackeln und Handy vibrieren lassen, je nach Optionen. Große Treffer wirken stärker.
+func _on_player_damaged(amount: float) -> void:
+	var strength := clampf(HIT_FEEDBACK_MIN + amount / player.max_hp * HIT_FEEDBACK_PER_SHARE, HIT_FEEDBACK_MIN, 1.0)
+	if Settings.screen_shake:
+		camera.shake(strength)
+	if Settings.vibration:
+		Haptics.vibrate(roundi(lerpf(VIBRATION_MIN_MS, VIBRATION_MAX_MS, strength)),
+				lerpf(VIBRATION_MIN_AMPLITUDE, VIBRATION_MAX_AMPLITUDE, strength))
 
 
 func _on_pause_menu_closed() -> void:

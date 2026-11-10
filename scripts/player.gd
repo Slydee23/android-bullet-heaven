@@ -5,6 +5,8 @@ extends Node2D
 ## Die Position des Nodes sind die Füße (Low Top-Down): Dort sitzt auch der Kollisionskreis.
 
 signal died
+## Ein Treffer hat gezählt (nicht bei Selbstschaden). Die Run-Szene löst damit Wackeln und Vibration aus.
+signal damaged(amount: float)
 
 ## Breite eines Animationsframes im Spritesheet (Pixel)
 const FRAME_WIDTH := 32
@@ -65,6 +67,7 @@ func take_damage(amount: float) -> bool:
 	_invulnerable_left = last_iframe_duration
 	_hit_flash_left = HIT_FLASH_TIME
 	_set_hp(maxf(hp - amount, 0.0))
+	damaged.emit(amount)
 	if hp <= 0.0:
 		died.emit()
 	return true
