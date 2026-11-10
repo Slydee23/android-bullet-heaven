@@ -2,12 +2,6 @@
 
 [ext_resource type="Script" path="res://scripts/options_menu.gd" id="1_script"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_mode"]
-
-[sub_resource type="ButtonGroup" id="ButtonGroup_side"]
-
-[sub_resource type="ButtonGroup" id="ButtonGroup_health_bar"]
-
 [node name="OptionsMenu" type="Control"]
 process_mode = 3
 layout_mode = 3
@@ -48,137 +42,29 @@ theme_override_font_sizes/font_size = 56
 text = "OPTIONS_TITLE"
 horizontal_alignment = 1
 
-[node name="ControlsHeader" type="Label" parent="Center/Panel/Content"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
-theme_override_font_sizes/font_size = 40
-text = "OPTIONS_SECTION_CONTROLS"
-
-[node name="Grid" type="GridContainer" parent="Center/Panel/Content"]
-layout_mode = 2
-theme_override_constants/h_separation = 40
-theme_override_constants/v_separation = 20
-columns = 2
-
-[node name="ModeLabel" type="Label" parent="Center/Panel/Content/Grid"]
-layout_mode = 2
-text = "OPTIONS_JOYSTICK_MODE"
-
-[node name="ModeButtons" type="HBoxContainer" parent="Center/Panel/Content/Grid"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="FloatingButton" type="Button" parent="Center/Panel/Content/Grid/ModeButtons"]
+[node name="Tabs" type="HBoxContainer" parent="Center/Panel/Content"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_mode")
-text = "OPTIONS_JOYSTICK_FLOATING"
+theme_override_constants/separation = 24
+alignment = 1
 
-[node name="FixedButton" type="Button" parent="Center/Panel/Content/Grid/ModeButtons"]
+[node name="Scroll" type="ScrollContainer" parent="Center/Panel/Content"]
+custom_minimum_size = Vector2(1240, 470)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Grid" type="GridContainer" parent="Center/Panel/Content/Scroll"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_mode")
-text = "OPTIONS_JOYSTICK_FIXED"
-
-[node name="SideLabel" type="Label" parent="Center/Panel/Content/Grid"]
-layout_mode = 2
-text = "OPTIONS_JOYSTICK_SIDE"
-
-[node name="SideButtons" type="HBoxContainer" parent="Center/Panel/Content/Grid"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="LeftButton" type="Button" parent="Center/Panel/Content/Grid/SideButtons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(170, 0)
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_side")
-text = "OPTIONS_SIDE_LEFT"
-
-[node name="RightButton" type="Button" parent="Center/Panel/Content/Grid/SideButtons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(170, 0)
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_side")
-text = "OPTIONS_SIDE_RIGHT"
-
-[node name="BothButton" type="Button" parent="Center/Panel/Content/Grid/SideButtons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(170, 0)
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_side")
-text = "OPTIONS_SIDE_BOTH"
-
-[node name="OpacityLabel" type="Label" parent="Center/Panel/Content/Grid"]
-layout_mode = 2
-text = "OPTIONS_JOYSTICK_OPACITY"
-
-[node name="OpacityRow" type="HBoxContainer" parent="Center/Panel/Content/Grid"]
-layout_mode = 2
-theme_override_constants/separation = 32
-
-[node name="OpacitySlider" type="HSlider" parent="Center/Panel/Content/Grid/OpacityRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 4
-max_value = 80.0
-step = 5.0
-
-[node name="OpacityValue" type="Label" parent="Center/Panel/Content/Grid/OpacityRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "0 %"
-horizontal_alignment = 2
-
-[node name="DisplayHeader" type="Label" parent="Center/Panel/Content"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
-theme_override_font_sizes/font_size = 40
-text = "OPTIONS_SECTION_DISPLAY"
-
-[node name="DisplayGrid" type="GridContainer" parent="Center/Panel/Content"]
-layout_mode = 2
-theme_override_constants/h_separation = 40
-theme_override_constants/v_separation = 20
+theme_override_constants/h_separation = 48
+theme_override_constants/v_separation = 28
 columns = 2
-
-[node name="HealthBarLabel" type="Label" parent="Center/Panel/Content/DisplayGrid"]
-layout_mode = 2
-text = "OPTIONS_PLAYER_HEALTH_BAR"
-
-[node name="HealthBarButtons" type="HBoxContainer" parent="Center/Panel/Content/DisplayGrid"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="HealthBarOnButton" type="Button" parent="Center/Panel/Content/DisplayGrid/HealthBarButtons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_health_bar")
-text = "OPTIONS_ON"
-
-[node name="HealthBarOffButton" type="Button" parent="Center/Panel/Content/DisplayGrid/HealthBarButtons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_health_bar")
-text = "OPTIONS_OFF"
 
 [node name="BackButton" type="Button" parent="Center/Panel/Content"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(320, 88)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 40
 text = "BUTTON_BACK"

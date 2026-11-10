@@ -25,6 +25,13 @@ var joystick_mode := JoystickMode.FLOATING
 var joystick_side := JoystickSide.BOTH
 ## Deckkraft des Joysticks, 0.2..1.0
 var joystick_opacity := 1.0
+## Transparenz in Prozent (0 % = voll sichtbar), wie sie der Regler im Optionsmenü zeigt.
+## Rechnet nur um: Gespeichert wird joystick_opacity.
+var joystick_transparency: float:
+	get:
+		return roundf((1.0 - joystick_opacity) * 100.0)
+	set(value):
+		joystick_opacity = clampf(1.0 - value / 100.0, MIN_JOYSTICK_OPACITY, 1.0)
 ## Nur Testwert (Debug-Menü), bis der Zoom entschieden ist
 var camera_zoom_mode := CameraZoomMode.DYNAMIC
 ## Nur Testwert (Debug-Menü): Spiel läuft weiter, während das Debug-Menü offen ist
@@ -34,6 +41,10 @@ var debug_iframe_min := IFRAME_NOT_SET
 var debug_iframe_max := IFRAME_NOT_SET
 var debug_iframe_share := IFRAME_NOT_SET
 var show_player_health_bar := true
+## Treffer-Feedback: Bild wackelt kurz
+var screen_shake := true
+## Treffer-Feedback: Handy vibriert (am PC ohne Wirkung)
+var vibration := true
 
 
 func _ready() -> void:
@@ -50,9 +61,7 @@ func load_settings() -> void:
 	var side: int = config.get_value("controls", "joystick_side", joystick_side)
 	if side in JoystickSide.values():
 		joystick_side = side as JoystickSide
-	# Fester Joystick braucht eine eindeutige Seite
-	if joystick_mode == JoystickMode.FIXED and joystick_side == JoystickSide.BOTH:
-		joystick_side = JoystickSide.LEFT
+	_sanitize()
 	var opacity: float = config.get_value("controls", "joystick_opacity", joystick_opacity)
 	joystick_opacity = clampf(opacity, MIN_JOYSTICK_OPACITY, 1.0)
 	var zoom_mode: int = config.get_value("debug", "camera_zoom_mode", camera_zoom_mode)
@@ -67,6 +76,10 @@ func load_settings() -> void:
 		_store_debug_iframes(iframe_min, iframe_max, iframe_share)
 	var health_bar: bool = config.get_value("display", "player_health_bar", show_player_health_bar)
 	show_player_health_bar = health_bar
+	var shake: bool = config.get_value("display", "screen_shake", screen_shake)
+	screen_shake = shake
+	var vibrate: bool = config.get_value("controls", "vibration", vibration)
+	vibration = vibrate
 
 
 func save_settings() -> void:
@@ -81,10 +94,27 @@ func save_settings() -> void:
 	config.set_value("debug", "iframe_max", debug_iframe_max)
 	config.set_value("debug", "iframe_share", debug_iframe_share)
 	config.set_value("display", "player_health_bar", show_player_health_bar)
+	config.set_value("display", "screen_shake", screen_shake)
+	config.set_value("controls", "vibration", vibration)
 	# Sicher schreiben: erst temporäre Datei, dann ersetzen
 	var temp_path := PATH + ".tmp"
 	if config.save(temp_path) == OK:
 		DirAccess.rename_absolute(temp_path, PATH)
+
+
+## Allgemeiner Setter für das Optionsmenü: setzt die Eigenschaft name (siehe OptionsCatalog).
+## persist = false: nur übernehmen, nicht speichern (z. B. während ein Schieberegler gezogen wird)
+func set_option(option_name: StringName, value: Variant, persist := true) -> void:
+	set(option_name, value)
+	_sanitize()
+	_apply(persist)
+
+
+## Ungültige Kombinationen korrigieren
+func _sanitize() -> void:
+	# Fester Joystick braucht eine eindeutige Seite
+	if joystick_mode == JoystickMode.FIXED and joystick_side == JoystickSide.BOTH:
+		joystick_side = JoystickSide.LEFT
 
 
 func set_joystick_mode(mode: JoystickMode) -> void:

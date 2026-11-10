@@ -1,52 +1,38 @@
 extends Control
 ## Optionsmenü: wird aus dem Hauptmenü und aus der Pause geöffnet und schließt sich selbst.
+## Reiter und Zeilen entstehen aus scripts/options_catalog.gd, hier steht keine einzelne Option fest im Code.
 
 signal closed
 
 const PixelUI := preload("res://scripts/pixel_ui.gd")
+## Größen der Elemente (der Inhaltsbereich selbst ist in options_menu.tscn festgelegt)
+const ROW_FONT_SIZE := 40
+const CHOICE_BUTTON_SIZE := Vector2(230.0, 88.0)
+const TAB_BUTTON_SIZE := Vector2(300.0, 88.0)
+const TAB_FONT_SIZE := 40
+const SLIDER_WIDTH := 520.0
+const SLIDER_HEIGHT := 88.0
+const SLIDER_VALUE_WIDTH := 130.0
+
+## Zuletzt geöffneter Reiter (bleibt gemerkt, solange die App läuft)
+static var _last_category: StringName = &""
 
 var _closing := false
+var _options: Array[OptionDef] = []
+## Aktualisiert die Anzeige der sichtbaren Zeilen nach einer Änderung (eine Funktion je Zeile)
+var _refreshers: Array[Callable] = []
 
-@onready var floating_button: Button = %FloatingButton
-@onready var fixed_button: Button = %FixedButton
-@onready var left_button: Button = %LeftButton
-@onready var right_button: Button = %RightButton
-@onready var both_button: Button = %BothButton
-@onready var opacity_slider: HSlider = %OpacitySlider
-@onready var opacity_value: Label = %OpacityValue
-@onready var health_bar_on_button: Button = %HealthBarOnButton
-@onready var health_bar_off_button: Button = %HealthBarOffButton
+@onready var tabs: HBoxContainer = %Tabs
+@onready var grid: GridContainer = %Grid
 @onready var back_button: Button = %BackButton
 
 
 func _ready() -> void:
 	theme = PixelUI.make_theme()
-
-	# Aktuelle Einstellungen anzeigen
-	floating_button.button_pressed = Settings.joystick_mode == Settings.JoystickMode.FLOATING
-	fixed_button.button_pressed = Settings.joystick_mode == Settings.JoystickMode.FIXED
-	left_button.button_pressed = Settings.joystick_side == Settings.JoystickSide.LEFT
-	right_button.button_pressed = Settings.joystick_side == Settings.JoystickSide.RIGHT
-	both_button.button_pressed = Settings.joystick_side == Settings.JoystickSide.BOTH
-	# Der Regler zeigt Transparenz (0 % = voll sichtbar), gespeichert wird die Deckkraft
-	opacity_slider.max_value = (1.0 - Settings.MIN_JOYSTICK_OPACITY) * 100.0
-	opacity_slider.value = (1.0 - Settings.joystick_opacity) * 100.0
-	_show_transparency(opacity_slider.value)
-	_update_side_buttons()
-
-	floating_button.pressed.connect(_on_mode_pressed.bind(Settings.JoystickMode.FLOATING))
-	fixed_button.pressed.connect(_on_mode_pressed.bind(Settings.JoystickMode.FIXED))
-	left_button.pressed.connect(Settings.set_joystick_side.bind(Settings.JoystickSide.LEFT))
-	right_button.pressed.connect(Settings.set_joystick_side.bind(Settings.JoystickSide.RIGHT))
-	both_button.pressed.connect(Settings.set_joystick_side.bind(Settings.JoystickSide.BOTH))
-	opacity_slider.value_changed.connect(_on_transparency_changed)
-	# Beim Ziehen nicht ständig speichern, erst beim Loslassen
-	opacity_slider.drag_ended.connect(func(_changed: bool) -> void: Settings.save_settings())
-	health_bar_on_button.button_pressed = Settings.show_player_health_bar
-	health_bar_off_button.button_pressed = not Settings.show_player_health_bar
-	health_bar_on_button.pressed.connect(Settings.set_show_player_health_bar.bind(true))
-	health_bar_off_button.pressed.connect(Settings.set_show_player_health_bar.bind(false))
+	_options = OptionsCatalog.options()
+	_build_tabs()
 	back_button.pressed.connect(close)
+	Settings.changed.connect(_refresh)
 
 
 func close() -> void:
@@ -65,23 +51,122 @@ func _unhandled_input(event: InputEvent) -> void:
 		close()
 
 
-func _on_mode_pressed(mode: Settings.JoystickMode) -> void:
-	# Ein fester Joystick braucht eine eindeutige Seite: aus „Beide“ wird „Links“
-	if mode == Settings.JoystickMode.FIXED and Settings.joystick_side == Settings.JoystickSide.BOTH:
-		Settings.joystick_side = Settings.JoystickSide.LEFT
-		left_button.button_pressed = true
-	Settings.set_joystick_mode(mode)
-	_update_side_buttons()
+# ---------- Reiter ----------
+
+func _build_tabs() -> void:
+	var group := ButtonGroup.new()
+	var first: StringName = &""
+	var selected: Button
+	for entry: Array in OptionsCatalog.CATEGORIES:
+		var category_id: StringName = entry[0]
+		if not _has_options(category_id):
+			continue  # leere Kategorien ausblenden
+		var button := _make_toggle_button(entry[1], TAB_BUTTON_SIZE, group)
+		button.add_theme_font_size_override("font_size", TAB_FONT_SIZE)
+		button.pressed.connect(_show_category.bind(category_id))
+		tabs.add_child(button)
+		if first.is_empty():
+			first = category_id
+			selected = button
+		if category_id == _last_category:
+			selected = button
+	if selected == null:
+		return
+	selected.button_pressed = true
+	_show_category(_last_category if _has_options(_last_category) else first)
 
 
-func _update_side_buttons() -> void:
-	both_button.disabled = Settings.joystick_mode == Settings.JoystickMode.FIXED
+func _has_options(category_id: StringName) -> bool:
+	for option in _options:
+		if option.category == category_id:
+			return true
+	return false
 
 
-func _on_transparency_changed(value: float) -> void:
-	Settings.set_joystick_opacity(1.0 - value / 100.0, false)
-	_show_transparency(value)
+func _show_category(category_id: StringName) -> void:
+	_last_category = category_id
+	_refreshers.clear()
+	for child in grid.get_children():
+		grid.remove_child(child)
+		child.queue_free()
+	for option in _options:
+		if option.category != category_id:
+			continue
+		var label := Label.new()
+		label.text = option.label_key
+		# Beschriftung füllt die linke Spalte, die Bedienelemente stehen dadurch rechts
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.add_theme_font_size_override("font_size", ROW_FONT_SIZE)
+		grid.add_child(label)
+		match option.kind:
+			OptionDef.Kind.TOGGLE:
+				grid.add_child(_build_choices(option, [[true, "OPTIONS_ON"], [false, "OPTIONS_OFF"]]))
+			OptionDef.Kind.CHOICE:
+				grid.add_child(_build_choices(option, option.choices))
+			OptionDef.Kind.SLIDER:
+				grid.add_child(_build_slider(option))
+	_refresh()
 
 
-func _show_transparency(value: float) -> void:
-	opacity_value.text = "%d %%" % int(value)
+# ---------- Zeilen ----------
+
+func _build_choices(option: OptionDef, values: Array) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 16)
+	var group := ButtonGroup.new()
+	var buttons: Array[Button] = []
+	for entry: Array in values:
+		var value: Variant = entry[0]
+		var button := _make_toggle_button(entry[1], CHOICE_BUTTON_SIZE, group)
+		button.add_theme_font_size_override("font_size", ROW_FONT_SIZE)
+		button.pressed.connect(Settings.set_option.bind(option.setting, value))
+		row.add_child(button)
+		buttons.append(button)
+	_refreshers.append(func() -> void:
+		var current: Variant = Settings.get(option.setting)
+		for i in buttons.size():
+			var value: Variant = values[i][0]
+			buttons[i].set_pressed_no_signal(value == current)
+			buttons[i].disabled = option.is_choice_disabled.is_valid() and option.is_choice_disabled.call(value)
+	)
+	return row
+
+
+func _build_slider(option: OptionDef) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 32)
+	var slider := HSlider.new()
+	slider.custom_minimum_size = Vector2(SLIDER_WIDTH, SLIDER_HEIGHT)
+	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	slider.min_value = option.min_value
+	slider.max_value = option.max_value
+	slider.step = option.step
+	var value_label := Label.new()
+	value_label.custom_minimum_size = Vector2(SLIDER_VALUE_WIDTH, 0.0)
+	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	value_label.add_theme_font_size_override("font_size", ROW_FONT_SIZE)
+	row.add_child(slider)
+	row.add_child(value_label)
+	# Beim Ziehen nicht ständig speichern, erst beim Loslassen
+	slider.value_changed.connect(func(value: float) -> void: Settings.set_option(option.setting, value, false))
+	slider.drag_ended.connect(func(_changed: bool) -> void: Settings.save_settings())
+	_refreshers.append(func() -> void:
+		var current: float = Settings.get(option.setting)
+		slider.set_value_no_signal(current)
+		value_label.text = option.value_format % current
+	)
+	return row
+
+
+func _make_toggle_button(text_key: String, min_size: Vector2, group: ButtonGroup) -> Button:
+	var button := Button.new()
+	button.text = text_key
+	button.toggle_mode = true
+	button.button_group = group
+	button.custom_minimum_size = min_size
+	return button
+
+
+func _refresh() -> void:
+	for refresher in _refreshers:
+		refresher.call()
