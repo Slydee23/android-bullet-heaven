@@ -232,7 +232,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/button.png` | 16×16 (9-Slice) | 1 | M1 |
 | `assets/sprites/characters/hero_idle.png` | 32×32, Blick nach Osten (Pixellab) | 1 (später gern Atem-Animation, beliebig viele) | M1 |
 | `assets/sprites/characters/hero_run.png` | 32×32, Blick nach Osten (Pixellab) | 8 (beliebig) | M1 |
-| `assets/tiles/forest_ground.png` | **Nahtloses Bodenmuster** aus 32×32-Kacheln (jetzt 256×256 = 8×8 Kacheln). Jede Zelle nimmt die Kachel an ihrer Position im Muster. Beliebig groß, solange Breite und Höhe Vielfache von 32 sind und das Bild als Ganzes nahtlos ist | 1 Muster | M1 |
+| `assets/tiles/forest_ground.png` | **Nahtloses Bodenmuster** aus 32×32-Kacheln (jetzt 512×512 = 16×16 Kacheln, ca. 15 % Erdflecken mit verzerrten, unregelmäßigen Formen). Jede Zelle nimmt die Kachel an ihrer Position im Muster, das Muster wird pro Run zufällig verschoben. Beliebig groß, solange Breite und Höhe Vielfache von 32 sind und das Bild als Ganzes nahtlos ist | 1 Muster | M1 |
 | `assets/tiles/forest_ground_details.png` | Reihe transparenter 32×32-Details (Steine, Laub, Pilze, Blumen …), zufällig auf ca. 10 % der Kacheln | beliebig viele | M3 |
 | `assets/tiles/forest_canopy.png` | Nahtloses, dichtes Kronendach aus 32×32-Kacheln (jetzt 128×128), füllt alles außerhalb der begehbaren Fläche | 1 Muster | M3 |
 | `assets/tiles/forest_edge.png` | Reihe transparenter 32×32-Waldrand-Stücke, Fußpunkt unten Mitte. Feste Reihenfolge: 0–3 Kronen, 4–5 Büsche, 6–7 Bäume mit Stamm (oberer Rand), 8 Schattenverlauf | 9 | M3 |

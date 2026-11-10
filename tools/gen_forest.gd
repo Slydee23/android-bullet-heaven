@@ -7,8 +7,13 @@ const OUT := "res://assets/tiles/"
 const PREVIEW := "user://forest_preview/"
 const PROJ := "res://"
 const S := 128  # Kronendach: 4×4 Tiles
-const G := 256  # Boden: 8×8 Tiles (Wiederholung erst alle 256 px)
+const G := 512  # Boden: 16×16 Tiles (Wiederholung erst alle 512 px)
 var ns := S  # aktuelle Rauschgröße
+## Anteil der Bodenfläche, der Erde statt Moos ist (0,15 = 15 %). Die Schwelle wird daraus berechnet.
+const SOIL_SHARE := 0.15
+## Wie stark die Fleckformen verzerrt werden (in Pixeln): größer = wildere, ausgefranste Flecken
+const WARP_PX := 28.0
+var soil_pixels := 0
 
 # Palette
 var SOIL := [Color.html("#251c16"), Color.html("#33271d"), Color.html("#443426")]
@@ -26,15 +31,20 @@ var lattices := {}
 
 func _init() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(PREVIEW))
+	# Jede Textur hat ihren eigenen festen Zufallswert: Eine Änderung an einer verändert die anderen nicht
 	rng.seed = 23
 	var ground := _ground()
 	ground.save_png(OUT + "forest_ground.png")
+	rng.seed = 24
 	var details := _details()
 	details.save_png(OUT + "forest_ground_details.png")
+	rng.seed = 25
 	var canopy := _canopy()
 	canopy.save_png(OUT + "forest_canopy.png")
+	rng.seed = 26
 	var edge := _edge()
 	edge.save_png(OUT + "forest_edge.png")
+	rng.seed = 27
 	_preview(ground, details, canopy, edge)
 	print("ok")
 	quit()
@@ -89,20 +99,40 @@ func _ground() -> Image:
 	var moss := []
 	moss.resize(G * G)
 	var rim: Color = MOSS[2].lerp(MOSS[3], 0.45)
+	# 1. Rauschwerte mit verzerrten Koordinaten (Domain Warping): bricht runde, rasterförmige Blobs auf
+	var values := PackedFloat32Array()
+	values.resize(G * G)
 	for y in G:
 		for x in G:
-			var m := 0.4 * _noise(x, y, 4, 1) + 0.3 * _noise(x, y, 8, 2) + 0.2 * _noise(x, y, 16, 3) + 0.1 * _noise(x, y, 32, 5)
-			var t := _noise(x, y, 64, 4) - 0.5
-			var is_moss := m > 0.42
+			var wx := (_noise(x, y, 8, 11) - 0.5) * 2.0 * WARP_PX + (_noise(x, y, 32, 13) - 0.5) * WARP_PX * 0.5
+			var wy := (_noise(x, y, 8, 12) - 0.5) * 2.0 * WARP_PX + (_noise(x, y, 32, 14) - 0.5) * WARP_PX * 0.5
+			var px := x + wx
+			var py := y + wy
+			var m := 0.4 * _noise(px, py, 8, 1) + 0.3 * _noise(px, py, 16, 2) + 0.2 * _noise(px, py, 32, 3) + 0.1 * _noise(px, py, 64, 5)
+			# kleines Pixelrauschen: ausgefranste statt glatter Ränder
+			values[y * G + x] = m + (rng.randf() - 0.5) * 0.025
+	# 2. Schwelle so wählen, dass genau SOIL_SHARE der Fläche Erde ist
+	var sorted := values.duplicate()
+	sorted.sort()
+	var soil_threshold := sorted[int(SOIL_SHARE * sorted.size())]
+	for y in G:
+		for x in G:
+			var m := values[y * G + x]
+			var t := _noise(x, y, 128, 4) - 0.5
+			var is_moss := m > soil_threshold
 			moss[y * G + x] = is_moss
+			if not is_moss:
+				soil_pixels += 1
 			var c: Color
 			if is_moss:
 				var v := m + t * 0.16
 				c = MOSS[2] if v > 0.6 else (MOSS[1] if v > 0.49 else MOSS[0])
 			else:
+				# Erdflecken: innen dunkler, zum Moos hin heller
 				var v := m + t * 0.12
-				c = SOIL[2] if v > 0.38 else (SOIL[1] if v > 0.3 else SOIL[0])
+				c = SOIL[2] if v > soil_threshold - 0.04 else (SOIL[1] if v > soil_threshold - 0.12 else SOIL[0])
 			img.set_pixel(x, y, c)
+	print("Erdanteil Boden: %d %%" % roundi(100.0 * soil_pixels / (G * G)))
 	# Kanten: Moos-Oberkante etwas heller, Erde unter dem Moos im Schatten
 	for y in G:
 		for x in G:
@@ -113,7 +143,7 @@ func _ground() -> Image:
 			elif not here and above:
 				img.set_pixel(x, y, SOIL[0])
 	# Grasbüschel (vor allem auf Moos)
-	for i in 560:
+	for i in 560 * 4:  # Fläche ×4 gegenüber früher 256 px
 		var x := rng.randi_range(0, G - 1)
 		var y := rng.randi_range(0, G - 1)
 		var on_moss: bool = moss[y * G + x]
@@ -121,7 +151,7 @@ func _ground() -> Image:
 			continue
 		_tuft(img, x, y, rng.randi_range(2, 3))
 	# Steinchen und Zweigreste auf der Erde
-	for i in 220:
+	for i in 220 * 4:
 		var x := rng.randi_range(0, G - 1)
 		var y := rng.randi_range(0, G - 1)
 		if moss[y * G + x]:

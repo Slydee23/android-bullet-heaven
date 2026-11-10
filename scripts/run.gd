@@ -193,15 +193,17 @@ func _is_walkable_cell(cell: Vector2i) -> bool:
 
 
 ## Boden als nahtloses Muster: Jede Zelle nimmt die Kachel an ihrer Position im Muster, dazu zufällige Details.
+## Das Muster wird pro Run zufällig verschoben, damit jede Expedition etwas anders aussieht (Nähte bleiben korrekt).
 func _build_ground(arena_tiles: Vector2i) -> void:
 	ground.tile_set = _make_tile_set(GROUND_TEXTURE)
 	var pattern := _tile_grid(GROUND_TEXTURE)
+	var shift := Vector2i(randi() % pattern.x, randi() % pattern.y)
 	ground_details.tile_set = _make_tile_set(GROUND_DETAILS_TEXTURE)
 	var detail_count := _tile_grid(GROUND_DETAILS_TEXTURE).x
 	for y in arena_tiles.y:
 		for x in arena_tiles.x:
 			var cell := Vector2i(x, y)
-			ground.set_cell(cell, 0, Vector2i(x % pattern.x, y % pattern.y))
+			ground.set_cell(cell, 0, Vector2i((x + shift.x) % pattern.x, (y + shift.y) % pattern.y))
 			if _is_walkable_cell(cell) and randf() < GROUND_DETAIL_SHARE:
 				ground_details.set_cell(cell, 0, Vector2i(randi() % detail_count, 0))
 
