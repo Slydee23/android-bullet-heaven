@@ -21,13 +21,18 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 
 - **Setting:** dunkle Fantasy. Die Runs sind Expeditionen zur Materialbeschaffung und Erkundung (z. B. ein Waldabschnitt).
 - **Meta:** Zwischen den Runs baut man ein altes Dorf wieder auf. Dort schaltet man Gebäude frei (Schmied,
-  Alchemist, Enchanter …), kauft permanente Upgrades und schaltet Charaktere, Waffen und Maps frei.
+  Alchemist, Enchanter …), kauft permanente Upgrades und schaltet Spezialfähigkeiten, Startwaffen und Maps frei.
+- **Ein spielbarer Held:** Es gibt nur den Hauptcharakter, keine Charakterauswahl. Abwechslung entsteht über
+  Spezialfähigkeiten und Startwaffen, die man im Dorf freischaltet und vor einer Expedition wählt.
 - **Rüstung:** RPG-Slots (Helm, Schultern, Brust …). Man kauft, verbessert und tauscht sie **nur zwischen den Runs**.
 - **Run:** Wellen mit Shop dazwischen (Brotato-Stil), 10 bis maximal 20 Minuten. Nach der letzten Welle eines
   Levels kann es optional im Endlos-Modus weitergehen.
-- **Kampf:** Angriffe laufen automatisch, dazu kommt eine **Spezialfähigkeit** (je nach Charakter oder durch Progression veränderbar).
+- **Kampf:** Angriffe laufen automatisch, dazu kommt eine **Spezialfähigkeit**. Neue Fähigkeiten schaltet man bei einem
+  NPC im Dorf frei, dort wählt man auch vor dem Run eine aus. Während des Runs ist sie fest.
 - **Waffen:** maximal 3. Das ist eine einzige Konstante im Code und lässt sich leicht auf 4 ändern. Bei Level-Up gibt es Waffen bzw. Waffen-Upgrades. Ab Waffenlevel 10 kann man die
   Waffe in 1 von 3 Varianten weiterentwickeln, später noch einmal in 1 von 3. Daraus ergeben sich 9 Endformen pro Waffe.
+- **Startwaffe:** Jeder Run beginnt mit **genau 1 Startwaffe** (das bleibt immer so). Am Anfang ist sie fest, weitere
+  Startwaffen werden im Laufe des Spiels freigeschaltet und vor der Expedition gewählt. Alle weiteren Waffen kommen über Level-Up.
 - **Welt:** feste Maps (begrenzte Arena, größer als der Bildschirm), die Kamera folgt der Figur.
 - **Steuerung:** Joystick Floating oder Fest, linke/rechte/beide Bildschirmseiten, einstellbare Transparenz.
 - **Grafik:** 2D Fantasy Pixel-Art. Die Platzhalter sind schon in Pixel-Optik, die echte Grafik folgt später.
@@ -53,6 +58,8 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 **Was die Lore im Spiel erklärt:**
 
 - Waffen gibt es **nur im Run**, sie erscheinen über die Level-Up-Auswahl. Waffen kann man nicht kaufen.
+- **Startwaffe:** Zu Beginn jeder Expedition materialisiert sich eine Waffe. Freigeschaltet wird nur, *welche* Waffe das ist.
+  Auch sie existiert nur im Run und verschwindet danach.
 - Nach jedem Run **sind alle Waffen weg**.
 - **Rüstung** ist keine Waffe und **bleibt erhalten**. Deshalb wird sie im Dorf gekauft, verbessert und getauscht.
 - Gegner sind Monster und Ungeheuer, keine anderen Völker.
@@ -93,6 +100,8 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
   Massenobjekte werden zentral gezeichnet. Menüs dürfen beim Öffnen erzeugt werden.
 - **Daten statt Code:** Waffen und Gegner werden als `Resource`-Dateien (`.tres`) beschrieben, mit Werten wie Schaden,
   Tempo und Sprite. Neue Waffen, Evolutionen und Rüstungen sind dann vor allem neue Datendateien.
+  Spezialfähigkeiten genauso: `SpecialAbilityData` in `data/abilities/` (ID, Name, Icon, Abklingzeit, Freischalt-Kosten),
+  automatisch geladen über ein Register wie bei den Materialien.
 - **Run-Zustand und dauerhafter Zustand getrennt:** Alles, was nur im Run gilt (Waffen, Level, XP, Artefakte,
   Magie-Schrott), liegt in einem eigenen `RunState`, der nach jedem Run gelöscht wird. Dauerhaftes (Rüstung, Dorf,
   Freischaltungen) kommt später in einen separaten Spielstand. So passt die Architektur von Anfang an zur Lore.
@@ -116,10 +125,11 @@ Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnum
 | Datei | Inhalt | Lebensdauer | Ab |
 | --- | --- | --- | --- |
 | `settings.cfg` | Optionen (Joystick, Anzeige, Audio, Sprache) | dauerhaft | M2 |
-| `run.save` | **Run-Spielstand:** Waffen + Level, Spielerlevel/XP, HP, Welle, Artefakte, Tränke, Magie-Schrott, im Run gesammelte Materialien, gespeicherte Shop-Angebote und Level-Up-Karten, Run-Statistik | nur während eines Runs | M8 |
-| `profile.save` | **Profil-Spielstand:** Dorf-Ausbau, Material-Lager, Rüstungsbesitz + angelegte Rüstung, Verzauberungen, permanente Upgrades, Freischaltungen, Quests, Gesamtstatistik | dauerhaft, wird nie durch einen Run gelöscht | E5 |
+| `run.save` | **Run-Spielstand:** Waffen + Level, Spielerlevel/XP, HP, Welle, Artefakte, Tränke, Magie-Schrott, im Run gesammelte Materialien, gespeicherte Shop-Angebote und Level-Up-Karten, Run-Statistik, gewählte Spezialfähigkeit und Startwaffe (IDs) | nur während eines Runs | M8 |
+| `profile.save` | **Profil-Spielstand:** Dorf-Ausbau, Material-Lager, Rüstungsbesitz + angelegte Rüstung, Verzauberungen, permanente Upgrades, Freischaltungen (u. a. freigeschaltete Spezialfähigkeiten und Startwaffen als IDs, dazu die jeweils gewählte), Quests, Gesamtstatistik | dauerhaft, wird nie durch einen Run gelöscht | E5 |
 
 - Der Run-Spielstand **liest** die angelegte Rüstung nur aus dem Profil (im Run kann man sie nicht tauschen) und schreibt nie hinein.
+  Genauso werden gewählte Spezialfähigkeit und Startwaffe beim Run-Start ins `run.save` kopiert und im Run nicht geändert.
 - **Belohnungsregeln:**
 
   | | Tod / Run aufgeben | Expedition erfolgreich |
@@ -348,6 +358,8 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 - Die Waffe ist als Resource-Datei angelegt (Grundlage für spätere Level und Evolutionen), mit **Zielmodus**
   (`NEAREST` für das Magiegeschoss) und Grundschaden.
 - Waffen sind ein eigener Baustein, den die Run-Szene dem Helden anhängt. `player.gd` bleibt waffenfrei.
+- Das Magiegeschoss ist die **feste Startwaffe**. Die Run-Szene liest dafür eine einzelne Startwaffen-ID (vorerst fest
+  vorgegeben), ohne Auswahl-Logik. Die Auswahl kommt mit E10.
 - **Schadenszahlen** über getroffenen Gegnern (Option „Schadenszahlen“), aus einem Pool.
 - **Lebensleisten über Gegnern** (Option „Lebensleisten Gegner“). Sie erscheinen nur bei bereits verletzten Gegnern und
   werden alle in einem einzigen Zeichenaufruf des EnemyManagers gezeichnet, nicht als eigene Nodes. Das ist wichtig für die Performance.
@@ -533,6 +545,8 @@ Die Stadt, die man nach und nach wieder aufbaut, ist ein **begehbarer Ort** und 
   geladen über den `SceneRouter`). Durch die Tür hinein, beim Hinausgehen steht man wieder vor der Tür (Spawn-Marker).
   Drinnen stehen NPCs bzw. Objekte, die die Menüs öffnen (z. B. Amboss beim Schmied, Lagertruhe im Haus). Ruinen sind nicht betretbar.
 - **NPCs als Daten** (`NpcData`): Dialog-Texte (Übersetzungs-Schlüssel), Bedingungen, was sie anbieten.
+- **NPC für Spezialfähigkeiten** (Platzhalter `[Lehrmeister]`, Gebäude noch offen): schaltet neue Spezialfähigkeiten frei
+  (Kosten stehen in den Fähigkeitsdaten) und lässt die aktive Fähigkeit wechseln. Wechseln geht nur hier, also vor einem Run.
 - **Interaktion:** In die Nähe laufen → ein Knopf („Sprechen“, „Betreten“ …) erscheint.
 - **Übergang zu Expeditionen:** Stadttor bzw. Expeditionstafel → Map-Auswahl → Run. Nach dem Run: Zusammenfassung → zurück in den Hub.
 - Der Hub hat nur wenige Objekte, die Performance-Regeln für Gegnermassen gelten dort nicht in derselben Strenge.
@@ -543,7 +557,8 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 
 1. **E1 – Rastplätze mit Händlern:** zufällige Händler (Tränke, Artefakte), Währung „Magie-Schrott“. Braucht Wellen (M7) und Speichern (M8).
 2. **E2 – Audio:** Musik und Soundeffekte, Lautstärke-Optionen.
-3. **E3 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm.
+3. **E3 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm. Eine erste Fähigkeit als Datendatei
+   (`SpecialAbilityData`), damit weitere ohne Code-Umbau dazukommen. Freischalten und Wechseln kommt erst mit E10.
 4. **E4 – Waffen-Evolutionen:** Level 10 → 1 von 3 Varianten → 2. Evolution → 1 von 3 = 9 Endformen.
 5. **E5 – Meta-Spielstand + Belohnungsbildschirm:** Profil-Spielstand (`profile.save`), Material-Register und erste Materialien
    aus Runs, volle Run-Zusammenfassung.
@@ -553,7 +568,9 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 7. **E7 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und über die Paperdoll anlegen, im Run ansehen.
 8. **E8 – Permanente Upgrades** über Dorf-Gebäude.
 9. **E9 – Questsystem:** Quest-Items und Questfortschritt, Anzeige im Belohnungsbildschirm.
-10. **E10 – Mehrere Charaktere** mit eigener Startwaffe und Spezialfähigkeit.
+10. **E10 – Spezialfähigkeiten und Startwaffen freischalten und wählen:** NPC `[Lehrmeister]` im Hub für Fähigkeiten,
+    Auswahl der Startwaffe vor der Expedition (Ort klären wir mit E6, z. B. Expeditionstafel). Mehrere Fähigkeiten und
+    Startwaffen, Speicherung im Profil. Braucht E3, E5 und E6b. (Ersetzt die frühere Idee „mehrere spielbare Charaktere“.)
 11. **E11 – Intro-Level / Tutorial:** Der Held erwacht im Wald, das erste Level bringt schrittweise die Grundlagen bei
     (die erste Waffe materialisiert sich in höchster Not). Am Ende entdeckt er die Dorf-Ruine, die zum Hub wird.
     Braucht Level-Up, Rastplatz, Spezialfähigkeit und den Hub. Den Inhalt besprechen wir vorher gemeinsam.
@@ -581,6 +598,8 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 - **Sichtbare Rüstung:** späteres Update, das angelegte Rüstung an der Spielfigur zeigt, mit Option an/aus.
 - **Rastplatz als begehbarer Ort:** Händler-Karawane als NPCs, die man ansprechen kann (nutzt die Hub-Interaktion).
 - **Frei verschiebbares HUD:** Der Spieler ordnet Anzeigen selbst an, ließe sich später als gespeichertes Layout ergänzen.
+- **Spezialfähigkeit im Run wechseln:** eventuell über einen besonderen Encounter zwischen zwei Wellen.
+  **Nicht entschieden**, deshalb nicht umsetzen und keine Systeme darauf ausrichten.
 
 ## UI-Überarbeitung (später)
 

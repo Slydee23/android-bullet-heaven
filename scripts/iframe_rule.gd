@@ -1,7 +1,7 @@
 class_name IFrameRule
 extends Resource
 ## Regel für die Unverwundbarkeit (I-Frames) nach einem Treffer: Schwere Treffer geben mehr Zeit zum Reagieren.
-## Formel und Grenzen liegen nur hier. Ein anderer Charakter oder Modus bekommt einfach eine eigene .tres-Datei.
+## Formel und Grenzen liegen nur hier. Ein anderer Modus (z. B. Endlos) bekommt einfach eine eigene .tres-Datei.
 
 ## Kürzeste Dauer in Sekunden, gilt für kleine Treffer
 @export var min_duration := 0.2
