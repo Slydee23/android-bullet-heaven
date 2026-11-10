@@ -39,6 +39,9 @@ var _attack_timers := PackedFloat32Array()
 var _grid_size := Vector2i.ONE
 var _cell_head := PackedInt32Array()
 var _cell_next := PackedInt32Array()
+## Sortierung nach Höhe: pro Pixelzeile der Arena eine Liste der Gegner, die dort stehen
+var _row_head := PackedInt32Array()
+var _row_next := PackedInt32Array()
 var _spawn_timer := 0.0
 var _time := 0.0
 
@@ -51,6 +54,7 @@ func _ready() -> void:
 	_flipped.resize(MAX_ENEMIES)
 	_attack_timers.resize(MAX_ENEMIES)
 	_cell_next.resize(MAX_ENEMIES)
+	_row_next.resize(MAX_ENEMIES)
 
 
 ## Bereich, den Gegner nicht verlassen (setzt die Run-Szene). Baut das Raster passend zur Arena.
@@ -58,6 +62,7 @@ func set_bounds(bounds: Rect2) -> void:
 	_bounds = bounds
 	_grid_size = Vector2i((bounds.size / CELL_SIZE).ceil()) + Vector2i.ONE
 	_cell_head.resize(_grid_size.x * _grid_size.y)
+	_row_head.resize(int(ceilf(bounds.size.y)) + 1)
 
 
 func spawn(data: EnemyData, pos: Vector2) -> void:
@@ -182,17 +187,32 @@ func _update_attack(i: int, data: EnemyData, in_range: bool, delta: float) -> vo
 		_attack_timers[i] = data.attack_interval
 
 
+## Zeichnet von oben nach unten: Wer weiter unten steht (näher an der Kamera), verdeckt die dahinter.
+## Sortiert wird pro Pixelzeile (Bucket-Sort mit verketteten Listen), ohne neue Arrays.
 func _draw() -> void:
+	_row_head.fill(-1)
+	var last_row := _row_head.size() - 1
 	for i in count:
-		var data := _type_list[_types[i]]
-		var texture := data.walk_texture
-		var frame_size := Vector2(data.frame_width, texture.get_height())
-		var frames := maxi(1, int(texture.get_width() / float(data.frame_width)))
-		var frame := int((_time + _anim_offsets[i]) * data.animation_fps) % frames
-		var source := Rect2(Vector2(frame * data.frame_width, 0), frame_size)
-		var flip_scale := Vector2(-1.0 if _flipped[i] else 1.0, 1.0) * data.draw_scale
-		draw_set_transform(_positions[i], 0.0, flip_scale)
-		# Die Position sind die Füße: Das Bild steht unten bündig darauf
-		var frame_rect := Rect2(Vector2(-frame_size.x * 0.5, 1.0 - frame_size.y), frame_size)
-		draw_texture_rect_region(texture, frame_rect, source)
+		var row := clampi(int(_positions[i].y - _bounds.position.y), 0, last_row)
+		_row_next[i] = _row_head[row]
+		_row_head[row] = i
+	for row in _row_head.size():
+		var i := _row_head[row]
+		while i != -1:
+			_draw_enemy(i)
+			i = _row_next[i]
 	draw_set_transform(Vector2.ZERO)
+
+
+func _draw_enemy(i: int) -> void:
+	var data := _type_list[_types[i]]
+	var texture := data.walk_texture
+	var frame_size := Vector2(data.frame_width, texture.get_height())
+	var frames := maxi(1, int(texture.get_width() / float(data.frame_width)))
+	var frame := int((_time + _anim_offsets[i]) * data.animation_fps) % frames
+	var source := Rect2(Vector2(frame * data.frame_width, 0), frame_size)
+	var flip_scale := Vector2(-1.0 if _flipped[i] else 1.0, 1.0) * data.draw_scale
+	draw_set_transform(_positions[i], 0.0, flip_scale)
+	# Die Position sind die Füße: Das Bild steht unten bündig darauf
+	var frame_rect := Rect2(Vector2(-frame_size.x * 0.5, 1.0 - frame_size.y), frame_size)
+	draw_texture_rect_region(texture, frame_rect, source)

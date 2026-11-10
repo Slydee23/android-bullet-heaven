@@ -7,6 +7,8 @@ extends Node2D
 signal died
 ## Ein Treffer hat gezählt (nicht bei Selbstschaden). Die Run-Szene löst damit Wackeln und Vibration aus.
 signal damaged(amount: float)
+## Die Tod-Animation ist durchgelaufen und der Held lag kurz da (danach kommt Game Over)
+signal death_animation_finished
 
 ## Breite eines Animationsframes im Spritesheet (Pixel)
 const FRAME_WIDTH := 32
@@ -18,9 +20,13 @@ const HIT_FLASH_TIME := 0.1
 const HIT_FLASH_COLOR := Color(1.0, 0.35, 0.35)
 ## Selbstschaden tötet vorläufig nicht: So viele HP bleiben mindestens übrig (endgültig entschieden wird beim ersten Effekt)
 const SELF_DAMAGE_MIN_HP := 1.0
+## So lange bleibt der Held nach der Tod-Animation noch liegen, bevor Game Over erscheint (Sekunden)
+const DEATH_LINGER := 0.6
 
 const IDLE_TEXTURE := preload("res://assets/sprites/characters/hero_idle.png")
 const RUN_TEXTURE := preload("res://assets/sprites/characters/hero_run.png")
+const HIT_TEXTURE := preload("res://assets/sprites/characters/hero_hit.png")
+const DEATH_TEXTURE := preload("res://assets/sprites/characters/hero_death.png")
 
 ## Laufgeschwindigkeit in Welt-Pixeln pro Sekunde
 @export var speed := 120.0
@@ -44,6 +50,11 @@ var _current_texture: Texture2D
 var _animation_time := 0.0
 var _invulnerable_left := 0.0
 var _hit_flash_left := 0.0
+## Restzeit der Treffer-Animation (läuft einmal durch, der Held kann dabei weiterlaufen)
+var _hit_anim_left := 0.0
+var _dead := false
+## Restzeit bis death_animation_finished
+var _death_left := 0.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var health_bar: TextureProgressBar = $HealthBar
@@ -69,8 +80,21 @@ func take_damage(amount: float) -> bool:
 	_set_hp(maxf(hp - amount, 0.0))
 	damaged.emit(amount)
 	if hp <= 0.0:
-		died.emit()
+		_die()
+	else:
+		_hit_anim_left = _frame_count(HIT_TEXTURE) / ANIMATION_FPS
+		_current_texture = null  # Animation von vorn beginnen, auch bei kurz aufeinanderfolgenden Treffern
 	return true
+
+
+func _die() -> void:
+	_dead = true
+	_death_left = _frame_count(DEATH_TEXTURE) / ANIMATION_FPS + DEATH_LINGER
+	_current_texture = null
+	# Nach dem Tod kein Blinken und kein Rot-Blitz mehr, der Held bleibt voll sichtbar liegen
+	sprite.modulate = Color.WHITE
+	sprite.visible = true
+	died.emit()
 
 
 ## Selbstschaden (z. B. durch Boni): Wirkt auch während der I-Frames und löst selbst keine aus.
@@ -98,6 +122,13 @@ func _apply_settings() -> void:
 
 
 func _process(delta: float) -> void:
+	if _dead:
+		_animate(delta, false)
+		if _death_left > 0.0:
+			_death_left -= delta
+			if _death_left <= 0.0:
+				death_animation_finished.emit()
+		return
 	_update_hit_feedback(delta)
 	var direction := _read_input()
 	position += direction * speed * delta
@@ -110,6 +141,7 @@ func _process(delta: float) -> void:
 
 func _update_hit_feedback(delta: float) -> void:
 	_hit_flash_left = maxf(_hit_flash_left - delta, 0.0)
+	_hit_anim_left = maxf(_hit_anim_left - delta, 0.0)
 	_invulnerable_left = maxf(_invulnerable_left - delta, 0.0)
 	sprite.modulate = HIT_FLASH_COLOR if _hit_flash_left > 0.0 else Color.WHITE
 	sprite.visible = _invulnerable_left <= 0.0 or int(_invulnerable_left / BLINK_INTERVAL) % 2 == 0
@@ -130,14 +162,27 @@ func _read_input() -> Vector2:
 	return direction.normalized()
 
 
+## Frame-Anzahl ergibt sich aus der Bildbreite, so passen auch Alpha-Assets mit mehr Frames
+func _frame_count(texture: Texture2D) -> int:
+	return maxi(1, int(texture.get_width() / float(FRAME_WIDTH)))
+
+
 func _animate(delta: float, moving: bool) -> void:
+	# Tod und Treffer laufen einmal durch (der letzte Frame bleibt stehen), Laufen und Stehen wiederholen sich
+	var loop := true
 	var texture: Texture2D = RUN_TEXTURE if moving else IDLE_TEXTURE
+	if _dead:
+		texture = DEATH_TEXTURE
+		loop = false
+	elif _hit_anim_left > 0.0:
+		texture = HIT_TEXTURE
+		loop = false
 	if texture != _current_texture:
-		# Frame-Anzahl ergibt sich aus der Bildbreite, so passen auch Alpha-Assets mit mehr Frames
 		_current_texture = texture
 		sprite.frame = 0
 		sprite.texture = texture
-		sprite.hframes = maxi(1, int(texture.get_width() / float(FRAME_WIDTH)))
+		sprite.hframes = _frame_count(texture)
 		_animation_time = 0.0
 	_animation_time += delta
-	sprite.frame = int(_animation_time * ANIMATION_FPS) % sprite.hframes
+	var index := int(_animation_time * ANIMATION_FPS)
+	sprite.frame = index % sprite.hframes if loop else mini(index, sprite.hframes - 1)

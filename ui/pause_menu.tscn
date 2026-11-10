@@ -62,10 +62,11 @@ theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
 theme_override_font_sizes/font_size = 40
 text = "PAUSE_COLUMN_CHARACTER"
 
-[node name="Placeholder" type="Label" parent="Margin/Layout/Columns/CharacterColumn/Content"]
-modulate = Color(1, 1, 1, 0.5)
+[node name="HpLabel" type="Label" parent="Margin/Layout/Columns/CharacterColumn/Content"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "PAUSE_COMING_SOON"
+theme_override_font_sizes/font_size = 40
+text = "PAUSE_HP"
 autowrap_mode = 3
 
 [node name="WeaponsColumn" type="PanelContainer" parent="Margin/Layout/Columns"]

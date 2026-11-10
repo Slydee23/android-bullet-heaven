@@ -44,7 +44,9 @@ const VIBRATION_MAX_AMPLITUDE := -1.0
 
 var _pause_menu: Control
 var _debug_menu: DebugMenu
+## Der Held ist gestorben (sperrt die Pause), auch schon während der Tod-Animation
 var _game_over := false
+var _game_over_menu: Control
 var _fps_timer := 0.0
 
 @onready var ground: TileMapLayer = $Ground
@@ -75,6 +77,7 @@ func _ready() -> void:
 	player.position = walkable.get_center()
 	player.joystick = joystick
 	player.died.connect(_on_player_died)
+	player.death_animation_finished.connect(_on_death_animation_finished)
 	player.damaged.connect(_on_player_damaged)
 
 	enemy_manager.set_bounds(player.bounds)
@@ -125,15 +128,27 @@ func _notification(what: int) -> void:
 func open_pause_menu() -> void:
 	if _pause_menu or _game_over:
 		return
-	_pause_menu = PAUSE_MENU.instantiate()
+	var menu: PauseMenu = PAUSE_MENU.instantiate()
+	menu.player = player
+	_pause_menu = menu
 	_pause_menu.tree_exited.connect(_on_pause_menu_closed)
 	hud.add_child(_pause_menu)
 
 
+## Der Held stirbt: Gegner frieren ein, der Held spielt seine Tod-Animation, und erst danach erscheint Game Over.
 func _on_player_died() -> void:
 	_game_over = true
-	# Das Pausemenü kann hier nicht offen sein: Bei Pause greift niemand an
-	hud.add_child(GAME_OVER_MENU.instantiate())
+	enemy_manager.process_mode = Node.PROCESS_MODE_DISABLED
+	joystick.visible = false
+	# Das Pausemenü kann hier nicht offen sein: Bei Pause greift niemand an.
+	# Das Debug-Menü (Spiel läuft weiter) würde dagegen nur stören.
+	if _debug_menu:
+		_debug_menu.queue_free()
+
+
+func _on_death_animation_finished() -> void:
+	_game_over_menu = GAME_OVER_MENU.instantiate()
+	hud.add_child(_game_over_menu)
 
 
 ## Treffer-Feedback: Bild wackeln und Handy vibrieren lassen, je nach Optionen. Große Treffer wirken stärker.
@@ -167,12 +182,12 @@ func _on_debug_menu_closed() -> void:
 	_update_pause()
 
 
-## Das Spiel steht bei Game Over, solange die Pause offen ist oder das Debug-Menü offen ist und nicht weiterlaufen soll.
+## Das Spiel steht, sobald das Game-Over-Fenster offen ist, solange die Pause offen ist oder das Debug-Menü offen ist und nicht weiterlaufen soll.
 func _update_pause() -> void:
 	# Beim Verlassen des Runs schließen sich die Menüs mit, dann gibt es hier nichts mehr zu steuern
 	if not is_inside_tree():
 		return
-	get_tree().paused = _game_over or _pause_menu != null or (_debug_menu != null and not Settings.debug_keep_running)
+	get_tree().paused = _game_over_menu != null or _pause_menu != null or (_debug_menu != null and not Settings.debug_keep_running)
 
 
 func _on_settings_changed() -> void:

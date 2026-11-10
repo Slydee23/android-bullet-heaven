@@ -28,6 +28,7 @@ PAUSE_TITLE,Pause
 PAUSE_COLUMN_CHARACTER,Charakter
 PAUSE_COLUMN_WEAPONS,Waffen
 PAUSE_COLUMN_RUN,Ausrüstung & Run
+PAUSE_HP,Lebenspunkte: %d / %d
 PAUSE_COMING_SOON,Wird im Laufe der Entwicklung gefüllt.
 PAUSE_RESUME,Weiter
 PAUSE_ABANDON,Run aufgeben

@@ -160,7 +160,7 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
 1. **Perspektive: Low Top-Down (3/4-Ansicht)**, wie Vampire Survivors oder Stardew Valley.
    - Nur **2 Blickrichtungen**: Sprites schauen nach rechts (bzw. schräg nach vorne rechts), links ist gespiegelt. Keine Animationen nach oben/unten.
    - **Kollisionskreis an den Füßen**, nicht in der Sprite-Mitte. Dass sich Köpfe überlappen, ist gewollt.
-   - Der **Held wird immer über den Gegnern** gezeichnet. Gegner untereinander werden nach Höhe sortiert (über die Grid-Zeilen).
+   - Der **Held wird immer über den Gegnern** gezeichnet. Gegner untereinander werden nach Höhe sortiert (pro Pixelzeile, ohne neue Arrays): Wer weiter unten steht, verdeckt die dahinter.
    - Keine Höhenstauchung: Reichweiten sind echte Kreise.
 2. **Kamera-Zoom: Dynamisch ist der Standard** (am PC und am Handy getestet). Nah (3×) und Weit (2×) bleiben im Debug-Menü zum Vergleichen.
    - Dynamisch: Jede Wave startet bei 3×. Mit steigender Gegnerzahl zoomt die Kamera fließend bis maximal 2× heraus
@@ -255,8 +255,8 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/slider_track.png` | 12×8 (9-Slice, Rand 3) – Schieberegler-Leiste | 1 | M2 |
 | `assets/ui/slider_grabber.png` | 16×16 – Schieberegler-Knopf | 1 | M2 |
 | `assets/sprites/enemies/skeleton_walk.png` | 32×32 (Pixellab) | 8 | M3 |
-| `assets/sprites/characters/hero_hit.png` | 32×32 | 2 | M3 |
-| `assets/sprites/characters/hero_death.png` | 32×32 | 6 | M3 |
+| `assets/sprites/characters/hero_hit.png` | 32×32 (Platzhalter vorhanden, Pixellab-Ersatz willkommen) | 2 (beliebig, läuft einmal durch) | M3 |
+| `assets/sprites/characters/hero_death.png` | 32×32 (Platzhalter vorhanden, Pixellab-Ersatz willkommen) | 6 (beliebig, letzter Frame bleibt liegen) | M3 |
 | `assets/ui/bar_frame.png` | 16×4 (Lebensleiste über dem Helden, im Spiel 2× skaliert) | 1 | M3 |
 | `assets/ui/bar_fill.png` | 14×2 (sitzt 1 Pixel innerhalb des Rahmens) | 1 | M3 |
 | `assets/sprites/weapons/magic_bolt.png` | 16×16 | 4 | M4 |
@@ -335,7 +335,7 @@ M3a+ Debug-Menü-Grundgerüst mit Zoom-Vergleich (aus M5 vorgezogen) → M3a++ d
 M3a+++ Debug-Knopf direkt im Run, Option „Spiel weiterlaufen lassen“ →
 M3b Schaden, Lebensleiste, Game Over, SceneRouter → M3b+ I-Frames nach Schaden (`IFrameRule`), Selbstschaden →
 Vergleichstest 16×16 / 32×32 → Umstellung auf 32×32 → neues Heldenmodell (Pixellab), vorübergehend max. 120 Gegner → Optionsmenü mit Kategorie-Reitern → M3c Bildschirmwackeln + Vibration (erledigt) →
-M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-Animation des Helden (`hero_hit`, `hero_death`).
+M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-Animation des Helden (`hero_hit`, `hero_death`) (erledigt).
 
 - Kontaktschaden nach „Grundsatzentscheidungen“ Punkt 5: Der Held läuft durch Gegner, Gegner bleiben an seinem Rand stehen.
   Im Debug-Menü: Regler für die I-Frames sowie Testknöpfe „Treffer 20 %“ und „Selbstschaden 10 %“.
@@ -349,7 +349,9 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
   Vibriert wird über `scripts/haptics.gd`: Ab Android 13 direkt über die Android-Vibration mit der Kategorie „Medien“.
   Godots `Input.vibrate_handheld` zählt als Touch-Feedback und wird auf Handys mit ausgeschalteter Touch-Vibration verworfen
   (am Redmi getestet). Ältere Android-Versionen und der PC nutzen weiter den Godot-Weg.
-- Statusbildschirm zeigt HP.
+- Statusbildschirm zeigt HP („Lebenspunkte: 80 / 100“, Charakter-Spalte).
+- **Held-Animationen:** Treffer (`hero_hit`, läuft einmal durch, der Held kann dabei weiterlaufen) und Tod (`hero_death`, bleibt auf dem letzten Frame liegen).
+  Beim Tod frieren die Gegner ein, das Game-Over-Fenster erscheint erst nach der Animation (+ 0,6 s). Die Platzhalter erzeugt `tools/gen_hero_placeholders.gd` aus `hero_idle.png`.
 - FPS-Anzeige in der Ecke.
 - **Am Handy testen:** Die Gegner kommen von außen herein und verfolgen dich. Du verlierst Leben, Game Over und Neustart funktionieren.
   Bei Treffern wackelt das Bild und das Handy vibriert. Beides und die Lebensleiste lassen sich in den Optionen abschalten.
