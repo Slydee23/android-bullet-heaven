@@ -50,3 +50,4 @@ DEBUG_IFRAME_RESET,Standardwerte
 DEBUG_TEST_SMALL_HIT,Treffer 5 %
 DEBUG_TEST_HIT,Treffer 20 %
 DEBUG_TEST_SELF_DAMAGE,Selbstschaden 10 %
+WEAPON_MAGIC_BOLT,Magiegeschoss

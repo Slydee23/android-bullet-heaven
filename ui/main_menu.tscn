@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bqs0vnl0xe6rn"]
 
-[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/ui/menu_background.png" id="2_background"]
-[ext_resource type="Texture2D" path="res://assets/ui/divider.png" id="9_divider"]
+[ext_resource type="Script" uid="uid://dptbw4o7nme8k" path="res://scripts/main_menu.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://geo8fv8y20t4" path="res://assets/ui/menu_background.png" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://dcg6xqqdv8qy7" path="res://assets/ui/divider.png" id="9_divider"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=382633441]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,7 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=536573342]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -24,7 +24,7 @@ texture = ExtResource("2_background")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=356714203]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -32,11 +32,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Menu" type="VBoxContainer" parent="Center"]
+[node name="Menu" type="VBoxContainer" parent="Center" unique_id=1639970832]
 layout_mode = 2
 theme_override_constants/separation = 64
 
-[node name="Title" type="Label" parent="Center/Menu"]
+[node name="Title" type="Label" parent="Center/Menu" unique_id=1526451523]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.86, 0.56, 1)
 theme_override_constants/shadow_offset_x = 8
@@ -45,14 +45,28 @@ theme_override_font_sizes/font_size = 128
 text = "Banebound"
 horizontal_alignment = 1
 
-[node name="Divider" type="TextureRect" parent="Center/Menu"]
+[node name="Divider" type="TextureRect" parent="Center/Menu" unique_id=1602041876]
 custom_minimum_size = Vector2(384, 36)
 layout_mode = 2
 size_flags_horizontal = 4
 texture = ExtResource("9_divider")
 expand_mode = 1
 
-[node name="VersionLabel" type="Label" parent="."]
+[node name="StartButton" type="Button" parent="Center/Menu" unique_id=603677033]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(480, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "MENU_START_RUN"
+
+[node name="OptionsButton" type="Button" parent="Center/Menu" unique_id=781262626]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(480, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "MENU_OPTIONS"
+
+[node name="VersionLabel" type="Label" parent="." unique_id=1415594968]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 3
@@ -70,17 +84,3 @@ theme_override_colors/font_color = Color(0.75, 0.7, 0.82, 1)
 theme_override_font_sizes/font_size = 32
 horizontal_alignment = 2
 vertical_alignment = 2
-
-[node name="StartButton" type="Button" parent="Center/Menu"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(480, 128)
-layout_mode = 2
-size_flags_horizontal = 4
-text = "MENU_START_RUN"
-
-[node name="OptionsButton" type="Button" parent="Center/Menu"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(480, 128)
-layout_mode = 2
-size_flags_horizontal = 4
-text = "MENU_OPTIONS"

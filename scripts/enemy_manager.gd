@@ -20,6 +20,13 @@ const SPAWN_MARGIN := 32.0
 const SPAWN_ATTEMPTS := 8
 ## Spielraum, ab dem ein stehender Gegner den Helden noch erreicht (Welt-Pixel)
 const ATTACK_TOLERANCE := 1.0
+## So lange leuchtet ein getroffener Gegner hell auf (Sekunden)
+const HIT_FLASH_TIME := 0.1
+## Farbe des Aufleuchtens (über 1 = heller als das Bild, wird auf Weiß begrenzt)
+const HIT_FLASH_COLOR := Color(3.0, 3.0, 3.0)
+
+## Ein Gegner ist gestorben (position = Füße). Anschluss für Effekte (M4b) und XP-Kristalle (M6).
+signal enemy_killed(position: Vector2, data: EnemyData)
 
 ## Ziel, auf das alle Gegner zulaufen und das sie angreifen (der Held)
 var target: Player
@@ -36,6 +43,8 @@ var _hp := PackedFloat32Array()
 var _anim_offsets := PackedFloat32Array()
 var _flipped := PackedByteArray()
 var _attack_timers := PackedFloat32Array()
+## Restzeit des Treffer-Aufleuchtens
+var _flash := PackedFloat32Array()
 var _grid_size := Vector2i.ONE
 var _cell_head := PackedInt32Array()
 var _cell_next := PackedInt32Array()
@@ -53,6 +62,7 @@ func _ready() -> void:
 	_anim_offsets.resize(MAX_ENEMIES)
 	_flipped.resize(MAX_ENEMIES)
 	_attack_timers.resize(MAX_ENEMIES)
+	_flash.resize(MAX_ENEMIES)
 	_cell_next.resize(MAX_ENEMIES)
 	_row_next.resize(MAX_ENEMIES)
 
@@ -78,6 +88,7 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 	_anim_offsets[count] = randf() * 10.0  # damit nicht alle im Gleichschritt laufen
 	_flipped[count] = 0
 	_attack_timers[count] = 0.0
+	_flash[count] = 0.0
 	count += 1
 
 
@@ -92,10 +103,61 @@ func kill(i: int) -> void:
 	_anim_offsets[i] = _anim_offsets[count]
 	_flipped[i] = _flipped[count]
 	_attack_timers[i] = _attack_timers[count]
+	_flash[i] = _flash[count]
+
+
+## Zieht Gegner i Lebenspunkte ab. Stirbt er, wird er erst zu Beginn des nächsten Frames entfernt
+## (sofortiges Entfernen würde die Plätze der anderen Gegner mitten in einer Schleife verschieben).
+func damage(i: int, amount: float) -> void:
+	_hp[i] -= amount
+	_flash[i] = HIT_FLASH_TIME
+
+
+func get_enemy_position(i: int) -> Vector2:
+	return _positions[i]
+
+
+## Nächster lebender Gegner im Umkreis max_range um pos (Füße), oder -1.
+## Läuft einmal über alle Gegner mit quadrierten Distanzen: Das reicht, weil es nur einmal pro Waffen-Schuss geschieht.
+func find_nearest(pos: Vector2, max_range: float) -> int:
+	var best := -1
+	var best_sq := max_range * max_range
+	for i in count:
+		if _hp[i] <= 0.0:
+			continue
+		var distance_sq := pos.distance_squared_to(_positions[i])
+		if distance_sq <= best_sq:
+			best_sq = distance_sq
+			best = i
+	return best
+
+
+## Erster lebender Gegner, dessen Körperkreis den Kreis (pos, radius) berührt, oder -1. Nutzt das Spatial Grid.
+func find_hit(pos: Vector2, radius: float) -> int:
+	var cell := _cell_of(pos)
+	for cy in range(maxi(cell.y - 1, 0), mini(cell.y + 2, _grid_size.y)):
+		for cx in range(maxi(cell.x - 1, 0), mini(cell.x + 2, _grid_size.x)):
+			var j := _cell_head[cy * _grid_size.x + cx]
+			while j != -1:
+				if _hp[j] > 0.0:
+					var reach := radius + _type_list[_types[j]].radius
+					if pos.distance_squared_to(_positions[j]) <= reach * reach:
+						return j
+				j = _cell_next[j]
+	return -1
+
+
+## Entfernt alle gestorbenen Gegner. Rückwärts, weil kill() den letzten Gegner auf den freien Platz setzt.
+func _remove_dead() -> void:
+	for i in range(count - 1, -1, -1):
+		if _hp[i] <= 0.0:
+			enemy_killed.emit(_positions[i], _type_list[_types[i]])
+			kill(i)
 
 
 func _process(delta: float) -> void:
 	_time += delta
+	_remove_dead()
 	_update_spawning(delta)
 	_build_grid()
 	_move(delta)
@@ -142,6 +204,7 @@ func _move(delta: float) -> void:
 	var target_radius := target.body_radius if target else 0.0
 	for i in count:
 		var data := _type_list[_types[i]]
+		_flash[i] = maxf(_flash[i] - delta, 0.0)
 		var pos := _positions[i]
 		var direction := pos.direction_to(target_pos)
 		# Am Rand des Helden bzw. in Angriffsreichweite stehen bleiben
@@ -215,4 +278,4 @@ func _draw_enemy(i: int) -> void:
 	draw_set_transform(_positions[i], 0.0, flip_scale)
 	# Die Position sind die Füße: Das Bild steht unten bündig darauf
 	var frame_rect := Rect2(Vector2(-frame_size.x * 0.5, 1.0 - frame_size.y), frame_size)
-	draw_texture_rect_region(texture, frame_rect, source)
+	draw_texture_rect_region(texture, frame_rect, source, HIT_FLASH_COLOR if _flash[i] > 0.0 else Color.WHITE)

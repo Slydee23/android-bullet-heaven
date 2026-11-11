@@ -25,6 +25,8 @@ const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
 const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
 const GAME_OVER_MENU := preload("res://ui/game_over_menu.tscn")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
+## Startwaffe des Runs (vorerst fest, die Auswahl im Hub kommt mit E10). Datei: data/weapons/<id>.tres
+const START_WEAPON_ID := &"magic_bolt"
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
 ## Bewusst fest und nicht von den Waves abhängig: Ab 50 Gegnern ist der Bildschirm voll genug für den weitesten Zoom.
 const ZOOM_FULL_ENEMIES := 50
@@ -61,6 +63,8 @@ var _fps_timer := 0.0
 @onready var pause_button: TextureButton = $HUD/PauseButton
 @onready var debug_button: TextureButton = $HUD/DebugButton
 @onready var enemy_manager: EnemyManager = $EnemyManager
+@onready var projectile_manager: ProjectileManager = $ProjectileManager
+@onready var weapon_holder: WeaponHolder = $Weapons
 @onready var fps_label: Label = $HUD/FpsLabel
 
 
@@ -83,6 +87,14 @@ func _ready() -> void:
 	enemy_manager.set_bounds(player.bounds)
 	enemy_manager.target = player
 	enemy_manager.spawn_types = [SKELETON]
+
+	projectile_manager.enemy_manager = enemy_manager
+	projectile_manager.bounds = player.bounds
+	weapon_holder.player = player
+	weapon_holder.enemy_manager = enemy_manager
+	weapon_holder.projectiles = projectile_manager
+	var start_weapon: WeaponData = load("res://data/weapons/%s.tres" % START_WEAPON_ID)
+	weapon_holder.add_start_weapon(start_weapon)
 
 	# FPS-Anzeige nur in Test-Builds (aus Godot gestartet), nicht in einer späteren Veröffentlichung
 	fps_label.visible = OS.is_debug_build()
@@ -139,6 +151,8 @@ func open_pause_menu() -> void:
 func _on_player_died() -> void:
 	_game_over = true
 	enemy_manager.process_mode = Node.PROCESS_MODE_DISABLED
+	projectile_manager.process_mode = Node.PROCESS_MODE_DISABLED
+	weapon_holder.process_mode = Node.PROCESS_MODE_DISABLED
 	joystick.visible = false
 	# Das Pausemenü kann hier nicht offen sein: Bei Pause greift niemand an.
 	# Das Debug-Menü (Spiel läuft weiter) würde dagegen nur stören.

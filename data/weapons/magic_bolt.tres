@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/behaviors/projectile_behavior.gd" id="2_behavior"]
+[ext_resource type="Texture2D" path="res://assets/sprites/weapons/magic_bolt.png" id="3_bolt"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[resource]
+script = ExtResource("1_script")
+id = &"magic_bolt"
+name_key = "WEAPON_MAGIC_BOLT"
+tags = Array[StringName]([&"projectile", &"magic"])
+base_stats = {
+&"cooldown": 0.8,
+&"damage": 5.0,
+&"pierce": 1.0,
+&"projectile_lifetime": 1.5,
+&"projectile_radius": 4.0,
+&"projectile_speed": 260.0,
+&"range": 220.0
+}
+behavior = SubResource("Resource_behavior")
+projectile_texture = ExtResource("3_bolt")
+frame_width = 16
+animation_fps = 10.0

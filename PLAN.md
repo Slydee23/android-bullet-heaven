@@ -29,10 +29,12 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
   Levels kann es optional im Endlos-Modus weitergehen.
 - **Kampf:** Angriffe laufen automatisch, dazu kommt eine **Spezialfähigkeit**. Neue Fähigkeiten schaltet man bei einem
   NPC im Dorf frei, dort wählt man auch vor dem Run eine aus. Während des Runs ist sie fest.
-- **Waffen:** maximal 3. Das ist eine einzige Konstante im Code und lässt sich leicht auf 4 ändern. Bei Level-Up gibt es Waffen bzw. Waffen-Upgrades. Ab Waffenlevel 10 kann man die
+- **Waffen:** **4 Plätze: 1 Startwaffen-Platz + 3 Run-Plätze** (zwei Konstanten im Code: `START_SLOTS`, `RUN_SLOTS`). Die Startwaffe zählt nicht zu den 3 Run-Plätzen,
+  leveln und entwickeln sich aber alle Waffen gleich. Bei Level-Up gibt es Waffen bzw. Waffen-Upgrades. Ab Waffenlevel 10 kann man die
   Waffe in 1 von 3 Varianten weiterentwickeln, später noch einmal in 1 von 3. Daraus ergeben sich 9 Endformen pro Waffe.
 - **Startwaffe:** Jeder Run beginnt mit **genau 1 Startwaffe** (das bleibt immer so). Am Anfang ist sie fest, weitere
-  Startwaffen werden im Laufe des Spiels freigeschaltet und vor der Expedition gewählt. Alle weiteren Waffen kommen über Level-Up.
+  Startwaffen werden im Laufe des Spiels freigeschaltet und vor der Expedition im Hub gewählt (jederzeit änderbar). Die Startwaffe belegt den
+  Startwaffen-Platz und ist ab Welle 1 da. Alle weiteren Waffen kommen über Level-Up in die 3 Run-Plätze.
 - **Welt:** feste Maps (begrenzte Arena, größer als der Bildschirm), die Kamera folgt der Figur.
 - **Steuerung:** Joystick Floating oder Fest, linke/rechte/beide Bildschirmseiten, einstellbare Transparenz.
 - **Grafik:** 2D Fantasy Pixel-Art. Die Platzhalter sind schon in Pixel-Optik, die echte Grafik folgt später.
@@ -125,7 +127,7 @@ Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnum
 | Datei | Inhalt | Lebensdauer | Ab |
 | --- | --- | --- | --- |
 | `settings.cfg` | Optionen (Joystick, Anzeige, Audio, Sprache) | dauerhaft | M2 |
-| `run.save` | **Run-Spielstand:** Waffen + Level, Spielerlevel/XP, HP, Welle, Artefakte, Tränke, Magie-Schrott, im Run gesammelte Materialien, gespeicherte Shop-Angebote und Level-Up-Karten, Run-Statistik, gewählte Spezialfähigkeit und Startwaffe (IDs) | nur während eines Runs | M8 |
+| `run.save` | **Run-Spielstand:** Waffen pro Platz (ID, Level, gewählte Upgrades/Effekte, Evolutionszweig), Spielerlevel/XP, HP, Welle, Artefakte, Tränke, Magie-Schrott, im Run gesammelte Materialien, gespeicherte Shop-Angebote und Level-Up-Karten, Run-Statistik, gewählte Spezialfähigkeit und Startwaffe (IDs) | nur während eines Runs | M8 |
 | `profile.save` | **Profil-Spielstand:** Dorf-Ausbau, Material-Lager, Rüstungsbesitz + angelegte Rüstung, Verzauberungen, permanente Upgrades, Freischaltungen (u. a. freigeschaltete Spezialfähigkeiten und Startwaffen als IDs, dazu die jeweils gewählte), Quests, Gesamtstatistik | dauerhaft, wird nie durch einen Run gelöscht | E5 |
 
 - Der Run-Spielstand **liest** die angelegte Rüstung nur aus dem Profil (im Run kann man sie nicht tauschen) und schreibt nie hinein.
@@ -202,6 +204,7 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - Neu gerechnet wird nur bei Änderungen. Geschosse tragen ihren fertigen Schadenswert.
    - Beispiel: Magiegeschoss 10 Grundschaden, +3 durch Waffenlevel, Artefakt +20 %, Rune +15 % → (10 + 3) × 1,35 = 17,6.
    - Einbau schrittweise: Grundschaden in M4, StatBlock und Modifikatoren in M6.
+     Waffen lesen ihre Werte aber von Anfang an über `WeaponInstance.get_stat(id)`, damit M6 nur das Innere austauscht (siehe Punkt 9).
 7. **Zielen:** Gespielt wird mit einem Daumen, kein zweiter Stick.
    - Der **Zielmodus ist eine Eigenschaft der Waffe** (Datendatei): `NEAREST` (nächster Gegner, Standard),
      `FACING` (letzte Laufrichtung, stufenlos, nicht nur links/rechts), später z. B. `RANDOM`, `STRONGEST`, `DENSEST`.
@@ -213,6 +216,19 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - **Der Run bekommt Parameter** (`ExpeditionData`: Map, Wellen, Beute) statt fest verdrahteter Werte. Kommt in M7.
    - Später (mit der Map-Rand-Diskussion nach M7): Hindernis-Kollision für den Helden (`CharacterBody2D`). Gegner bleiben
      physikfrei und meiden blockierte Grid-Zellen.
+
+9. **Waffen-Architektur (flexibel erweiterbar):** Eine Waffe besteht aus drei austauschbaren Teilen. Neue Waffen und Mechaniken sind
+   meist neue Datendateien oder kleine Zusatz-Skripte, kein Umbau.
+   - **`WeaponData` (Resource):** Name, Icon, Tags (`projectile`, `magic` …), Zielmodus, **Grundwerte als Liste „Stat-ID → Wert“**
+     (damage, cooldown, range, projectile_speed, pierce, amount …; ein neuer Stat ist nur eine neue Zeile in der Datendatei),
+     `behavior` (wie die Waffe angreift: Geschoss, kreisende Klinge, Aura; ein Skript pro Angriffsart) und `effects`
+     (Effekte, die bei Schuss, Treffer oder Kill eingreifen, z. B. Ricochet = Treffer-Effekt, später Brennen, Explosion).
+   - **`WeaponInstance` (nur im Run):** Datendatei, Level, gewählte Upgrades (= Modifikatoren) und zusätzliche Effekte.
+     `get_stat(id)` liefert den fertigen Wert: in M4 der Grundwert, ab M6 rechnet hier der StatBlock. Geschosse tragen ihren fertigen Schaden.
+   - **`WeaponHolder` (Baustein der Run-Szene):** `START_SLOTS := 1`, `RUN_SLOTS := 3`, dazu `can_add_run_weapon()` und `has_weapon(id)` für den Level-Up-Pool.
+   - **Performance:** Geschosse bleiben im Pool des `ProjectileManager` (merken sich nur den Waffen-Index). Effekte laufen nur bei Ereignissen
+     (Treffer, Kill), nicht pro Frame. Waffen ohne Effekte kosten nichts extra.
+   - Evolutionen (E4) sind neue Waffen-Datendateien, die die alte im selben Platz ersetzen.
 
 ## Assets: Platzhalter → Alpha
 
@@ -261,7 +277,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/sprites/characters/hero_death.png` | 32×32 (Platzhalter vorhanden, Pixellab-Ersatz willkommen) | 6 (beliebig, letzter Frame bleibt liegen) | M3 |
 | `assets/ui/bar_frame.png` | 16×4 (Lebensleiste über dem Helden, im Spiel 2× skaliert) | 1 | M3 |
 | `assets/ui/bar_fill.png` | 14×2 (sitzt 1 Pixel innerhalb des Rahmens) | 1 | M3 |
-| `assets/sprites/weapons/magic_bolt.png` | 16×16 | 4 | M4 |
+| `assets/sprites/weapons/magic_bolt.png` | 16×16, Blick nach **Osten** (Schweif links, wird in Flugrichtung gedreht). Platzhalter vorhanden (`tools/gen_weapon_placeholders.gd`) | 4 (beliebig) | M4 |
 | `assets/sprites/effects/hit.png` | 32×32 | 4 | M4 |
 | `assets/sprites/effects/death.png` | 32×32 | 6 | M4 |
 | `assets/sprites/pickups/xp_crystal.png` | 16×16 | 4 | M6 |
@@ -361,13 +377,20 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 
 ### M4 – Auto-Angriff
 
+Umsetzung in Teilschritten: M4a Waffen-Architektur, Magiegeschoss, Geschoss-Pool, Gegner-HP mit Aufleuchten und Tod (Code fertig, Test am PC/Handy offen) →
+M4b Treffer- und Tod-Effekte (`hit.png`, `death.png`, Effekt-Pool) → M4c Schadenszahlen und Gegner-Lebensleisten mit Optionen →
+M4d Statusbildschirm mit Waffen-Spalte (4 Plätze).
+
 - Erste Waffe „Magiegeschoss“: Sie schießt automatisch auf den nächsten Gegner. Geschosse kommen aus einem Pool.
   Gegner haben HP, blinken kurz bei einem Treffer und sterben (mit kleinem Effekt).
-- Die Waffe ist als Resource-Datei angelegt (Grundlage für spätere Level und Evolutionen), mit **Zielmodus**
-  (`NEAREST` für das Magiegeschoss) und Grundschaden.
-- Waffen sind ein eigener Baustein, den die Run-Szene dem Helden anhängt. `player.gd` bleibt waffenfrei.
-- Das Magiegeschoss ist die **feste Startwaffe**. Die Run-Szene liest dafür eine einzelne Startwaffen-ID (vorerst fest
-  vorgegeben), ohne Auswahl-Logik. Die Auswahl kommt mit E10.
+- Waffen-Architektur nach Grundsatz 9: `WeaponData` (Datendatei `data/weapons/*.tres`, Stats als Liste „ID → Wert“, `behavior`, `effects`),
+  `WeaponInstance` (Zustand im Run, `get_stat()`), `WeaponHolder` (4 Plätze: `START_SLOTS` 1 + `RUN_SLOTS` 3) und `ProjectileManager` (Geschoss-Pool).
+  Zielmodus der Waffe: `NEAREST` ist umgesetzt, `FACING` folgt mit der ersten Waffe, die ihn braucht.
+- Waffen sind ein eigener Baustein (Node `Weapons`), den die Run-Szene dem Helden anhängt. `player.gd` bleibt waffenfrei.
+- Das Magiegeschoss ist die **feste Startwaffe**. Die Run-Szene liest dafür eine einzelne Startwaffen-ID (`START_WEAPON_ID` in `run.gd`, vorerst fest
+  vorgegeben), ohne Auswahl-Logik. Die Auswahl im Hub kommt mit E10.
+- Gegner sterben erst zu Beginn des nächsten Frames (`EnemyManager.damage()` markiert, `_remove_dead()` entfernt) und senden dann `enemy_killed` (Anschluss für M4b/M6).
+- Geschosse fliegen in der Fußebene und werden 14 Pixel höher (Körpermitte) gezeichnet, damit sie zu den Kollisionskreisen an den Füßen passen.
 - **Schadenszahlen** über getroffenen Gegnern (Option „Schadenszahlen“), aus einem Pool.
 - **Lebensleisten über Gegnern** (Option „Lebensleisten Gegner“). Sie erscheinen nur bei bereits verletzten Gegnern und
   werden alle in einem einzigen Zeichenaufruf des EnemyManagers gezeichnet, nicht als eigene Nodes. Das ist wichtig für die Performance.
@@ -395,14 +418,15 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 
 - **Zuerst das HUD-Grundgerüst** nach „UI-Konzepte → HUD“: HUD-Szene mit Bereichen, feste HP-Leiste, XP-Leiste, Level und Waffen-Icons.
 - Gegner lassen XP-Kristalle fallen, die per Magnet eingesammelt werden. Am oberen Rand gibt es eine XP-Leiste.
-- Beim Level-Up pausiert das Spiel, und es erscheinen **3 Karten** zum Antippen: eine neue Waffe (maximal 3 Slots) oder
-  das Upgrade einer vorhandenen Waffe.
-- Im Grundspiel gibt es 3 Waffen, z. B. Magiegeschoss, kreisende Klingen und Feuer-Aura.
+- Beim Level-Up pausiert das Spiel, und es erscheinen **3 Karten** zum Antippen, gezogen aus einem Pool: eine neue Waffe (nur solange
+  ein Run-Platz frei ist, nie eine schon vorhandene) oder ein Upgrade einer vorhandenen Waffe (auch der Startwaffe).
+- Im Grundspiel gibt es 4 Waffen, z. B. Magiegeschoss, kreisende Klingen, Feuer-Aura und eine weitere.
+- Erster Effekt **Ricochet** (abprallende Geschosse) als Upgrade des Magiegeschosses. Er beweist, dass Effekte ohne Umbau dazukommen (Grundsatz 9).
 - **Werte-System** nach „Grundsatzentscheidungen“ Punkt 6: Stat-Definitionen, Modifikatoren und StatBlock.
   Level-Up-Upgrades sind Modifikatoren. Kommt Ausweichen dazu: Ein ausgewichener Treffer gibt die Mindestdauer der I-Frames.
 - Statusbildschirm zeigt Level, XP, alle Waffen-Slots mit Level und Werten sowie die Spielerwerte.
 - **Am Handy testen:** Kristalle werden eingesammelt, das Level-Up-Menü lässt sich gut antippen und die Karten sind lesbar.
-  Mit 3 Waffen kommen keine neuen Waffen mehr, sondern nur noch Upgrades.
+  Mit 4 Waffen kommen keine neuen Waffen mehr, sondern nur noch Upgrades.
 
 ### M7 – Wellen & Run-Ende
 
@@ -475,7 +499,7 @@ Drei Spalten, damit im Querformat alles auf einen Blick sichtbar ist:
 
 | Links: Charakter | Mitte: Waffen | Rechts: Ausrüstung & Run |
 | --- | --- | --- |
-| HP, Level, XP-Fortschritt | 3 Waffen-Slots: Icon, Level x/10, Evolutionsstufe und gewählter Zweig | **Paperdoll** mit angelegter Rüstung |
+| HP, Level, XP-Fortschritt | 4 Waffen-Slots (Startwaffe markiert): Icon, Level x/10, Evolutionsstufe und gewählter Zweig | **Paperdoll** mit angelegter Rüstung |
 | Spezialfähigkeit + Abklingzeit | Werte je Waffe: Schaden, Tempo, Reichweite | Aktive Artefakte mit Beschreibung |
 | Werte: Schaden %, Angriffstempo, Laufgeschwindigkeit, Krit, Rüstung, Regeneration, Sammelradius, Glück | Bisher verursachter Schaden je Waffe | Tränke im Inventar |
 | | | Ausbeute: Magie-Schrott, Materialien, Kills, Zeit, Welle x/y |
@@ -572,6 +596,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 3. **E3 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm. Eine erste Fähigkeit als Datendatei
    (`SpecialAbilityData`), damit weitere ohne Code-Umbau dazukommen. Freischalten und Wechseln kommt erst mit E10.
 4. **E4 – Waffen-Evolutionen:** Level 10 → 1 von 3 Varianten → 2. Evolution → 1 von 3 = 9 Endformen.
+   Eine Evolution ist eine neue Waffen-Datendatei (andere Werte, Effekte, Verhalten), die die alte im selben Platz ersetzt.
 5. **E5 – Meta-Spielstand + Belohnungsbildschirm:** Profil-Spielstand (`profile.save`), Material-Register und erste Materialien
    aus Runs, volle Run-Zusammenfassung.
 6. **E6 – Begehbare Hub-Stadt** (siehe „Hub-Stadt“). Ab hier startet das Hauptmenü in den Hub statt direkt in einen Run.
