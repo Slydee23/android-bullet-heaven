@@ -1,14 +1,16 @@
 extends SceneTree
 ## Erzeugt den Platzhalter für das Magiegeschoss: 16×16, 4 Frames, Blick nach Osten (Schweif links).
 ## Aufruf (im Projektordner): Godot --headless --path . -s tools/gen_weapon_placeholders.gd
-## Die Datei lässt sich jederzeit durch ein Alpha-Asset überschreiben (gleicher Name, beliebig viele 16×16-Frames).
+## Die Farben werden auf die gemeinsame Palette der Spielwelt (tools/palette.gd) eingefärbt, damit das Geschoss zum Helden passt
+## (der Held hält eine blaue Kugel). Die Datei lässt sich jederzeit durch ein Alpha-Asset überschreiben (gleicher Name, beliebig viele 16×16-Frames).
 const FRAME := 16
 const FRAMES := 4
 const OUT := "res://assets/sprites/weapons/magic_bolt.png"
-const CORE := Color("#fff4d0")
-const MID := Color("#b49cff")
-const OUTER := Color("#7a5cd0")
-const GOLD := Color("#f6dc90")
+
+var CORE := Palette.snap(Color("#e0fffd"))
+var MID := Palette.snap(Color("#7fc8e0"))
+var OUTER := Palette.snap(Color("#3f7090"))
+var GOLD := Palette.snap(Color("#f9c769"))
 
 
 func _init() -> void:

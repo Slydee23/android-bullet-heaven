@@ -26,7 +26,7 @@ const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
 const GAME_OVER_MENU := preload("res://ui/game_over_menu.tscn")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
 ## Startwaffe des Runs (vorerst fest, die Auswahl im Hub kommt mit E10). Datei: data/weapons/<id>.tres
-const START_WEAPON_ID := &"magic_bolt"
+const START_WEAPON_ID := &"arcane_wand"
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
 ## Bewusst fest und nicht von den Waves abhängig: Ab 50 Gegnern ist der Bildschirm voll genug für den weitesten Zoom.
 const ZOOM_FULL_ENEMIES := 50
@@ -90,9 +90,8 @@ func _ready() -> void:
 
 	projectile_manager.enemy_manager = enemy_manager
 	projectile_manager.bounds = player.bounds
-	weapon_holder.player = player
-	weapon_holder.enemy_manager = enemy_manager
-	weapon_holder.projectiles = projectile_manager
+	projectile_manager.shooter = player
+	weapon_holder.setup(player, enemy_manager, projectile_manager)
 	var start_weapon: WeaponData = load("res://data/weapons/%s.tres" % START_WEAPON_ID)
 	weapon_holder.add_start_weapon(start_weapon)
 
@@ -186,6 +185,7 @@ func _toggle_debug_menu() -> void:
 		return
 	_debug_menu = DEBUG_MENU.instantiate()
 	_debug_menu.player = player
+	_debug_menu.weapon_holder = weapon_holder
 	_debug_menu.tree_exited.connect(_on_debug_menu_closed)
 	hud.add_child(_debug_menu)
 	_update_pause()

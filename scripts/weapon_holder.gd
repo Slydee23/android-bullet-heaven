@@ -6,17 +6,23 @@ extends Node
 const START_SLOTS := 1
 const RUN_SLOTS := 3
 
-var player: Player
-var enemy_manager: EnemyManager
-var projectiles: ProjectileManager
 var start_weapons: Array[WeaponInstance] = []
 var run_weapons: Array[WeaponInstance] = []
+
+var _context := WeaponContext.new()
+
+
+## Verweise setzen (die Run-Szene ruft das einmal beim Start auf).
+func setup(player: Player, enemy_manager: EnemyManager, projectiles: ProjectileManager) -> void:
+	_context.player = player
+	_context.enemy_manager = enemy_manager
+	_context.projectiles = projectiles
 
 
 func add_start_weapon(data: WeaponData) -> WeaponInstance:
 	if start_weapons.size() >= START_SLOTS:
 		return null
-	var weapon := WeaponInstance.new(data)
+	var weapon := _register(data)
 	start_weapons.append(weapon)
 	return weapon
 
@@ -25,7 +31,7 @@ func add_start_weapon(data: WeaponData) -> WeaponInstance:
 func add_run_weapon(data: WeaponData) -> WeaponInstance:
 	if not can_add_run_weapon() or has_weapon(data.id):
 		return null
-	var weapon := WeaponInstance.new(data)
+	var weapon := _register(data)
 	run_weapons.append(weapon)
 	return weapon
 
@@ -44,7 +50,20 @@ func has_weapon(id: StringName) -> bool:
 	return false
 
 
+func _register(data: WeaponData) -> WeaponInstance:
+	var weapon := WeaponInstance.new(data)
+	weapon.stats_changed.connect(_on_stats_changed.bind(weapon))
+	return weapon
+
+
+func _on_stats_changed(weapon: WeaponInstance) -> void:
+	if _context.player:
+		weapon.data.behavior.on_stats_changed(weapon, _context)
+
+
 func _process(delta: float) -> void:
+	if not _context.player:
+		return
 	for weapon in start_weapons:
 		_update_weapon(weapon, delta)
 	for weapon in run_weapons:
@@ -52,15 +71,13 @@ func _process(delta: float) -> void:
 
 
 func _update_weapon(weapon: WeaponInstance, delta: float) -> void:
+	var behavior := weapon.data.behavior
+	behavior.tick(weapon, _context, delta)
 	weapon.cooldown_left -= delta
-	if weapon.cooldown_left > 0.0 or not player or not enemy_manager or not projectiles:
+	if weapon.cooldown_left > 0.0:
 		return
-	var origin := player.global_position
-	# NEAREST ist der einzige umgesetzte Zielmodus, FACING und weitere folgen mit der ersten Waffe, die sie braucht
-	var target := enemy_manager.find_nearest(origin, weapon.get_stat(&"range"))
-	if target == -1:
+	if behavior.fire(weapon, _context):
+		weapon.cooldown_left = weapon.get_stat(&"cooldown")
+	else:
 		# Kein Ziel in Reichweite: Die Waffe bleibt schussbereit
 		weapon.cooldown_left = 0.0
-		return
-	weapon.data.behavior.fire(weapon, origin, enemy_manager.get_enemy_position(target), projectiles)
-	weapon.cooldown_left = weapon.get_stat(&"cooldown")

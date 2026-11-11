@@ -13,6 +13,8 @@ const TEST_SELF_DAMAGE_SHARE := 0.1
 
 ## Held, auf den sich die Testwerte beziehen (setzt die Run-Szene vor dem Öffnen)
 var player: Player
+## Waffen des Helden, auf die sich „+1 Projektil“ bezieht (setzt die Run-Szene vor dem Öffnen)
+var weapon_holder: WeaponHolder
 
 var _closing := false
 var _shown_iframes := -1.0
@@ -32,6 +34,8 @@ var _shown_iframes := -1.0
 @onready var test_small_hit_button: Button = %TestSmallHitButton
 @onready var test_hit_button: Button = %TestHitButton
 @onready var test_self_damage_button: Button = %TestSelfDamageButton
+@onready var extra_projectile_button: Button = %ExtraProjectileButton
+@onready var extra_projectile_reset_button: Button = %ExtraProjectileResetButton
 @onready var iframe_reset_button: Button = %IFrameResetButton
 @onready var back_button: Button = %BackButton
 
@@ -63,6 +67,8 @@ func _ready() -> void:
 	test_small_hit_button.pressed.connect(_on_test_hit_pressed.bind(TEST_SMALL_HIT_SHARE))
 	test_hit_button.pressed.connect(_on_test_hit_pressed.bind(TEST_HIT_SHARE))
 	test_self_damage_button.pressed.connect(_on_test_self_damage_pressed)
+	extra_projectile_button.pressed.connect(_on_extra_projectile_pressed)
+	extra_projectile_reset_button.pressed.connect(_on_extra_projectile_reset_pressed)
 	iframe_reset_button.pressed.connect(_on_iframe_reset_pressed)
 	back_button.pressed.connect(close)
 
@@ -116,6 +122,17 @@ func _on_test_hit_pressed(share: float) -> void:
 
 func _on_test_self_damage_pressed() -> void:
 	player.take_self_damage(player.max_hp * TEST_SELF_DAMAGE_SHARE)
+
+
+## Testbonus auf die Startwaffe (später rechnet das Werte-System solche Boni aus Upgrades und Artefakten)
+func _on_extra_projectile_pressed() -> void:
+	if weapon_holder and not weapon_holder.start_weapons.is_empty():
+		weapon_holder.start_weapons[0].add_flat(&"amount", 1.0)
+
+
+func _on_extra_projectile_reset_pressed() -> void:
+	if weapon_holder and not weapon_holder.start_weapons.is_empty():
+		weapon_holder.start_weapons[0].reset_bonuses()
 
 
 func _on_iframe_reset_pressed() -> void:

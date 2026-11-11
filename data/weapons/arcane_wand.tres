@@ -2,17 +2,25 @@
 
 [ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
 [ext_resource type="Script" path="res://scripts/behaviors/projectile_behavior.gd" id="2_behavior"]
-[ext_resource type="Texture2D" path="res://assets/sprites/weapons/magic_bolt.png" id="3_bolt"]
+[ext_resource type="Script" path="res://scripts/targeting/nearest_distinct_picker.gd" id="3_picker"]
+[ext_resource type="Texture2D" path="res://assets/sprites/weapons/magic_bolt.png" id="4_bolt"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
 
+[sub_resource type="Resource" id="Resource_picker"]
+script = ExtResource("3_picker")
+
 [resource]
 script = ExtResource("1_script")
-id = &"magic_bolt"
-name_key = "WEAPON_MAGIC_BOLT"
+id = &"arcane_wand"
+name_key = "WEAPON_ARCANE_WAND_NAME"
+description_key = "WEAPON_ARCANE_WAND_DESC"
 tags = Array[StringName]([&"projectile", &"magic"])
+element = &"physical"
+default_unlocked = true
 base_stats = {
+&"amount": 1.0,
 &"cooldown": 0.8,
 &"damage": 5.0,
 &"pierce": 1.0,
@@ -22,6 +30,7 @@ base_stats = {
 &"range": 220.0
 }
 behavior = SubResource("Resource_behavior")
-projectile_texture = ExtResource("3_bolt")
+target_picker = SubResource("Resource_picker")
+projectile_texture = ExtResource("4_bolt")
 frame_width = 16
 animation_fps = 10.0

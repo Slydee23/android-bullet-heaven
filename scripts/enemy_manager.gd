@@ -25,6 +25,9 @@ const HIT_FLASH_TIME := 0.1
 ## Farbe des Aufleuchtens (über 1 = heller als das Bild, wird auf Weiß begrenzt)
 const HIT_FLASH_COLOR := Color(3.0, 3.0, 3.0)
 
+## Höchstanzahl der Ziele, die find_nearest_n auf einmal liefert
+const MAX_NEAREST := 16
+
 ## Ein Gegner ist gestorben (position = Füße). Anschluss für Effekte (M4b) und XP-Kristalle (M6).
 signal enemy_killed(position: Vector2, data: EnemyData)
 
@@ -45,6 +48,12 @@ var _flipped := PackedByteArray()
 var _attack_timers := PackedFloat32Array()
 ## Restzeit des Treffer-Aufleuchtens
 var _flash := PackedFloat32Array()
+## Stabile ID jedes Gegners: Beim Tod rückt der letzte Gegner nach und ändert seinen Platz, seine ID bleibt.
+## Wer sich einen Gegner über mehrere Frames merken muss (Geschosse, Salven, Status-Effekte), merkt sich die ID.
+var _ids := PackedInt32Array()
+var _next_id := 1
+## Arbeitsspeicher von find_nearest_n (Abstände der bisher nächsten Gegner)
+var _nearest_distances := PackedFloat32Array()
 var _grid_size := Vector2i.ONE
 var _cell_head := PackedInt32Array()
 var _cell_next := PackedInt32Array()
@@ -63,6 +72,8 @@ func _ready() -> void:
 	_flipped.resize(MAX_ENEMIES)
 	_attack_timers.resize(MAX_ENEMIES)
 	_flash.resize(MAX_ENEMIES)
+	_ids.resize(MAX_ENEMIES)
+	_nearest_distances.resize(MAX_NEAREST)
 	_cell_next.resize(MAX_ENEMIES)
 	_row_next.resize(MAX_ENEMIES)
 
@@ -89,6 +100,8 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 	_flipped[count] = 0
 	_attack_timers[count] = 0.0
 	_flash[count] = 0.0
+	_ids[count] = _next_id
+	_next_id += 1
 	count += 1
 
 
@@ -104,6 +117,25 @@ func kill(i: int) -> void:
 	_flipped[i] = _flipped[count]
 	_attack_timers[i] = _attack_timers[count]
 	_flash[i] = _flash[count]
+	_ids[i] = _ids[count]
+
+
+## Stabile ID von Gegner i (bleibt gleich, auch wenn sich sein Platz ändert).
+func get_id(i: int) -> int:
+	return _ids[i]
+
+
+## Aktueller Platz des Gegners mit dieser ID, oder -1, wenn er nicht mehr lebt.
+## Läuft linear über alle Gegner, ist also für seltene Abfragen gedacht (z. B. Salven), nicht für jeden Frame und jedes Geschoss.
+func find_index_by_id(id: int) -> int:
+	for i in count:
+		if _ids[i] == id:
+			return i if _hp[i] > 0.0 else -1
+	return -1
+
+
+func is_alive(i: int) -> bool:
+	return i >= 0 and i < count and _hp[i] > 0.0
 
 
 ## Zieht Gegner i Lebenspunkte ab. Stirbt er, wird er erst zu Beginn des nächsten Frames entfernt
@@ -130,6 +162,37 @@ func find_nearest(pos: Vector2, max_range: float) -> int:
 			best_sq = distance_sq
 			best = i
 	return best
+
+
+## Die n nächsten lebenden Gegner im Umkreis max_range um pos (Füße), nach Abstand sortiert.
+## Schreibt ihre Plätze nach out (Größe wird angepasst) und liefert die Anzahl (höchstens n, höchstens MAX_NEAREST).
+## Ein Durchlauf mit kleiner Einfügeliste, ohne neue Arrays. Die Plätze gelten nur bis zum nächsten Entfernen eines Gegners:
+## für längeres Merken get_id() nutzen.
+func find_nearest_n(pos: Vector2, max_range: float, n: int, out: PackedInt32Array) -> int:
+	n = clampi(n, 0, MAX_NEAREST)
+	out.resize(n)
+	if n == 0:
+		return 0
+	var found := 0
+	var range_sq := max_range * max_range
+	for i in count:
+		if _hp[i] <= 0.0:
+			continue
+		var distance_sq := pos.distance_squared_to(_positions[i])
+		if distance_sq > range_sq or (found == n and distance_sq >= _nearest_distances[n - 1]):
+			continue
+		# In die sortierte Liste einfügen, der bisher Fernste fällt heraus, wenn sie voll ist
+		var k := mini(found, n - 1)
+		while k > 0 and _nearest_distances[k - 1] > distance_sq:
+			_nearest_distances[k] = _nearest_distances[k - 1]
+			out[k] = out[k - 1]
+			k -= 1
+		_nearest_distances[k] = distance_sq
+		out[k] = i
+		if found < n:
+			found += 1
+	out.resize(found)
+	return found
 
 
 ## Erster lebender Gegner, dessen Körperkreis den Kreis (pos, radius) berührt, oder -1. Nutzt das Spatial Grid.

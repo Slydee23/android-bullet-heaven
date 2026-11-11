@@ -45,7 +45,7 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Start-Waffen (Vorschlag, bestätigt):** Arkaner Zauberstab (gezielte Geschosse), Kreisendes Schwert (Orbit), Dreizack (zufällige Blitze),
   Flammenfackel (Aura), Peitsche (Sichel-Schlag in 4 Richtungen), Bombenbeutel (Zufalls-Bomben mit Warnfläche).
   Später freischaltbar (Vorschläge): Giftphiole (Giftwelle), Frostbogen (durchdringende Eispfeile), Wurfscheibe (Ricochet).
-- **Elemente und Status-Effekte:** Physisch, Feuer (Burning), Blitz (Shock), Gift (Poisoned, stapelt), Kälte (Freeze). Siehe Grundsatz 9.
+- **Elemente und Status-Effekte:** Physisch, Feuer (Burning), Blitz (Shock = Kettenblitz), Gift (Poisoned, stapelt), Kälte (Frost = Slow, Freeze eventuell als Extra-Effekt einer Entwicklung). Siehe Grundsatz 9.
 - **Welt:** feste Maps (begrenzte Arena, größer als der Bildschirm), die Kamera folgt der Figur.
 - **Steuerung:** Joystick Floating oder Fest, linke/rechte/beide Bildschirmseiten, einstellbare Transparenz.
 - **Grafik:** 2D Fantasy Pixel-Art. Die Platzhalter sind schon in Pixel-Optik, die echte Grafik folgt später.
@@ -256,9 +256,11 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - **`TargetPicker`** wählt Ziele bzw. Richtungen und wird in der `WeaponInstance` gehalten (austauschbar durch Upgrades).
    - **Zusätzliche Projektile (`amount`):** Die Behavior ruft pro Angriff `amount`-mal den `TargetPicker` auf (mit den schon gewählten Zielen), jede Einheit folgt also
      dem Muster ihrer Waffe, nie einem festen Fächer. Alle Einheiten lösen **gleichzeitig** aus, nur überzählige Geschosse (mehr Geschosse als Gegner)
-     folgen als kurze Salve (Richtwert 0,1 s) auf den nächsten Gegner. Wirkung von +1: Zauberstab ein weiteres Geschoss auf ein weiteres Ziel,
+     folgen als kurze Salve (0,1 s Abstand, **reihum auf die schon gewählten Ziele**, Reihenfolge nächster, zweitnächster, nächster …). Wirkung von +1: Zauberstab ein weiteres Geschoss auf ein weiteres Ziel,
      Schwert eine weitere Klinge, Dreizack ein weiterer Blitz (ohne weiteren Gegner: zufälliger Punkt im Bild), Bomben eine weitere Bombe,
      Peitsche ein weiterer Schlag in einer anderen Richtung, Aura nicht anwendbar (`supports_stat`).
+     **Peitsche:** Der erste Schlag geht in eine zufällige der 4 Himmelsrichtungen. Zusätzliche Schläge gehen **zuerst auf die gegenüberliegende Seite,
+     danach zum „+“ (die übrigen zwei Himmelsrichtungen) und erst dann in die Diagonalen (maximal 8).
    - **Treffer-Formen im EnemyManager** (Spatial Grid, ohne Allokation): `damage_in_radius`, `damage_in_crescent` (Sichel = innerhalb eines großen Kreises,
      außerhalb eines versetzten zweiten Kreises), bei Bedarf `damage_in_rect`. Der `ProjectileManager` bekommt die Bewegungsart `ORBIT`, einen
      Treffer-Takt pro Gegner für Dauerwaffen und einen Erinnerungsspeicher der zuletzt getroffenen Gegner (Durchschlag, Ricochet).
@@ -266,8 +268,10 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
      Geschosse und Status-Effekte merken sich IDs statt Plätzen.
    - **`EffectManager`** (ab M4b): Treffer-, Tod- und Einschlag-Visuals, ein Pool, ein Zeichenaufruf, dazu verzögerte Ereignisse (Bombenzünder)
      mit **Warnfläche** (leicht transparent, genau in Explosionsgröße, nicht ablenkend).
-   - **Status-Effekte (`StatusEffectData`)**: Element, Art, Dauer, Stärke, Stapelregel, Farbe. Arten: `DOT`, `SLOW`, `STOP`, dazu je nach Entscheidung `CHAIN`/`VULNERABLE` (Shock).
-     Burning = DOT (Dauer erneuern), Poisoned = DOT (stapelt), Freeze = STOP, Bleeding (später, physisch) = DOT. Angewendet über `ApplyStatusEffect` (ein `WeaponEffect`).
+   - **Status-Effekte (`StatusEffectData`)**: Element, Art, Dauer, Stärke, Stapelregel, Farbe. Arten: `DOT`, `SLOW`, `STOP`, `CHAIN` (Kettenblitz).
+     Burning = DOT (Dauer erneuern), Poisoned = DOT (stapelt), **Shock = Kettenblitz** (`CHAIN`, entschieden: ein geschockter Gegner gibt einen Teil des erlittenen
+     Schadens als Blitz an nahe Gegner weiter; Upgrades dafür später: mehr Ziele, mehr % Schaden beim Überspringen), **Frost = Slow** (`SLOW`),
+     Freeze = STOP (eventuell später als Extra-Effekt einer Entwicklung), Bleeding (später, physisch) = DOT. Angewendet über `ApplyStatusEffect` (ein `WeaponEffect`).
      Speicher pro Gegner als Bitmaske und flache Arrays, nur Gegner mit gesetzter Maske laufen durch die Status-Schleife.
      Später: Resistenzen/Immunitäten je `EnemyData`, Elementreaktionen, Status auf den Helden.
    - **Freischalten:** `WeaponData.default_unlocked` (später zusätzlich eine Freischalt-ID). Level-Up-Pool und Startwaffen-Auswahl ziehen nur aus freigeschalteten Waffen
@@ -429,7 +433,7 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 ### M4 – Auto-Angriff
 
 Umsetzung in Teilschritten: M4a Waffen-Architektur, Magiegeschoss, Geschoss-Pool, Gegner-HP mit Aufleuchten und Tod (**erledigt**, am PC getestet) →
-**M4a+** Umbau für den Waffen-Baukasten (Zauberstab-Umbenennung `arcane_wand`, `WeaponContext`, Behavior-Haken, `TargetPicker`, `amount` mit Salve, stabile Gegner-IDs, Farbpalette aus den vorhandenen Texturen) →
+**M4a+** (**erledigt**, am PC getestet, Handy-Test offen) Umbau für den Waffen-Baukasten (Zauberstab-Umbenennung `arcane_wand`, `WeaponContext`, Behavior-Haken, `TargetPicker`, `amount` mit Salve, stabile Gegner-IDs, Farbpalette aus den vorhandenen Texturen) →
 M4b Treffer- und Tod-Effekte (`hit.png`, `death.png`) mit allgemeinem `EffectManager` und Treffer-Formen (`damage_in_radius`, `damage_in_crescent`) →
 M4c Schadenszahlen und Gegner-Lebensleisten mit Optionen (Schadenszahlen in Elementfarbe) →
 M4d Statusbildschirm mit Waffen-Spalte (4 Plätze, Icon, Name, Fähigkeit) →
@@ -721,10 +725,10 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
   ~~Lizenz der Pixellab-Assets~~ → geklärt: Rechte liegen bei uns (Pixellab-Nutzungsbedingungen 1.3), siehe `CREDITS.md`.
   Ob die Figuren bei vielen Gegnern groß genug wirken, prüfen wir beim Testen. Feinwerte (Zoom, Geschwindigkeiten) beim Balancing.
 - **Waffen-Baukasten, noch offen** (jeweils vor der betreffenden Stufe klären):
-  - **Shock-Effekt** (vor M4g): Kettenblitz (Empfehlung: geschockter Gegner gibt 30 % Schaden an bis zu 2 nahe Gegner weiter), Überladung (+15 % erlittener Schaden) oder Zucken (kurzes Stoppen)?
-  - **Überzählige Geschosse** (vor M4a+ bzw. M4f): Zauberstab → Salve auf den nächsten Gegner, Dreizack → zufälliger Punkt im Bild. Passt das so?
-  - **Peitsche** (vor M4h): Richtung zufällig aus den 4 Himmelsrichtungen (bei +1 eine andere) oder zur Seite mit den meisten Gegnern? Länge der Sichel mit Probebild abstimmen.
-  - **Salve-Abstand** (Richtwert 0,1 s) und **Größe der Bomben-Warnfläche** am Handy abstimmen.
+  - ~~Shock-Effekt~~ → **entschieden: Kettenblitz** (Slow gehört zu Frost). Konkrete Werte (Anteil des Schadens, Anzahl Ziele, Reichweite) vor M4g.
+  - ~~Überzählige Geschosse~~ → **entschieden:** Zauberstab = Salve reihum auf die gewählten Ziele, Dreizack = zufälliger Punkt im Bild (Dreizack vor M4f noch einmal ansehen).
+  - ~~Peitschen-Richtung~~ → **entschieden:** zufällig aus den 4 Himmelsrichtungen, zusätzliche Schläge gegenüber → „+“ → Diagonalen (max. 8). Länge der Sichel mit Probebild abstimmen (vor M4h).
+  - **Salve-Abstand** (jetzt 0,1 s, `ProjectileBehavior.SALVO_DELAY`) und **Größe der Bomben-Warnfläche** am Handy abstimmen.
   - Weitere Entwicklungen und Freischalt-Quellen der Waffen im Dorf → mit E4/E10.
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
   exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit

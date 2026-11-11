@@ -50,4 +50,7 @@ DEBUG_IFRAME_RESET,Standardwerte
 DEBUG_TEST_SMALL_HIT,Treffer 5 %
 DEBUG_TEST_HIT,Treffer 20 %
 DEBUG_TEST_SELF_DAMAGE,Selbstschaden 10 %
-WEAPON_MAGIC_BOLT,Magiegeschoss
+WEAPON_ARCANE_WAND_NAME,Arkaner Zauberstab
+WEAPON_ARCANE_WAND_DESC,"Verschießt magische Projektile, die selbständig Gegner anvisieren."
+DEBUG_EXTRA_PROJECTILE,+1 Projektil
+DEBUG_EXTRA_PROJECTILE_RESET,Projektile zurücksetzen
