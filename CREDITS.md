@@ -13,7 +13,14 @@
 | `assets/sprites/characters/hero_idle.png`, `hero_run.png` | Erstellt mit [Pixellab](https://www.pixellab.ai) | Eigene Werke: Laut Pixellab-Nutzungsbedingungen 1.3 liegen die Rechte bei uns, kommerzielle Nutzung erlaubt (geprüft am 2026-11-09) |
 | `assets/sprites/enemies/skeleton_walk.png` | Erstellt mit Pixellab | wie oben |
 | `assets/tiles/forest_*.png` | Selbst erstellt (Generator `tools/gen_forest.gd`) | Eigene Werke |
-| `assets/ui/*.png` | Selbst erstellte Platzhalter | Eigene Werke |
+| `assets/ui/*.png` (Fenster, Knöpfe, Regler, Hauptmenü-Bild …) | Selbst erstellt (Generator `tools/gen_ui.gd`) | Eigene Werke |
+| `assets/sprites/characters/hero_hit.png`, `hero_death.png` | Selbst erstellte Platzhalter (Generator `tools/gen_hero_placeholders.gd`, abgeleitet vom Pixellab-Helden) | Eigene Werke |
+
+## Schriften
+
+| Schrift | Quelle | Lizenz |
+| --- | --- | --- |
+| `assets/fonts/pixel_font.ttf` = **Pixelify Sans** | https://github.com/eifetx/Pixelify-Sans (Copyright 2021 The Pixelify Sans Project Authors) | SIL Open Font License 1.1, Lizenztext in `assets/fonts/OFL.txt`. Kommerzielle Nutzung erlaubt, der Lizenzhinweis muss im Credits-Bildschirm stehen (siehe PLAN.md E16). |
 
 ## Regel
 

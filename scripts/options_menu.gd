@@ -6,10 +6,10 @@ signal closed
 
 const PixelUI := preload("res://scripts/pixel_ui.gd")
 ## Größen der Elemente (der Inhaltsbereich selbst ist in options_menu.tscn festgelegt)
-const ROW_FONT_SIZE := 40
+const ROW_FONT_SIZE := 32
 const CHOICE_BUTTON_SIZE := Vector2(230.0, 88.0)
-const TAB_BUTTON_SIZE := Vector2(300.0, 88.0)
-const TAB_FONT_SIZE := 40
+const TAB_BUTTON_SIZE := Vector2(260.0, 88.0)
+const TAB_FONT_SIZE := 32
 const SLIDER_WIDTH := 520.0
 const SLIDER_HEIGHT := 88.0
 const SLIDER_VALUE_WIDTH := 130.0

@@ -237,9 +237,11 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 
 | Datei | Größe pro Frame | Frames | Ab |
 | --- | --- | --- | --- |
-| `assets/ui/menu_background.png` | 600×270 (mind. 480×270) | 1 | M1 |
-| `assets/fonts/pixel_font.ttf` | – (mit ä, ö, ü, ß); noch kein Platzhalter, bis dahin Godot-Standardschrift | – | M1 |
-| `assets/ui/button.png` | 16×16 (9-Slice) | 1 | M1 |
+| `assets/ui/menu_background.png` | 600×270 (20:9, im Spiel genau 4× vergrößert; mind. 480×270) – Nacht über einem Waffenfeld, Mond mit Bann-Siegel | 1 | M1 |
+| `assets/fonts/pixel_font.ttf` | Pixelify Sans (SIL OFL, siehe `CREDITS.md`), mit ä, ö, ü, ß. Auf 16er-Raster: Größen 32/48/64/96/128 sind gestochen scharf | – | M1 |
+| `assets/ui/button.png` | 20×20 (9-Slice, Rand 6) – Runentafel mit Goldkante | 1 | M1 |
+| `assets/ui/button_pressed.png` | 20×20 (9-Slice, Rand 6) – gedrückt/gewählt, violett glühend | 1 | M3 |
+| `assets/ui/divider.png` | 96×9 – goldene Trennlinie unter Überschriften | 1 | M3 |
 | `assets/sprites/characters/hero_idle.png` | 32×32, Blick nach Osten (Pixellab) | 1 (später gern Atem-Animation, beliebig viele) | M1 |
 | `assets/sprites/characters/hero_run.png` | 32×32, Blick nach Osten (Pixellab) | 8 (beliebig) | M1 |
 | `assets/tiles/forest_ground.png` | **Nahtloses Bodenmuster** aus 32×32-Kacheln (jetzt 512×512 = 16×16 Kacheln, ca. 15 % Erdflecken mit verzerrten, unregelmäßigen Formen). Jede Zelle nimmt die Kachel an ihrer Position im Muster, das Muster wird pro Run zufällig verschoben. Beliebig groß, solange Breite und Höhe Vielfache von 32 sind und das Bild als Ganzes nahtlos ist | 1 Muster | M1 |
@@ -251,7 +253,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
 | `assets/ui/pause_button.png` | 16×16 | 1 | M2 |
 | `assets/ui/debug_button.png` | 16×16 (nur Test-Builds, muss nicht ersetzt werden) | 1 | M3 |
-| `assets/ui/panel.png` | 16×16 (9-Slice, Rand 4) – Hintergrund für Menüfenster | 1 | M2 |
+| `assets/ui/panel.png` | 24×24 (9-Slice, Rand 8) – Steinrahmen mit Goldlinie und Nieten für Menüfenster | 1 | M2 |
 | `assets/ui/slider_track.png` | 12×8 (9-Slice, Rand 3) – Schieberegler-Leiste | 1 | M2 |
 | `assets/ui/slider_grabber.png` | 16×16 – Schieberegler-Knopf | 1 | M2 |
 | `assets/sprites/enemies/skeleton_walk.png` | 32×32 (Pixellab) | 8 | M3 |
@@ -441,7 +443,6 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
   Der Changelog lässt sich öffnen, scrollen und schließen.
 
 - ⚠ **Erinnerung nach Abschluss von M8:**
-  - UI-Design-Überarbeitung besprechen (siehe „UI-Überarbeitung“).
   - README gemeinsam aktualisieren und deine ersten Screenshots einbauen.
 
 ➡ **Nach M8 ist das Grundspiel fertig.**
@@ -612,12 +613,21 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 - **Spezialfähigkeit im Run wechseln:** eventuell über einen besonderen Encounter zwischen zwei Wellen.
   **Nicht entschieden**, deshalb nicht umsetzen und keine Systeme darauf ausrichten.
 
-## UI-Überarbeitung (später)
+## UI-Stil: „Runenstein & Bann-Siegel“
 
-- **Feedback zu M2c:** Das Design von Pausemenü, Status-Screen und Buttons wirkt kantig und nicht modern.
-  Erst angehen, wenn die Menüs inhaltlich vollständig sind → **nach M8 gemeinsam besprechen**.
-- Technisch hängt die Optik vor allem an den UI-Texturen (`button.png`, `panel.png` …) und den Theme-Werten in
-  `scripts/pixel_ui.gd` (`make_theme()`). Der Menü-Code bleibt bei einem Redesign weitgehend unberührt.
+- **Feedback zu M2c:** Pausemenü, Status-Screen und Buttons wirkten kantig und nicht modern. Am 2026-11-11 auf Wunsch des Nutzers
+  vorgezogen und umgesetzt (statt erst nach M8).
+- **Stil (vom Nutzer gewählt):** dunkler Runenstein mit Goldkante, violetter Magie-Schimmer, passend zur Lore (Bann des Hohen Zirkels,
+  Waffen zerfallen zu Staub). Gedrückte/gewählte Knöpfe glühen violett. Titel und Überschriften in Gold mit Schlagschatten.
+- **Hauptmenü-Bild:** Nacht über einem Schlachtfeld voller zerfallender Klingen, Bögen und Speere (Staub steigt auf), der Held steht
+  dazwischen, über dem Mond liegt das Siegel des Zirkels. Alles als Pixel-Art von `tools/gen_ui.gd` erzeugt (auch alle UI-Texturen);
+  der Nutzer kann jede Datei durch eigene Pixellab-Assets (gleicher Name, gleiche Größe) überschreiben.
+- **Schrift:** Pixelify Sans (OFL). Größen nur 32, 48, 64, 96, 128 verwenden (`PixelUI.FONT_SIZE_*`), dann bleibt sie scharf.
+  Statt Umrandung gibt es einen Schlagschatten (Theme `shadow_offset`).
+- **Umfang:** Theme (Knöpfe, Fenster, Regler, Reiter), Hauptmenü, Pause, Optionen, Game Over, HUD-Knöpfe. Das Debug-Menü erbt nur das Theme.
+  Joystick und Lebensleiste sind noch im alten Stil (Kandidaten für später).
+- Technisch hängt die Optik an den UI-Texturen und den Theme-Werten in `scripts/pixel_ui.gd` (`make_theme()`); der Menü-Code blieb
+  weitgehend unberührt.
 
 ## Offene Designfragen
 

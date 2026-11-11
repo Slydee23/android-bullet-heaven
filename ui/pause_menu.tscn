@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/pause_menu.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/ui/divider.png" id="9_divider"]
 
 [node name="PauseMenu" type="Control"]
 process_mode = 3
@@ -39,9 +40,17 @@ theme_override_constants/separation = 32
 
 [node name="Title" type="Label" parent="Margin/Layout"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
 theme_override_font_sizes/font_size = 64
 text = "PAUSE_TITLE"
 horizontal_alignment = 1
+
+[node name="Divider" type="TextureRect" parent="Margin/Layout"]
+custom_minimum_size = Vector2(384, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("9_divider")
+expand_mode = 1
 
 [node name="Columns" type="HBoxContainer" parent="Margin/Layout"]
 layout_mode = 2
@@ -59,13 +68,12 @@ theme_override_constants/separation = 16
 [node name="Header" type="Label" parent="Margin/Layout/Columns/CharacterColumn/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 text = "PAUSE_COLUMN_CHARACTER"
 
 [node name="HpLabel" type="Label" parent="Margin/Layout/Columns/CharacterColumn/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
 text = "PAUSE_HP"
 autowrap_mode = 3
 
@@ -80,7 +88,7 @@ theme_override_constants/separation = 16
 [node name="Header" type="Label" parent="Margin/Layout/Columns/WeaponsColumn/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 text = "PAUSE_COLUMN_WEAPONS"
 
 [node name="Placeholder" type="Label" parent="Margin/Layout/Columns/WeaponsColumn/Content"]
@@ -100,7 +108,7 @@ theme_override_constants/separation = 16
 [node name="Header" type="Label" parent="Margin/Layout/Columns/RunColumn/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.35, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 text = "PAUSE_COLUMN_RUN"
 
 [node name="Placeholder" type="Label" parent="Margin/Layout/Columns/RunColumn/Content"]

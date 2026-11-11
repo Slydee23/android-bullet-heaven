@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/ui/menu_background.png" id="2_background"]
+[ext_resource type="Texture2D" path="res://assets/ui/divider.png" id="9_divider"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -37,12 +38,19 @@ theme_override_constants/separation = 64
 
 [node name="Title" type="Label" parent="Center/Menu"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.91, 0.87, 0.78, 1)
-theme_override_colors/font_outline_color = Color(0.05, 0.03, 0.08, 1)
-theme_override_constants/outline_size = 16
+theme_override_colors/font_color = Color(0.96, 0.86, 0.56, 1)
+theme_override_constants/shadow_offset_x = 8
+theme_override_constants/shadow_offset_y = 8
 theme_override_font_sizes/font_size = 128
 text = "Banebound"
 horizontal_alignment = 1
+
+[node name="Divider" type="TextureRect" parent="Center/Menu"]
+custom_minimum_size = Vector2(384, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("9_divider")
+expand_mode = 1
 
 [node name="VersionLabel" type="Label" parent="."]
 unique_name_in_owner = true
@@ -59,9 +67,7 @@ offset_bottom = -32.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.75, 0.7, 0.82, 1)
-theme_override_colors/font_outline_color = Color(0.05, 0.03, 0.08, 1)
-theme_override_constants/outline_size = 8
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 32
 horizontal_alignment = 2
 vertical_alignment = 2
 
@@ -70,7 +76,6 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(480, 128)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 56
 text = "MENU_START_RUN"
 
 [node name="OptionsButton" type="Button" parent="Center/Menu"]
@@ -78,5 +83,4 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(480, 128)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 56
 text = "MENU_OPTIONS"
