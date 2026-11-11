@@ -35,6 +35,17 @@ Erweiterungen Richtung Hades-artiger Meta-Progression. Jeder Meilenstein ist ein
 - **Startwaffe:** Jeder Run beginnt mit **genau 1 Startwaffe** (das bleibt immer so). Am Anfang ist sie fest, weitere
   Startwaffen werden im Laufe des Spiels freigeschaltet und vor der Expedition im Hub gewählt (jederzeit änderbar). Die Startwaffe belegt den
   Startwaffen-Platz und ist ab Welle 1 da. Alle weiteren Waffen kommen über Level-Up in die 3 Run-Plätze.
+  **Startwaffen sind nicht stärker als andere Waffen** (kein Bonus): Die Wahl hilft nur, einen gewünschten Build leichter zu erreichen.
+- **Waffenidentität:** Jede Auswahl ist eine **echte Fantasy-Waffe** (Zauberstab, Schwert, Dreizack …), keine abstrakte Fähigkeit.
+  Die **Fähigkeit der Waffe bestimmt ihr Angriffsverhalten**. Upgrades verbessern oder verändern Eigenschaften und Effekte der Waffe.
+  Auswahl und Spielgefühl orientieren sich an Vampire Survivors, die Darstellung ist thematisch.
+- **Waffen-Pool:** **6 Waffen sind von Anfang an freigeschaltet** (Richtwert, später anpassbar), weitere schaltet man über Fortschritt oder
+  Aktivitäten im Hub frei. Aus den freigeschalteten Waffen wählt man die Startwaffe und bekommt per Level-Up weitere.
+  Jede dieser Waffen muss auch allein in Welle 1 funktionieren und sich durch Angriffsmuster und Spielweise von den anderen unterscheiden.
+- **Start-Waffen (Vorschlag, bestätigt):** Arkaner Zauberstab (gezielte Geschosse), Kreisendes Schwert (Orbit), Dreizack (zufällige Blitze),
+  Flammenfackel (Aura), Peitsche (Sichel-Schlag in 4 Richtungen), Bombenbeutel (Zufalls-Bomben mit Warnfläche).
+  Später freischaltbar (Vorschläge): Giftphiole (Giftwelle), Frostbogen (durchdringende Eispfeile), Wurfscheibe (Ricochet).
+- **Elemente und Status-Effekte:** Physisch, Feuer (Burning), Blitz (Shock), Gift (Poisoned, stapelt), Kälte (Freeze). Siehe Grundsatz 9.
 - **Welt:** feste Maps (begrenzte Arena, größer als der Bildschirm), die Kamera folgt der Figur.
 - **Steuerung:** Joystick Floating oder Fest, linke/rechte/beide Bildschirmseiten, einstellbare Transparenz.
 - **Grafik:** 2D Fantasy Pixel-Art. Die Platzhalter sind schon in Pixel-Optik, die echte Grafik folgt später.
@@ -178,7 +189,8 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
      Grafiken, kommerzielle und nicht kommerzielle Nutzung ohne Genehmigung (vom Nutzer am 2026-11-09 geprüft).
    - Lizenz je fremdem Asset prüfen und in `CREDITS.md` eintragen (dort stehen auch Engine und Pixellab).
    - **Feste Farbpalette und feste Sprite-Größen**, damit Assets aus verschiedenen Quellen zusammenpassen.
-     Die Palette wählen wir, sobald das erste Alpha-Asset kommt.
+     Die Palette wählen wir, sobald das erste Alpha-Asset kommt. Vorerst lesen wir sie aus den vorhandenen Texturen (Held, Skelett, Wald)
+     aus und legen sie als Konstanten in einem Tool-Skript ab (M4a+), damit alle Platzhalter-Generatoren dieselben Farben nutzen.
 5. **Kollision und Schaden:**
    - Der Held kann **durch Gegner hindurchlaufen**. Gegner bleiben am Rand seines Körperradius stehen, nicht in ihm, und werden
      beiseitegeschoben, wenn er durch eine Gruppe läuft. Gegner können den Helden nie einsperren.
@@ -200,14 +212,20 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - Boni derselben Art **addieren** sich (+20 % und +15 % = +35 %). MULT nur für seltene Quellen (z. B. Evolutionen).
    - Verteidigung mit **abnehmendem Ertrag**: Schadensreduktion = `Rüstung ÷ (Rüstung + K)` (z. B. K = 15). Dazu Obergrenzen
      in den Stat-Definitionen (z. B. Ausweichen max. 60 %).
-   - **Schadens-Tags** (z. B. `fire`, `projectile`, `melee`), damit Boni nur bestimmte Waffen betreffen können.
+   - **Schadens-Tags** (z. B. `projectile`, `melee`) und **Elemente** (`physical`, `fire`, `lightning`, `poison`, `cold`), damit Boni nur bestimmte Waffen betreffen können.
+     Jede Waffe hat genau ein Element, `physical` (Anzeige „Physisch“) ist der Standard für Waffen ohne Element.
+   - **Zusätzliche Projektile:** Stat `amount` (Anzahl der Angriffseinheiten pro Angriff, Grundwert in der Waffe) plus globaler Bonus `extra_projectiles`,
+     der nur Waffen mit `amount`-Unterstützung betrifft (siehe Grundsatz 9).
    - Neu gerechnet wird nur bei Änderungen. Geschosse tragen ihren fertigen Schadenswert.
-   - Beispiel: Magiegeschoss 10 Grundschaden, +3 durch Waffenlevel, Artefakt +20 %, Rune +15 % → (10 + 3) × 1,35 = 17,6.
+   - Beispiel: Arkaner Zauberstab 10 Grundschaden, +3 durch Waffenlevel, Artefakt +20 %, Rune +15 % → (10 + 3) × 1,35 = 17,6.
    - Einbau schrittweise: Grundschaden in M4, StatBlock und Modifikatoren in M6.
      Waffen lesen ihre Werte aber von Anfang an über `WeaponInstance.get_stat(id)`, damit M6 nur das Innere austauscht (siehe Punkt 9).
 7. **Zielen:** Gespielt wird mit einem Daumen, kein zweiter Stick.
-   - Der **Zielmodus ist eine Eigenschaft der Waffe** (Datendatei): `NEAREST` (nächster Gegner, Standard),
-     `FACING` (letzte Laufrichtung, stufenlos, nicht nur links/rechts), später z. B. `RANDOM`, `STRONGEST`, `DENSEST`.
+   - Der **Zielmodus ist eine Eigenschaft der Waffe** (Datendatei) und ein austauschbarer Baustein (`TargetPicker`, siehe Grundsatz 9):
+     `NEAREST_DISTINCT` (nächste Gegner, jeder nur einmal, Standard), `RANDOM_ENEMY`, `RANDOM_SCREEN_POINT`, `RANDOM_DIRECTION`,
+     `FACING` (letzte Laufrichtung, stufenlos, nicht nur links/rechts), später z. B. `STRONGEST`, `DENSEST`.
+     Ein Upgrade oder eine Entwicklung kann den Zielmodus wechseln (z. B. Bomben zielen auf Gegnergruppen).
+   - **Kein Homing:** Geschosse sind nur beim Abschuss gezielt. Lenken im Flug kann später ein Upgrade-Effekt sein.
    - Bewusst **kein vom Spieler umschaltbarer Zielmodus**: Der Zielmodus macht jede Waffe einzigartig und situativ.
 8. **Begehbare Hub-Stadt** als Zentrum des Spiels (siehe „Hub-Stadt“). Die Architektur wird schon jetzt darauf vorbereitet:
    - **Zentrale Szenensteuerung** (Autoload `SceneRouter`) für Hauptmenü, Run und später Hub/Innenräume. Kommt in M3b.
@@ -228,7 +246,34 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - **`WeaponHolder` (Baustein der Run-Szene):** `START_SLOTS := 1`, `RUN_SLOTS := 3`, dazu `can_add_run_weapon()` und `has_weapon(id)` für den Level-Up-Pool.
    - **Performance:** Geschosse bleiben im Pool des `ProjectileManager` (merken sich nur den Waffen-Index). Effekte laufen nur bei Ereignissen
      (Treffer, Kill), nicht pro Frame. Waffen ohne Effekte kosten nichts extra.
-   - Evolutionen (E4) sind neue Waffen-Datendateien, die die alte im selben Platz ersetzen.
+   - Evolutionen (E4) sind neue Waffen-Datendateien, die die alte im selben Platz ersetzen. Sie können Element, Status-Effekt und `TargetPicker`
+     wechseln (geplant: elementare Zauberstab-Entwicklungen, brennende Schwerter, Bleeding bei physischen Waffen, Bomben auf Gegnergruppen).
+   - **Fünf Angriffsarten (`WeaponBehavior`)** decken alle geplanten Muster ab:
+     `ProjectileBehavior` (gezielte, durchdringende, abprallende Geschosse und Wellen mit unbegrenztem Durchschlag),
+     `OrbitBehavior` (umlaufende Klingen), `AuraBehavior` (Dauerfläche um den Helden), `StrikeBehavior` (Einschläge: Blitze, Bomben mit Verzögerung),
+     `SweepBehavior` (Richtungsangriffe wie die Sichel der Peitsche). Haken: `fire()` (bei Abklingzeit), `tick(delta)` (Dauerwaffen), `on_stats_changed()`.
+     Verweise (Held, Gegner, Geschosse, Effekte) stecken in einem gemeinsamen `WeaponContext`.
+   - **`TargetPicker`** wählt Ziele bzw. Richtungen und wird in der `WeaponInstance` gehalten (austauschbar durch Upgrades).
+   - **Zusätzliche Projektile (`amount`):** Die Behavior ruft pro Angriff `amount`-mal den `TargetPicker` auf (mit den schon gewählten Zielen), jede Einheit folgt also
+     dem Muster ihrer Waffe, nie einem festen Fächer. Alle Einheiten lösen **gleichzeitig** aus, nur überzählige Geschosse (mehr Geschosse als Gegner)
+     folgen als kurze Salve (Richtwert 0,1 s) auf den nächsten Gegner. Wirkung von +1: Zauberstab ein weiteres Geschoss auf ein weiteres Ziel,
+     Schwert eine weitere Klinge, Dreizack ein weiterer Blitz (ohne weiteren Gegner: zufälliger Punkt im Bild), Bomben eine weitere Bombe,
+     Peitsche ein weiterer Schlag in einer anderen Richtung, Aura nicht anwendbar (`supports_stat`).
+   - **Treffer-Formen im EnemyManager** (Spatial Grid, ohne Allokation): `damage_in_radius`, `damage_in_crescent` (Sichel = innerhalb eines großen Kreises,
+     außerhalb eines versetzten zweiten Kreises), bei Bedarf `damage_in_rect`. Der `ProjectileManager` bekommt die Bewegungsart `ORBIT`, einen
+     Treffer-Takt pro Gegner für Dauerwaffen und einen Erinnerungsspeicher der zuletzt getroffenen Gegner (Durchschlag, Ricochet).
+   - **Stabile Gegner-IDs:** Gegner behalten eine fortlaufende ID (`_ids`), weil beim Tod der letzte Gegner nachrückt und Plätze sich ändern.
+     Geschosse und Status-Effekte merken sich IDs statt Plätzen.
+   - **`EffectManager`** (ab M4b): Treffer-, Tod- und Einschlag-Visuals, ein Pool, ein Zeichenaufruf, dazu verzögerte Ereignisse (Bombenzünder)
+     mit **Warnfläche** (leicht transparent, genau in Explosionsgröße, nicht ablenkend).
+   - **Status-Effekte (`StatusEffectData`)**: Element, Art, Dauer, Stärke, Stapelregel, Farbe. Arten: `DOT`, `SLOW`, `STOP`, dazu je nach Entscheidung `CHAIN`/`VULNERABLE` (Shock).
+     Burning = DOT (Dauer erneuern), Poisoned = DOT (stapelt), Freeze = STOP, Bleeding (später, physisch) = DOT. Angewendet über `ApplyStatusEffect` (ein `WeaponEffect`).
+     Speicher pro Gegner als Bitmaske und flache Arrays, nur Gegner mit gesetzter Maske laufen durch die Status-Schleife.
+     Später: Resistenzen/Immunitäten je `EnemyData`, Elementreaktionen, Status auf den Helden.
+   - **Freischalten:** `WeaponData.default_unlocked` (später zusätzlich eine Freischalt-ID). Level-Up-Pool und Startwaffen-Auswahl ziehen nur aus freigeschalteten Waffen
+     (`WeaponCatalog`; die Liste der freigeschalteten IDs liegt später im Profil-Spielstand).
+   - **Upgrades (M6):** zufälliger Pool je Waffe (`WeaponUpgrade`: Modifikatoren, optional zusätzliche Effekte, `max_stacks`, Gewicht, Voraussetzungen).
+     Waffenlevel = 1 + Anzahl gewählter Upgrades (Obergrenze 10, dann Evolution). Die Waffe wird nicht am Helden gezeichnet (später evtl. schwebend wie bei Brotato, siehe „Ideen“).
 
 ## Assets: Platzhalter → Alpha
 
@@ -245,6 +290,9 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 - Lizenz: CC0 oder ausdrücklich für kommerzielle Nutzung freigegeben (bei KI-Tools die Nutzungsbedingungen des Tarifs prüfen).
   Jedes fremde Asset kommt mit Quelle und Lizenz in `CREDITS.md`.
 - Farben aus der gemeinsamen Palette (wird mit dem ersten Alpha-Asset festgelegt).
+- **Neue Grafiken müssen zum Stil der vorhandenen passen und dürfen nicht wie Fremdkörper wirken.** Vorzugsgröße **32×32**, andere Größen nur,
+  wenn sie sinnvoller sind. Wichtiger als die Auflösung ist die **gleiche Pixeldichte**: Ein 16×16-Geschoss ist im Spiel genauso grob gepixelt wie der 32×32-Held.
+  Einheitlicher Pixel-Art-Stil, gleiche Lichtrichtung und Umrandung wie bei Held und Skelett.
 - **Dateinamen auf Englisch, klein geschrieben, mit Unterstrich, ohne Umlaute und Leerzeichen**
   (z. B. `hero_run.png`, nicht `Held Laufen.png`). Android unterscheidet Groß- und Kleinschreibung,
   und Umlaute in Dateinamen machen Probleme.
@@ -281,9 +329,12 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/sprites/effects/hit.png` | 32×32 | 4 | M4 |
 | `assets/sprites/effects/death.png` | 32×32 | 6 | M4 |
 | `assets/sprites/pickups/xp_crystal.png` | 16×16 | 4 | M6 |
-| `assets/sprites/weapons/spinning_blade.png` | 32×32 | 1 | M6 |
-| `assets/sprites/weapons/fire_aura.png` | 128×128 | 8 | M6 |
-| `assets/sprites/icons/weapon_magic_bolt.png` (usw. je Waffe) | 16×16 | 1 | M6 |
+| `assets/sprites/icons/weapon_<id>.png` (je Waffe, z. B. `weapon_arcane_wand.png`) | 32×32, zeigt **die Waffe selbst** (Zauberstab, Schwert, Dreizack, Fackel, Peitsche, Bombenbeutel), nicht ihren Angriff | 1 | M4d |
+| `assets/sprites/weapons/sword_orbit.png` | 32×32, umlaufende Klinge, Blick nach Osten (Vorschlag, Größe bei M4e festlegen) | 1–4 | M4e |
+| `assets/sprites/effects/aura_fire.png` | Fläche um den Helden, Größe bei M4e festlegen (Vorschlag: Vielfaches von 32) | 4–8 | M4e |
+| `assets/sprites/effects/lightning_strike.png` | 32×64 (hoch), Einschlag-Blitz (Vorschlag) | 4–6 | M4f |
+| `assets/sprites/weapons/bomb.png`, `effects/explosion.png` | 32×32, Bombe bzw. Explosion (Vorschlag), dazu die Warnfläche (halbtransparent, im Code gezeichnet) | beliebig | M4f |
+| `assets/sprites/effects/whip_slash.png` | Sichelform (lang, gekrümmt wie ein Swoosh), Blick nach Osten und wird für die 4 Himmelsrichtungen gedreht (Vorschlag: 64×32, mit Probebild abstimmen) | 3–4 | M4h |
 | `assets/ui/card_frame.png` | 32×32 (9-Slice) | 1 | M6 |
 | `assets/sprites/enemies/bat_fly.png` | 32×32 | 4 | M7 |
 | `assets/sprites/enemies/slime_hop.png` | 32×32 | 4 | M7 |
@@ -377,17 +428,23 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 
 ### M4 – Auto-Angriff
 
-Umsetzung in Teilschritten: M4a Waffen-Architektur, Magiegeschoss, Geschoss-Pool, Gegner-HP mit Aufleuchten und Tod (Code fertig, Test am PC/Handy offen) →
-M4b Treffer- und Tod-Effekte (`hit.png`, `death.png`, Effekt-Pool) → M4c Schadenszahlen und Gegner-Lebensleisten mit Optionen →
-M4d Statusbildschirm mit Waffen-Spalte (4 Plätze).
+Umsetzung in Teilschritten: M4a Waffen-Architektur, Magiegeschoss, Geschoss-Pool, Gegner-HP mit Aufleuchten und Tod (**erledigt**, am PC getestet) →
+**M4a+** Umbau für den Waffen-Baukasten (Zauberstab-Umbenennung `arcane_wand`, `WeaponContext`, Behavior-Haken, `TargetPicker`, `amount` mit Salve, stabile Gegner-IDs, Farbpalette aus den vorhandenen Texturen) →
+M4b Treffer- und Tod-Effekte (`hit.png`, `death.png`) mit allgemeinem `EffectManager` und Treffer-Formen (`damage_in_radius`, `damage_in_crescent`) →
+M4c Schadenszahlen und Gegner-Lebensleisten mit Optionen (Schadenszahlen in Elementfarbe) →
+M4d Statusbildschirm mit Waffen-Spalte (4 Plätze, Icon, Name, Fähigkeit) →
+**M4e** Kreisendes Schwert (`OrbitBehavior`) und Flammenfackel (`AuraBehavior`) →
+**M4f** Dreizack und Bombenbeutel (`StrikeBehavior`, Warnfläche) →
+**M4g** Elemente und Status-Effekte (Burning, Shock, Poisoned, Freeze) →
+**M4h** Peitsche (`SweepBehavior`, Sichel) und Grundlage für Welle/Ricochet. Jede Stufe liefert eine spielbare Waffe als Beweis, dass die Architektur das Muster trägt.
 
-- Erste Waffe „Magiegeschoss“: Sie schießt automatisch auf den nächsten Gegner. Geschosse kommen aus einem Pool.
+- Erste Waffe **Arkaner Zauberstab** (sein Angriff ist das „Magiegeschoss“; bis M4a noch unter dem Namen „Magiegeschoss“ geführt): Sie schießt automatisch auf den nächsten Gegner. Geschosse kommen aus einem Pool.
   Gegner haben HP, blinken kurz bei einem Treffer und sterben (mit kleinem Effekt).
 - Waffen-Architektur nach Grundsatz 9: `WeaponData` (Datendatei `data/weapons/*.tres`, Stats als Liste „ID → Wert“, `behavior`, `effects`),
   `WeaponInstance` (Zustand im Run, `get_stat()`), `WeaponHolder` (4 Plätze: `START_SLOTS` 1 + `RUN_SLOTS` 3) und `ProjectileManager` (Geschoss-Pool).
   Zielmodus der Waffe: `NEAREST` ist umgesetzt, `FACING` folgt mit der ersten Waffe, die ihn braucht.
 - Waffen sind ein eigener Baustein (Node `Weapons`), den die Run-Szene dem Helden anhängt. `player.gd` bleibt waffenfrei.
-- Das Magiegeschoss ist die **feste Startwaffe**. Die Run-Szene liest dafür eine einzelne Startwaffen-ID (`START_WEAPON_ID` in `run.gd`, vorerst fest
+- Der Zauberstab ist vorerst die **feste Startwaffe** (im Debug-Menü später wählbar). Die Run-Szene liest dafür eine einzelne Startwaffen-ID (`START_WEAPON_ID` in `run.gd`, vorerst fest
   vorgegeben), ohne Auswahl-Logik. Die Auswahl im Hub kommt mit E10.
 - Gegner sterben erst zu Beginn des nächsten Frames (`EnemyManager.damage()` markiert, `_remove_dead()` entfernt) und senden dann `enemy_killed` (Anschluss für M4b/M6).
 - Geschosse fliegen in der Fußebene und werden 14 Pixel höher (Körpermitte) gezeichnet, damit sie zu den Kollisionskreisen an den Füßen passen.
@@ -403,7 +460,8 @@ M4d Statusbildschirm mit Waffen-Spalte (4 Plätze).
 - **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
   Das Grundgerüst gibt es schon seit M3: erreichbar über den Debug-Knopf neben dem Pause-Knopf, das Spiel kann dabei weiterlaufen
   (Zoom, I-Frames). Das Fenster ist scrollbar: Neue Einträge kommen in den Scrollbereich, Titel und „Zurück“ bleiben fest.
-  Neu: „+100 Gegner“, „Unverwundbar“. Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
+  Neu: „+100 Gegner“, „Unverwundbar“, **„Startwaffe wählen“, „Waffe geben“, „Status geben“** (zum Testen aller Waffen und Status, bis die Startwaffen-Auswahl im Hub mit E10 kommt).
+  Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
   in M7 „Zu Welle X springen“, später z. B. „Magie-Schrott geben“.
 - Mit „+100 Gegner“ messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
   Bei Bedarf optimieren, z. B. mit MultiMesh-Rendering oder einem gröberen Grid.
@@ -420,8 +478,9 @@ M4d Statusbildschirm mit Waffen-Spalte (4 Plätze).
 - Gegner lassen XP-Kristalle fallen, die per Magnet eingesammelt werden. Am oberen Rand gibt es eine XP-Leiste.
 - Beim Level-Up pausiert das Spiel, und es erscheinen **3 Karten** zum Antippen, gezogen aus einem Pool: eine neue Waffe (nur solange
   ein Run-Platz frei ist, nie eine schon vorhandene) oder ein Upgrade einer vorhandenen Waffe (auch der Startwaffe).
-- Im Grundspiel gibt es 4 Waffen, z. B. Magiegeschoss, kreisende Klingen, Feuer-Aura und eine weitere.
-- Erster Effekt **Ricochet** (abprallende Geschosse) als Upgrade des Magiegeschosses. Er beweist, dass Effekte ohne Umbau dazukommen (Grundsatz 9).
+- Die **6 Start-Waffen** (Zauberstab, Schwert, Dreizack, Fackel, Peitsche, Bombenbeutel) sind spielbar, jede mit eigenem Upgrade-Pool (`WeaponUpgrade`, siehe Grundsatz 9).
+  Der Pool zieht nur aus freigeschalteten Waffen (zunächst `default_unlocked`).
+- Erster Effekt-Upgrade **Ricochet** (abprallende Geschosse) für den Zauberstab. Er beweist, dass Effekte ohne Umbau dazukommen (Grundsatz 9).
 - **Werte-System** nach „Grundsatzentscheidungen“ Punkt 6: Stat-Definitionen, Modifikatoren und StatBlock.
   Level-Up-Upgrades sind Modifikatoren. Kommt Ausweichen dazu: Ein ausgewichener Treffer gibt die Mindestdauer der I-Frames.
 - Statusbildschirm zeigt Level, XP, alle Waffen-Slots mit Level und Werten sowie die Spielerwerte.
@@ -632,6 +691,8 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 
 - **Headstart-Perk:** Ein Teil des Magie-Schrotts aus dem vorherigen Run wird in den nächsten Run mitgenommen.
   Wie und ob das ins Spiel kommt, ist noch offen.
+- **Schwebende Waffen:** Die Waffen schweben als Icons um den Spieler (wie bei Brotato). Vorerst werden Waffen nicht am Helden gezeichnet.
+- **Homing als Upgrade-Effekt** für Geschosse (Lenken im Flug) und **Elementreaktionen** (z. B. Feuer + Kälte).
 - **Sichtbare Rüstung:** späteres Update, das angelegte Rüstung an der Spielfigur zeigt, mit Option an/aus.
 - **Rastplatz als begehbarer Ort:** Händler-Karawane als NPCs, die man ansprechen kann (nutzt die Hub-Interaktion).
 - **Frei verschiebbares HUD:** Der Spieler ordnet Anzeigen selbst an, ließe sich später als gespeichertes Layout ergänzen.
@@ -659,6 +720,12 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 - ~~Sprite-Auflösung 16×16 oder 32×32~~ → **entschieden: 32×32, Figurengröße 1,5×** (siehe „Technische Grundentscheidungen“).
   ~~Lizenz der Pixellab-Assets~~ → geklärt: Rechte liegen bei uns (Pixellab-Nutzungsbedingungen 1.3), siehe `CREDITS.md`.
   Ob die Figuren bei vielen Gegnern groß genug wirken, prüfen wir beim Testen. Feinwerte (Zoom, Geschwindigkeiten) beim Balancing.
+- **Waffen-Baukasten, noch offen** (jeweils vor der betreffenden Stufe klären):
+  - **Shock-Effekt** (vor M4g): Kettenblitz (Empfehlung: geschockter Gegner gibt 30 % Schaden an bis zu 2 nahe Gegner weiter), Überladung (+15 % erlittener Schaden) oder Zucken (kurzes Stoppen)?
+  - **Überzählige Geschosse** (vor M4a+ bzw. M4f): Zauberstab → Salve auf den nächsten Gegner, Dreizack → zufälliger Punkt im Bild. Passt das so?
+  - **Peitsche** (vor M4h): Richtung zufällig aus den 4 Himmelsrichtungen (bei +1 eine andere) oder zur Seite mit den meisten Gegnern? Länge der Sichel mit Probebild abstimmen.
+  - **Salve-Abstand** (Richtwert 0,1 s) und **Größe der Bomben-Warnfläche** am Handy abstimmen.
+  - Weitere Entwicklungen und Freischalt-Quellen der Waffen im Dorf → mit E4/E10.
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
   exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit
   vollen HP vom Wellenanfang wiederholen. Ist das okay, oder braucht es eine Gegenmaßnahme? → vor M8 entscheiden
