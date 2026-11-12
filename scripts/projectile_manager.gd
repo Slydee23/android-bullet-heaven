@@ -121,7 +121,7 @@ func _process(delta: float) -> void:
 		if hit_id == _last_hit_id[i]:
 			continue
 		var hit_position := enemy_manager.get_enemy_position(hit)
-		enemy_manager.damage(hit, _damage[i])
+		enemy_manager.damage(hit, _damage[i], weapon.data.element)
 		for effect in weapon.data.effects:
 			effect.on_hit(weapon, hit_position, hit, self)
 		for effect in weapon.extra_effects:

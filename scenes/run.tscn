@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/projectile_manager.gd" id="8_projectiles"]
 [ext_resource type="Script" path="res://scripts/weapon_holder.gd" id="9_weapons"]
 [ext_resource type="Script" path="res://scripts/effect_manager.gd" id="10_effects"]
+[ext_resource type="Script" path="res://scripts/damage_number_manager.gd" id="11_numbers"]
 
 [node name="Run" type="Node2D" unique_id=439059942]
 script = ExtResource("1_script")
@@ -43,6 +44,13 @@ script = ExtResource("10_effects")
 script = ExtResource("9_weapons")
 
 [node name="ForestEdgeFront" type="Node2D" parent="."]
+
+[node name="DamageNumbersLayer" type="CanvasLayer" parent="."]
+
+[node name="DamageNumbers" type="Node2D" parent="DamageNumbersLayer"]
+texture_filter = 2
+material = ExtResource("7_sharp")
+script = ExtResource("11_numbers")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

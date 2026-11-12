@@ -41,6 +41,10 @@ var debug_iframe_min := IFRAME_NOT_SET
 var debug_iframe_max := IFRAME_NOT_SET
 var debug_iframe_share := IFRAME_NOT_SET
 var show_player_health_bar := true
+## Schadenszahlen über getroffenen Gegnern
+var show_damage_numbers := true
+## Lebensleisten über verletzten Gegnern
+var show_enemy_health_bars := true
 ## Treffer-Feedback: Bild wackelt kurz
 var screen_shake := true
 ## Treffer-Feedback: Handy vibriert (am PC ohne Wirkung)
@@ -76,6 +80,10 @@ func load_settings() -> void:
 		_store_debug_iframes(iframe_min, iframe_max, iframe_share)
 	var health_bar: bool = config.get_value("display", "player_health_bar", show_player_health_bar)
 	show_player_health_bar = health_bar
+	var numbers: bool = config.get_value("display", "damage_numbers", show_damage_numbers)
+	show_damage_numbers = numbers
+	var enemy_bars: bool = config.get_value("display", "enemy_health_bars", show_enemy_health_bars)
+	show_enemy_health_bars = enemy_bars
 	var shake: bool = config.get_value("display", "screen_shake", screen_shake)
 	screen_shake = shake
 	var vibrate: bool = config.get_value("controls", "vibration", vibration)
@@ -94,6 +102,8 @@ func save_settings() -> void:
 	config.set_value("debug", "iframe_max", debug_iframe_max)
 	config.set_value("debug", "iframe_share", debug_iframe_share)
 	config.set_value("display", "player_health_bar", show_player_health_bar)
+	config.set_value("display", "damage_numbers", show_damage_numbers)
+	config.set_value("display", "enemy_health_bars", show_enemy_health_bars)
 	config.set_value("display", "screen_shake", screen_shake)
 	config.set_value("controls", "vibration", vibration)
 	# Sicher schreiben: erst temporäre Datei, dann ersetzen

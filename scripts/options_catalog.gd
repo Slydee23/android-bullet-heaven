@@ -32,6 +32,8 @@ static func options() -> Array[OptionDef]:
 		OptionDef.toggle(&"controls", "OPTIONS_VIBRATION", &"vibration"),
 		# Anzeige
 		OptionDef.toggle(&"display", "OPTIONS_PLAYER_HEALTH_BAR", &"show_player_health_bar"),
+		OptionDef.toggle(&"display", "OPTIONS_ENEMY_HEALTH_BARS", &"show_enemy_health_bars"),
+		OptionDef.toggle(&"display", "OPTIONS_DAMAGE_NUMBERS", &"show_damage_numbers"),
 		OptionDef.toggle(&"display", "OPTIONS_SCREEN_SHAKE", &"screen_shake"),
 	]
 

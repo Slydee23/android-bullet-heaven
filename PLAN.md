@@ -341,6 +341,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/sprites/weapons/magic_bolt.png` | 16×16, Blick nach **Osten** (Schweif links, wird in Flugrichtung gedreht). Platzhalter vorhanden (`tools/gen_weapon_placeholders.gd`) | 4 (beliebig) | M4 |
 | `assets/sprites/effects/hit.png` | 32×32, Treffer-Funken in der Körpermitte des Gegners, mit dunklem 1-px-Rand für Lesbarkeit. Platzhalter vorhanden (`tools/gen_effect_placeholders.gd`), Pixellab-Ersatz willkommen | 4 (beliebig) | M4 |
 | `assets/sprites/effects/death.png` | 32×32, Tod-Staub, Bild steht mit dem Unterrand auf den Füßen des Gegners. Platzhalter vorhanden, Pixellab-Ersatz willkommen | 6 (beliebig) | M4 |
+| `assets/sprites/effects/damage_digits.png` | Ziffern 0-9 und „!“ der Schadenszahlen, je 10×12-Zelle (Körper 7×9, dicker Rand, Schatten unten rechts), hell, damit sie per Elementfarbe eingefärbt werden. Generator `tools/gen_damage_digits.gd` | 11 Zeichen | M4c |
 | `assets/sprites/pickups/xp_crystal.png` | 16×16 | 4 | M6 |
 | `assets/sprites/icons/weapon_<id>.png` (je Waffe, z. B. `weapon_arcane_wand.png`) | 32×32, zeigt **die Waffe selbst** (Zauberstab, Schwert, Dreizack, Fackel, Peitsche, Bombenbeutel), nicht ihren Angriff | 1 | M4d |
 | `assets/sprites/weapons/sword_orbit.png` | 32×32, umlaufende Klinge, Blick nach Osten (Vorschlag, Größe bei M4e festlegen) | 1–4 | M4e |
@@ -444,7 +445,8 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 Umsetzung in Teilschritten: M4a Waffen-Architektur, Magiegeschoss, Geschoss-Pool, Gegner-HP mit Aufleuchten und Tod (**erledigt**, am PC getestet) →
 **M4a+** (**erledigt**, am PC getestet, Handy-Test offen) Umbau für den Waffen-Baukasten (Zauberstab-Umbenennung `arcane_wand`, `WeaponContext`, Behavior-Haken, `TargetPicker`, `amount` mit Salve, stabile Gegner-IDs, Farbpalette aus den vorhandenen Texturen) →
 M4b (**erledigt**, am PC und Handy getestet, FPS auf dem Redmi stabil bei vielen Gegnern, Geschossen und Effekten – das ist der Maßstab für die nächsten Schritte) Treffer- und Tod-Effekte (`hit.png`, `death.png`) mit allgemeinem `EffectManager` und Treffer-Formen (`damage_in_radius`, `damage_in_crescent`) →
-M4c Schadenszahlen und Gegner-Lebensleisten mit Optionen (Schadenszahlen in Elementfarbe) →
+M4c (**erledigt, am PC getestet; Feinschliff, sobald mehrere Waffen im Spiel sind**) Schadenszahlen und Gegner-Lebensleisten mit Optionen (Schadenszahlen in Elementfarbe) →
+   `DamageNumberManager` (Pool 64, Bildschirm-Raum, eigene Ziffern-Grafik in Stufen 3/4/5, Crit mit „!“ und Ploppen, tödlich bleibt länger), Leisten nur bei verletzten Gegnern, Schalter in Anzeige, Debug „Test-Crit“. Signal `enemy_damaged(position, amount, element, crit, kill)`.
 M4d Statusbildschirm mit Waffen-Spalte (4 Plätze, Icon, Name, Fähigkeit) →
 **M4e** Kreisendes Schwert (`OrbitBehavior`) und Flammenfackel (`AuraBehavior`) →
 **M4f** Dreizack und Bombenbeutel (`StrikeBehavior`, Warnfläche) →

@@ -31,8 +31,15 @@ const MAX_NEAREST := 16
 ## Höhe der Körpermitte über den Füßen (Welt-Pixel): Dort sitzen Treffer-Effekte und Schadenszahlen
 const BODY_HEIGHT := 14.0
 
+## Lebensleiste über dem Kopf eines verletzten Gegners (dieselben Bilder wie die des Helden, 1× groß)
+const BAR_FRAME := preload("res://assets/ui/bar_frame.png")
+const BAR_FILL := preload("res://assets/ui/bar_fill.png")
+const BAR_FILL_WIDTH := 14
+const BAR_GAP := 3.0
+
 ## Ein Gegner hat Schaden genommen (position = Füße). Anschluss für Treffer-Effekte (M4b) und Schadenszahlen (M4c).
-signal enemy_damaged(position: Vector2, amount: float)
+## element = Schadensart, crit = kritischer Treffer, kill = dieser Treffer hat den Gegner getötet.
+signal enemy_damaged(position: Vector2, amount: float, element: StringName, crit: bool, kill: bool)
 ## Ein Gegner ist gestorben (position = Füße). Anschluss für Effekte (M4b) und XP-Kristalle (M6).
 signal enemy_killed(position: Vector2, data: EnemyData)
 
@@ -145,15 +152,16 @@ func is_alive(i: int) -> bool:
 
 ## Zieht Gegner i Lebenspunkte ab. Stirbt er, wird er erst zu Beginn des nächsten Frames entfernt
 ## (sofortiges Entfernen würde die Plätze der anderen Gegner mitten in einer Schleife verschieben).
-func damage(i: int, amount: float) -> void:
+func damage(i: int, amount: float, element: StringName = Elements.PHYSICAL, crit := false) -> void:
+	var was_alive := _hp[i] > 0.0
 	_hp[i] -= amount
 	_flash[i] = HIT_FLASH_TIME
-	enemy_damaged.emit(_positions[i], amount)
+	enemy_damaged.emit(_positions[i], amount, element, crit, was_alive and _hp[i] <= 0.0)
 
 
 ## Schadet allen lebenden Gegnern, deren Körperkreis den Kreis (center, radius) berührt (Bomben, Blitze, Auren).
 ## Nutzt das Spatial Grid. Liefert die Anzahl getroffener Gegner.
-func damage_in_radius(center: Vector2, radius: float, amount: float) -> int:
+func damage_in_radius(center: Vector2, radius: float, amount: float, element: StringName = Elements.PHYSICAL) -> int:
 	var hits := 0
 	var reach := radius + CELL_SIZE * 0.5
 	var first := _cell_of(center - Vector2(reach, reach))
@@ -165,7 +173,7 @@ func damage_in_radius(center: Vector2, radius: float, amount: float) -> int:
 				if _hp[j] > 0.0:
 					var touch := radius + _type_list[_types[j]].radius
 					if center.distance_squared_to(_positions[j]) <= touch * touch:
-						damage(j, amount)
+						damage(j, amount, element)
 						hits += 1
 				j = _cell_next[j]
 	return hits
@@ -175,7 +183,7 @@ func damage_in_radius(center: Vector2, radius: float, amount: float) -> int:
 ## nach hinten verschobenen Kreis B gleicher Größe. Sie wölbt sich in Richtung `direction`, ihre Spitze liegt `reach` Pixel
 ## vor `origin`, vorne ist sie `thickness` dick und läuft zu den Seiten spitz aus. Ein größerer `radius` macht sie flacher und breiter.
 ## Ein Gegner zählt, wenn sein Körperkreis die Sichel berührt. Liefert die Anzahl getroffener Gegner.
-func damage_in_crescent(origin: Vector2, direction: Vector2, reach: float, radius: float, thickness: float, amount: float) -> int:
+func damage_in_crescent(origin: Vector2, direction: Vector2, reach: float, radius: float, thickness: float, amount: float, element: StringName = Elements.PHYSICAL) -> int:
 	var dir := direction.normalized()
 	var center_a := origin + dir * (reach - radius)
 	var center_b := center_a - dir * thickness
@@ -193,7 +201,7 @@ func damage_in_crescent(origin: Vector2, direction: Vector2, reach: float, radiu
 					# Nicht ganz im Kreis B: der Gegner muss über dessen Rand hinausragen
 					var not_in_b := center_b.distance_to(_positions[j]) > radius - body
 					if in_a and not_in_b:
-						damage(j, amount)
+						damage(j, amount, element)
 						hits += 1
 				j = _cell_next[j]
 	return hits
@@ -382,6 +390,20 @@ func _draw() -> void:
 			_draw_enemy(i)
 			i = _row_next[i]
 	draw_set_transform(Vector2.ZERO)
+	if Settings.show_enemy_health_bars:
+		for i in count:
+			_draw_health_bar(i)
+
+
+## Leiste nur bei verletzten Gegnern, sonst wäre der Bildschirm voller Balken
+func _draw_health_bar(i: int) -> void:
+	var data := _type_list[_types[i]]
+	if _hp[i] <= 0.0 or _hp[i] >= data.max_hp:
+		return
+	var top := _positions[i] + Vector2(-BAR_FRAME.get_width() * 0.5, 1.0 - data.walk_texture.get_height() * data.draw_scale - BAR_GAP - BAR_FRAME.get_height())
+	draw_texture(BAR_FRAME, top.round())
+	var width := maxi(1, roundi(BAR_FILL_WIDTH * _hp[i] / data.max_hp))
+	draw_texture_rect_region(BAR_FILL, Rect2(top.round() + Vector2.ONE, Vector2(width, BAR_FILL.get_height())), Rect2(0, 0, width, BAR_FILL.get_height()))
 
 
 func _draw_enemy(i: int) -> void:

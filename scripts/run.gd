@@ -68,6 +68,7 @@ var _fps_timer := 0.0
 @onready var projectile_manager: ProjectileManager = $ProjectileManager
 @onready var weapon_holder: WeaponHolder = $Weapons
 @onready var effect_manager: EffectManager = $EffectManager
+@onready var damage_numbers: DamageNumberManager = $DamageNumbersLayer/DamageNumbers
 @onready var fps_label: Label = $HUD/FpsLabel
 
 
@@ -164,9 +165,12 @@ func _on_player_died() -> void:
 		_debug_menu.queue_free()
 
 
-## Treffer-Funken in der Körpermitte des getroffenen Gegners
-func _on_enemy_damaged(pos: Vector2, _amount: float) -> void:
-	effect_manager.play(HIT_EFFECT, pos - Vector2(0.0, EnemyManager.BODY_HEIGHT))
+## Treffer-Funken und Schadenszahl in der Körpermitte des getroffenen Gegners
+func _on_enemy_damaged(pos: Vector2, amount: float, element: StringName, crit: bool, kill: bool) -> void:
+	var body := pos - Vector2(0.0, EnemyManager.BODY_HEIGHT)
+	effect_manager.play(HIT_EFFECT, body)
+	if Settings.show_damage_numbers:
+		damage_numbers.spawn(body, amount, element, crit, kill)
 
 
 ## Tod-Staub an den Füßen des gestorbenen Gegners
@@ -201,6 +205,7 @@ func _toggle_debug_menu() -> void:
 	_debug_menu = DEBUG_MENU.instantiate()
 	_debug_menu.player = player
 	_debug_menu.weapon_holder = weapon_holder
+	_debug_menu.enemy_manager = enemy_manager
 	_debug_menu.tree_exited.connect(_on_debug_menu_closed)
 	hud.add_child(_debug_menu)
 	_update_pause()

@@ -54,3 +54,6 @@ WEAPON_ARCANE_WAND_NAME,Arkaner Zauberstab
 WEAPON_ARCANE_WAND_DESC,"Verschießt magische Projektile, die selbständig Gegner anvisieren."
 DEBUG_EXTRA_PROJECTILE,+1 Projektil
 DEBUG_EXTRA_PROJECTILE_RESET,Projektile zurücksetzen
+OPTIONS_DAMAGE_NUMBERS,Schadenszahlen
+OPTIONS_ENEMY_HEALTH_BARS,Lebensleisten Gegner
+DEBUG_TEST_CRIT,Test-Crit (zufälliges Element)

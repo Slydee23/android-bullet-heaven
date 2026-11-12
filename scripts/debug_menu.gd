@@ -15,6 +15,8 @@ const TEST_SELF_DAMAGE_SHARE := 0.1
 var player: Player
 ## Waffen des Helden, auf die sich „+1 Projektil“ bezieht (setzt die Run-Szene vor dem Öffnen)
 var weapon_holder: WeaponHolder
+## Gegner für „Test-Crit“ (setzt die Run-Szene vor dem Öffnen)
+var enemy_manager: EnemyManager
 
 var _closing := false
 var _shown_iframes := -1.0
@@ -36,6 +38,7 @@ var _shown_iframes := -1.0
 @onready var test_self_damage_button: Button = %TestSelfDamageButton
 @onready var extra_projectile_button: Button = %ExtraProjectileButton
 @onready var extra_projectile_reset_button: Button = %ExtraProjectileResetButton
+@onready var test_crit_button: Button = %TestCritButton
 @onready var iframe_reset_button: Button = %IFrameResetButton
 @onready var back_button: Button = %BackButton
 
@@ -69,6 +72,7 @@ func _ready() -> void:
 	test_self_damage_button.pressed.connect(_on_test_self_damage_pressed)
 	extra_projectile_button.pressed.connect(_on_extra_projectile_pressed)
 	extra_projectile_reset_button.pressed.connect(_on_extra_projectile_reset_pressed)
+	test_crit_button.pressed.connect(_on_test_crit_pressed)
 	iframe_reset_button.pressed.connect(_on_iframe_reset_pressed)
 	back_button.pressed.connect(close)
 
@@ -133,6 +137,15 @@ func _on_extra_projectile_pressed() -> void:
 func _on_extra_projectile_reset_pressed() -> void:
 	if weapon_holder and not weapon_holder.start_weapons.is_empty():
 		weapon_holder.start_weapons[0].reset_bonuses()
+
+
+## Kritischer Treffer mit zufälligem Element auf den nächsten Gegner, zum Ansehen der Schadenszahlen (Größen, Farben, Tod)
+func _on_test_crit_pressed() -> void:
+	if not enemy_manager or not player:
+		return
+	var target := enemy_manager.find_nearest(player.global_position, 600.0)
+	if target != -1:
+		enemy_manager.damage(target, randf_range(4.0, 14.0), Elements.ALL.pick_random(), true)
 
 
 func _on_iframe_reset_pressed() -> void:
