@@ -330,8 +330,8 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/bar_frame.png` | 16×4 (Lebensleiste über dem Helden, im Spiel 2× skaliert) | 1 | M3 |
 | `assets/ui/bar_fill.png` | 14×2 (sitzt 1 Pixel innerhalb des Rahmens) | 1 | M3 |
 | `assets/sprites/weapons/magic_bolt.png` | 16×16, Blick nach **Osten** (Schweif links, wird in Flugrichtung gedreht). Platzhalter vorhanden (`tools/gen_weapon_placeholders.gd`) | 4 (beliebig) | M4 |
-| `assets/sprites/effects/hit.png` | 32×32 | 4 | M4 |
-| `assets/sprites/effects/death.png` | 32×32 | 6 | M4 |
+| `assets/sprites/effects/hit.png` | 32×32, Treffer-Funken in der Körpermitte des Gegners. Platzhalter vorhanden (`tools/gen_effect_placeholders.gd`), Pixellab-Ersatz willkommen | 4 (beliebig) | M4 |
+| `assets/sprites/effects/death.png` | 32×32, Tod-Staub, Bild steht mit dem Unterrand auf den Füßen des Gegners. Platzhalter vorhanden, Pixellab-Ersatz willkommen | 6 (beliebig) | M4 |
 | `assets/sprites/pickups/xp_crystal.png` | 16×16 | 4 | M6 |
 | `assets/sprites/icons/weapon_<id>.png` (je Waffe, z. B. `weapon_arcane_wand.png`) | 32×32, zeigt **die Waffe selbst** (Zauberstab, Schwert, Dreizack, Fackel, Peitsche, Bombenbeutel), nicht ihren Angriff | 1 | M4d |
 | `assets/sprites/weapons/sword_orbit.png` | 32×32, umlaufende Klinge, Blick nach Osten (Vorschlag, Größe bei M4e festlegen) | 1–4 | M4e |
@@ -434,7 +434,7 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 
 Umsetzung in Teilschritten: M4a Waffen-Architektur, Magiegeschoss, Geschoss-Pool, Gegner-HP mit Aufleuchten und Tod (**erledigt**, am PC getestet) →
 **M4a+** (**erledigt**, am PC getestet, Handy-Test offen) Umbau für den Waffen-Baukasten (Zauberstab-Umbenennung `arcane_wand`, `WeaponContext`, Behavior-Haken, `TargetPicker`, `amount` mit Salve, stabile Gegner-IDs, Farbpalette aus den vorhandenen Texturen) →
-M4b Treffer- und Tod-Effekte (`hit.png`, `death.png`) mit allgemeinem `EffectManager` und Treffer-Formen (`damage_in_radius`, `damage_in_crescent`) →
+M4b (**erledigt**, am PC und Handy getestet, FPS auf dem Redmi stabil bei vielen Gegnern, Geschossen und Effekten – das ist der Maßstab für die nächsten Schritte) Treffer- und Tod-Effekte (`hit.png`, `death.png`) mit allgemeinem `EffectManager` und Treffer-Formen (`damage_in_radius`, `damage_in_crescent`) →
 M4c Schadenszahlen und Gegner-Lebensleisten mit Optionen (Schadenszahlen in Elementfarbe) →
 M4d Statusbildschirm mit Waffen-Spalte (4 Plätze, Icon, Name, Fähigkeit) →
 **M4e** Kreisendes Schwert (`OrbitBehavior`) und Flammenfackel (`AuraBehavior`) →
@@ -452,6 +452,9 @@ M4d Statusbildschirm mit Waffen-Spalte (4 Plätze, Icon, Name, Fähigkeit) →
   vorgegeben), ohne Auswahl-Logik. Die Auswahl im Hub kommt mit E10.
 - Gegner sterben erst zu Beginn des nächsten Frames (`EnemyManager.damage()` markiert, `_remove_dead()` entfernt) und senden dann `enemy_killed` (Anschluss für M4b/M6).
 - Geschosse fliegen in der Fußebene und werden 14 Pixel höher (Körpermitte) gezeichnet, damit sie zu den Kollisionskreisen an den Füßen passen.
+- **Effekte (M4b):** `EffectManager` (Pool, ein Zeichenaufruf, Datendatei `EffectData` in `data/effects/`) spielt Treffer-Funken (bei jedem Schaden, über das Signal
+  `EnemyManager.enemy_damaged`) und Tod-Staub (bei `enemy_killed`) ab. Dazu die Treffer-Formen `damage_in_radius` und `damage_in_crescent` (Sichel) im `EnemyManager`,
+  die Bomben, Blitze, Aura und Peitsche später nutzen.
 - **Schadenszahlen** über getroffenen Gegnern (Option „Schadenszahlen“), aus einem Pool.
 - **Lebensleisten über Gegnern** (Option „Lebensleisten Gegner“). Sie erscheinen nur bei bereits verletzten Gegnern und
   werden alle in einem einzigen Zeichenaufruf des EnemyManagers gezeichnet, nicht als eigene Nodes. Das ist wichtig für die Performance.

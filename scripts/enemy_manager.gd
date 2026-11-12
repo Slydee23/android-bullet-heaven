@@ -28,6 +28,11 @@ const HIT_FLASH_COLOR := Color(3.0, 3.0, 3.0)
 ## Höchstanzahl der Ziele, die find_nearest_n auf einmal liefert
 const MAX_NEAREST := 16
 
+## Höhe der Körpermitte über den Füßen (Welt-Pixel): Dort sitzen Treffer-Effekte und Schadenszahlen
+const BODY_HEIGHT := 14.0
+
+## Ein Gegner hat Schaden genommen (position = Füße). Anschluss für Treffer-Effekte (M4b) und Schadenszahlen (M4c).
+signal enemy_damaged(position: Vector2, amount: float)
 ## Ein Gegner ist gestorben (position = Füße). Anschluss für Effekte (M4b) und XP-Kristalle (M6).
 signal enemy_killed(position: Vector2, data: EnemyData)
 
@@ -143,6 +148,55 @@ func is_alive(i: int) -> bool:
 func damage(i: int, amount: float) -> void:
 	_hp[i] -= amount
 	_flash[i] = HIT_FLASH_TIME
+	enemy_damaged.emit(_positions[i], amount)
+
+
+## Schadet allen lebenden Gegnern, deren Körperkreis den Kreis (center, radius) berührt (Bomben, Blitze, Auren).
+## Nutzt das Spatial Grid. Liefert die Anzahl getroffener Gegner.
+func damage_in_radius(center: Vector2, radius: float, amount: float) -> int:
+	var hits := 0
+	var reach := radius + CELL_SIZE * 0.5
+	var first := _cell_of(center - Vector2(reach, reach))
+	var last := _cell_of(center + Vector2(reach, reach))
+	for cy in range(first.y, last.y + 1):
+		for cx in range(first.x, last.x + 1):
+			var j := _cell_head[cy * _grid_size.x + cx]
+			while j != -1:
+				if _hp[j] > 0.0:
+					var touch := radius + _type_list[_types[j]].radius
+					if center.distance_squared_to(_positions[j]) <= touch * touch:
+						damage(j, amount)
+						hits += 1
+				j = _cell_next[j]
+	return hits
+
+
+## Schadet allen lebenden Gegnern in einer Sichel (Peitsche): Die Form ist ein Kreis A ohne einen um `thickness`
+## nach hinten verschobenen Kreis B gleicher Größe. Sie wölbt sich in Richtung `direction`, ihre Spitze liegt `reach` Pixel
+## vor `origin`, vorne ist sie `thickness` dick und läuft zu den Seiten spitz aus. Ein größerer `radius` macht sie flacher und breiter.
+## Ein Gegner zählt, wenn sein Körperkreis die Sichel berührt. Liefert die Anzahl getroffener Gegner.
+func damage_in_crescent(origin: Vector2, direction: Vector2, reach: float, radius: float, thickness: float, amount: float) -> int:
+	var dir := direction.normalized()
+	var center_a := origin + dir * (reach - radius)
+	var center_b := center_a - dir * thickness
+	var hits := 0
+	var margin := radius + CELL_SIZE * 0.5
+	var first := _cell_of(center_a - Vector2(margin, margin))
+	var last := _cell_of(center_a + Vector2(margin, margin))
+	for cy in range(first.y, last.y + 1):
+		for cx in range(first.x, last.x + 1):
+			var j := _cell_head[cy * _grid_size.x + cx]
+			while j != -1:
+				if _hp[j] > 0.0:
+					var body := _type_list[_types[j]].radius
+					var in_a := center_a.distance_squared_to(_positions[j]) <= (radius + body) * (radius + body)
+					# Nicht ganz im Kreis B: der Gegner muss über dessen Rand hinausragen
+					var not_in_b := center_b.distance_to(_positions[j]) > radius - body
+					if in_a and not_in_b:
+						damage(j, amount)
+						hits += 1
+				j = _cell_next[j]
+	return hits
 
 
 func get_enemy_position(i: int) -> Vector2:

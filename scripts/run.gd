@@ -25,6 +25,8 @@ const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
 const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
 const GAME_OVER_MENU := preload("res://ui/game_over_menu.tscn")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
+const HIT_EFFECT := preload("res://data/effects/hit.tres")
+const DEATH_EFFECT := preload("res://data/effects/death.tres")
 ## Startwaffe des Runs (vorerst fest, die Auswahl im Hub kommt mit E10). Datei: data/weapons/<id>.tres
 const START_WEAPON_ID := &"arcane_wand"
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
@@ -65,6 +67,7 @@ var _fps_timer := 0.0
 @onready var enemy_manager: EnemyManager = $EnemyManager
 @onready var projectile_manager: ProjectileManager = $ProjectileManager
 @onready var weapon_holder: WeaponHolder = $Weapons
+@onready var effect_manager: EffectManager = $EffectManager
 @onready var fps_label: Label = $HUD/FpsLabel
 
 
@@ -87,6 +90,8 @@ func _ready() -> void:
 	enemy_manager.set_bounds(player.bounds)
 	enemy_manager.target = player
 	enemy_manager.spawn_types = [SKELETON]
+	enemy_manager.enemy_damaged.connect(_on_enemy_damaged)
+	enemy_manager.enemy_killed.connect(_on_enemy_killed)
 
 	projectile_manager.enemy_manager = enemy_manager
 	projectile_manager.bounds = player.bounds
@@ -157,6 +162,16 @@ func _on_player_died() -> void:
 	# Das Debug-Menü (Spiel läuft weiter) würde dagegen nur stören.
 	if _debug_menu:
 		_debug_menu.queue_free()
+
+
+## Treffer-Funken in der Körpermitte des getroffenen Gegners
+func _on_enemy_damaged(pos: Vector2, _amount: float) -> void:
+	effect_manager.play(HIT_EFFECT, pos - Vector2(0.0, EnemyManager.BODY_HEIGHT))
+
+
+## Tod-Staub an den Füßen des gestorbenen Gegners
+func _on_enemy_killed(pos: Vector2, _data: EnemyData) -> void:
+	effect_manager.play(DEATH_EFFECT, pos)
 
 
 func _on_death_animation_finished() -> void:

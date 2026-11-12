@@ -16,6 +16,7 @@
 | `assets/ui/*.png` (Fenster, Knöpfe, Regler, Hauptmenü-Bild …) | Selbst erstellt (Generator `tools/gen_ui.gd`) | Eigene Werke |
 | `assets/sprites/weapons/magic_bolt.png` | Selbst erstellter Platzhalter (Generator `tools/gen_weapon_placeholders.gd`) | Eigenes Werk |
 | `assets/sprites/characters/hero_hit.png`, `hero_death.png` | Selbst erstellte Platzhalter (Generator `tools/gen_hero_placeholders.gd`, abgeleitet vom Pixellab-Helden) | Eigene Werke |
+| `assets/sprites/effects/hit.png`, `death.png` | Selbst erstellte Platzhalter (Generator `tools/gen_effect_placeholders.gd`, Farben aus der Palette von Held und Skelett) | Eigene Werke |
 
 ## Schriften
 
