@@ -330,7 +330,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/bar_frame.png` | 16×4 (Lebensleiste über dem Helden, im Spiel 2× skaliert) | 1 | M3 |
 | `assets/ui/bar_fill.png` | 14×2 (sitzt 1 Pixel innerhalb des Rahmens) | 1 | M3 |
 | `assets/sprites/weapons/magic_bolt.png` | 16×16, Blick nach **Osten** (Schweif links, wird in Flugrichtung gedreht). Platzhalter vorhanden (`tools/gen_weapon_placeholders.gd`) | 4 (beliebig) | M4 |
-| `assets/sprites/effects/hit.png` | 32×32, Treffer-Funken in der Körpermitte des Gegners. Platzhalter vorhanden (`tools/gen_effect_placeholders.gd`), Pixellab-Ersatz willkommen | 4 (beliebig) | M4 |
+| `assets/sprites/effects/hit.png` | 32×32, Treffer-Funken in der Körpermitte des Gegners, mit dunklem 1-px-Rand für Lesbarkeit. Platzhalter vorhanden (`tools/gen_effect_placeholders.gd`), Pixellab-Ersatz willkommen | 4 (beliebig) | M4 |
 | `assets/sprites/effects/death.png` | 32×32, Tod-Staub, Bild steht mit dem Unterrand auf den Füßen des Gegners. Platzhalter vorhanden, Pixellab-Ersatz willkommen | 6 (beliebig) | M4 |
 | `assets/sprites/pickups/xp_crystal.png` | 16×16 | 4 | M6 |
 | `assets/sprites/icons/weapon_<id>.png` (je Waffe, z. B. `weapon_arcane_wand.png`) | 32×32, zeigt **die Waffe selbst** (Zauberstab, Schwert, Dreizack, Fackel, Peitsche, Bombenbeutel), nicht ihren Angriff | 1 | M4d |

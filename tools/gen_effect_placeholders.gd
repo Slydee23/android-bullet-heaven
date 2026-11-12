@@ -12,6 +12,7 @@ var WHITE := Palette.snap(Color("#f4f6f0"))
 var CYAN_LIGHT := Palette.snap(Color("#cdfcfa"))
 var CYAN := Palette.snap(Color("#8ecbdc"))
 var GOLD := Palette.snap(Color("#f9c769"))
+var OUTLINE := Palette.snap(Color("#542a4d"))
 var BONE_LIGHT := Palette.snap(Color("#ebe8d4"))
 var BONE := Palette.snap(Color("#ddd4b5"))
 var BONE_DARK := Palette.snap(Color("#cdbf9b"))
@@ -39,7 +40,7 @@ func _make_hit() -> Image:
 	for f in HIT_FRAMES:
 		rng.seed = 100 + f
 		var ox := f * FRAME
-		var length: float = [4.0, 8.0, 11.0, 13.0][f]
+		var length: float = [6.0, 9.0, 12.0, 14.0][f]
 		var rays := 8
 		for k in rays:
 			var angle := TAU * k / rays + 0.2
@@ -62,8 +63,26 @@ func _make_hit() -> Image:
 			for y in range(-core, core + 1):
 				for x in range(-core, core + 1):
 					if absi(x) + absi(y) <= core:
-						_px(sheet, ox + 15 + x, 15 + y, CYAN_LIGHT if f == 0 else WHITE)
+						_px(sheet, ox + 15 + x, 15 + y, WHITE)
+		_outline(sheet, ox)
 	return sheet
+
+
+## Dunkler 1-px-Rand um alle Funkenpixel eines Frames, damit sie sich vom Waldboden abheben
+func _outline(img: Image, ox: int) -> void:
+	var edge: Array[Vector2i] = []
+	for y in FRAME:
+		for x in FRAME:
+			if img.get_pixel(ox + x, y).a > 0.0:
+				continue
+			for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+				var nx: int = x + d.x
+				var ny: int = y + d.y
+				if nx >= 0 and ny >= 0 and nx < FRAME and ny < FRAME and img.get_pixel(ox + nx, ny).a > 0.0:
+					edge.append(Vector2i(x, y))
+					break
+	for e in edge:
+		img.set_pixel(ox + e.x, e.y, OUTLINE)
 
 
 ## Staub: Eine Wolke aus Knochenstaub steigt auf und löst sich auf, dazu fliegen ein paar Knochensplitter heraus
