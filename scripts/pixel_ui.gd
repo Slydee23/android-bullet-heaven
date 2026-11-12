@@ -16,7 +16,7 @@ const BUTTON_MARGIN := 6
 const PANEL_MARGIN := 8
 const SLIDER_TRACK_MARGIN := 3
 
-## Die Schrift ist auf einem 16er-Raster gezeichnet: Bei 32, 48, 64, 96 und 128 ist jeder Schriftpixel
+## Die Schrift (Jersey 10, angepasst) ist auf einem 16er-Raster gezeichnet: Bei 32, 48, 64, 96 und 128 ist jeder Schriftpixel
 ## 2, 3, 4, 6 bzw. 8 Bildschirmpixel groß und damit gestochen scharf. Dazwischen wird sie unregelmäßig.
 const FONT_SIZE_SMALL := 32
 const FONT_SIZE_BUTTON := 48

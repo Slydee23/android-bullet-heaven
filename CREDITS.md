@@ -24,7 +24,7 @@
 
 | Schrift | Quelle | Lizenz |
 | --- | --- | --- |
-| `assets/fonts/pixel_font.ttf` = **Pixelify Sans** | https://github.com/eifetx/Pixelify-Sans (Copyright 2021 The Pixelify Sans Project Authors) | SIL Open Font License 1.1, Lizenztext in `assets/fonts/OFL.txt`. Kommerzielle Nutzung erlaubt, der Lizenzhinweis muss im Credits-Bildschirm stehen (siehe PLAN.md E16). |
+| `assets/fonts/pixel_font.ttf` = **Jersey 10** (angepasst: unitsPerEm 1400 → 1200, damit ein Schriftpixel genau 1/16 der Schriftgröße ist und die Größen 32/48/64 scharf bleiben; Glyphen unverändert) | https://github.com/scfried/soft-type-jersey (Copyright 2023 The Soft Type Project Authors) | SIL Open Font License 1.1, Lizenztext in `assets/fonts/OFL.txt`. Kommerzielle Nutzung erlaubt, der Lizenzhinweis muss im Credits-Bildschirm stehen (siehe PLAN.md E16). |
 
 ## Regel
 

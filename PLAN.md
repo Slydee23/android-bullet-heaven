@@ -315,7 +315,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | Datei | Größe pro Frame | Frames | Ab |
 | --- | --- | --- | --- |
 | `assets/ui/menu_background.png` | 600×270 (20:9, im Spiel genau 4× vergrößert; mind. 480×270) – Nacht über einem Waffenfeld, Mond mit Bann-Siegel | 1 | M1 |
-| `assets/fonts/pixel_font.ttf` | Pixelify Sans (SIL OFL, siehe `CREDITS.md`), mit ä, ö, ü, ß. Auf 16er-Raster: Größen 32/48/64/96/128 sind gestochen scharf | – | M1 |
+| `assets/fonts/pixel_font.ttf` | Jersey 10 (SIL OFL, siehe `CREDITS.md`, auf 16er-Raster angepasst), mit ä, ö, ü, ß und klaren Ziffern. Größen 32/48/64/96/128 sind gestochen scharf | – | M1 |
 | `assets/ui/button.png` | 20×20 (9-Slice, Rand 6) – Runentafel mit Goldkante | 1 | M1 |
 | `assets/ui/button_pressed.png` | 20×20 (9-Slice, Rand 6) – gedrückt/gewählt, violett glühend | 1 | M3 |
 | `assets/ui/divider.png` | 96×9 – goldene Trennlinie unter Überschriften | 1 | M3 |
@@ -727,7 +727,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 - **Hauptmenü-Bild:** Nacht über einem Schlachtfeld voller zerfallender Klingen, Bögen und Speere (Staub steigt auf), der Held steht
   dazwischen, über dem Mond liegt das Siegel des Zirkels. Alles als Pixel-Art von `tools/gen_ui.gd` erzeugt (auch alle UI-Texturen);
   der Nutzer kann jede Datei durch eigene Pixellab-Assets (gleicher Name, gleiche Größe) überschreiben.
-- **Schrift:** Pixelify Sans (OFL). Größen nur 32, 48, 64, 96, 128 verwenden (`PixelUI.FONT_SIZE_*`), dann bleibt sie scharf.
+- **Schrift:** Jersey 10 (OFL; ersetzt Pixelify Sans, deren „5“ wie ein „S“ aussah). Größen nur 32, 48, 64, 96, 128 verwenden (`PixelUI.FONT_SIZE_*`), dann bleibt sie scharf.
   Statt Umrandung gibt es einen Schlagschatten (Theme `shadow_offset`).
 - **Umfang:** Theme (Knöpfe, Fenster, Regler, Reiter), Hauptmenü, Pause, Optionen, Game Over, HUD-Knöpfe. Das Debug-Menü erbt nur das Theme.
   Joystick und Lebensleiste sind noch im alten Stil (Kandidaten für später).
@@ -739,7 +739,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 - ~~Sprite-Auflösung 16×16 oder 32×32~~ → **entschieden: 32×32, Figurengröße 1,5×** (siehe „Technische Grundentscheidungen“).
   ~~Lizenz der Pixellab-Assets~~ → geklärt: Rechte liegen bei uns (Pixellab-Nutzungsbedingungen 1.3), siehe `CREDITS.md`.
   Ob die Figuren bei vielen Gegnern groß genug wirken, prüfen wir beim Testen. Feinwerte (Zoom, Geschwindigkeiten) beim Balancing.
-- **Menü-Schrift:** Pixelify Sans zeichnet die „5“ wie ein „S“ (Nutzer und Tester). Nächster Schritt nach M4d: 2–3 freie Pixelschriften mit klaren Ziffern und Umlauten per Vorschau vergleichen, der Nutzer wählt (Datei `assets/fonts/pixel_font.ttf` wird ersetzt).
+- **Menü-Schrift:** gelöst, Jersey 10 ersetzt Pixelify Sans (Vergleich mit Silkscreen, Press Start 2P, Micro 5, VT323, Jacquard 12). Idee für später: Jacquard 12 (Fraktur-Pixelschrift, OFL) nur für große Überschriften/Titel ausprobieren.
 - **Waffen-Baukasten, noch offen** (jeweils vor der betreffenden Stufe klären):
   - ~~Shock-Effekt~~ → **entschieden: Kettenblitz** (Slow gehört zu Frost). Konkrete Werte (Anteil des Schadens, Anzahl Ziele, Reichweite) vor M4g.
   - ~~Überzählige Geschosse~~ → **entschieden:** Zauberstab = Salve reihum auf die gewählten Ziele, Dreizack = zufälliger Punkt im Bild (Dreizack vor M4f noch einmal ansehen).
