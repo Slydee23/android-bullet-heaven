@@ -189,8 +189,12 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
      Grafiken, kommerzielle und nicht kommerzielle Nutzung ohne Genehmigung (vom Nutzer am 2026-11-09 geprüft).
    - Lizenz je fremdem Asset prüfen und in `CREDITS.md` eintragen (dort stehen auch Engine und Pixellab).
    - **Feste Farbpalette und feste Sprite-Größen**, damit Assets aus verschiedenen Quellen zusammenpassen.
-     Die Palette wählen wir, sobald das erste Alpha-Asset kommt. Vorerst lesen wir sie aus den vorhandenen Texturen (Held, Skelett, Wald)
-     aus und legen sie als Konstanten in einem Tool-Skript ab (M4a+), damit alle Platzhalter-Generatoren dieselben Farben nutzen.
+     Die Palette steht in `tools/palette.gd` (aus Held und Skelett gelesen, M4a+), alle Generatoren der Spielwelt nutzen sie.
+     Neue Farben (Feuer, Gift, Frost …) dürfen aufgenommen werden, wenn sie zu Sättigung und Helligkeit der vorhandenen passen. Vorher frage ich den Nutzer.
+   - **Generator-Grafiken sind vollwertige Assets.** Was der Nutzer abgenommen hat, bleibt final und wird nicht ersetzt. Die Generatoren
+     unter `tools/` bleiben im Repo, damit jede Grafik reproduzierbar und anpassbar ist. Neue Effekte und Geschosse erzeugt standardmäßig
+     ein Generator, Pixellab ist vor allem für Figuren gedacht. **Vor jeder neuen Grafik frage ich den Nutzer nach Details** (Form, Farben,
+     Stimmung, Größe im Spiel, Vorbilder), damit sie genau zum Rest passt.
 5. **Kollision und Schaden:**
    - Der Held kann **durch Gegner hindurchlaufen**. Gegner bleiben am Rand seines Körperradius stehen, nicht in ihm, und werden
      beiseitegeschoben, wenn er durch eine Gruppe läuft. Gegner können den Helden nie einsperren.
@@ -293,7 +297,12 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 - Animationen als horizontaler Streifen: alle Frames gleich groß, eine Datei pro Animation.
 - Lizenz: CC0 oder ausdrücklich für kommerzielle Nutzung freigegeben (bei KI-Tools die Nutzungsbedingungen des Tarifs prüfen).
   Jedes fremde Asset kommt mit Quelle und Lizenz in `CREDITS.md`.
-- Farben aus der gemeinsamen Palette (wird mit dem ersten Alpha-Asset festgelegt).
+- Farben aus der gemeinsamen Palette `tools/palette.gd`. Neue Farben dürfen aufgenommen werden, wenn sie zu Sättigung und Helligkeit passen.
+- **Stilleitfaden für Generator-Grafiken:** nur Palettenfarben, dunkler 1-px-Rand bei Effekten, die sich vom Boden abheben müssen,
+  Licht von oben links, gleiche Pixeldichte wie Held und Skelett, Effekte kurz (4–6 Bilder).
+- **Status der Dateien:** **Final** = bleibt, **Final-Kandidat** = gefällt, Feinschliff möglich, **Platzhalter** = wird ersetzt.
+  Pixellab-Grafiken und abgenommene UI-Texturen gelten als Final, die übrigen Generator-Grafiken als Final-Kandidat. Ausnahmen:
+  `hero_hit.png`, `hero_death.png` und `forest_props.png` sind Platzhalter.
 - **Neue Grafiken müssen zum Stil der vorhandenen passen und dürfen nicht wie Fremdkörper wirken.** Vorzugsgröße **32×32**, andere Größen nur,
   wenn sie sinnvoller sind. Wichtiger als die Auflösung ist die **gleiche Pixeldichte**: Ein 16×16-Geschoss ist im Spiel genauso grob gepixelt wie der 32×32-Held.
   Einheitlicher Pixel-Art-Stil, gleiche Lichtrichtung und Umrandung wie bei Held und Skelett.
@@ -684,7 +693,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 16. **E16 – Credits-Bildschirm.** Ab dem ersten fremden Asset führen wir `CREDITS.md` mit Quelle und Lizenz,
     damit am Ende nichts fehlt.
 
-- **Laufend:** Alpha-Assets ersetzen die Platzhalter, sobald du sie hast.
+- **Laufend:** Ersetzt werden nur Dateien mit dem Status „Platzhalter“ (siehe „Assets“), sobald du bessere Grafiken hast.
 
 ## Beta (vor der Veröffentlichung, nicht Teil der Alpha)
 
