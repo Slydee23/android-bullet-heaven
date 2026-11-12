@@ -24,6 +24,12 @@ func on_stats_changed(_weapon: WeaponInstance, _context: WeaponContext) -> void:
 	pass
 
 
+## Die wichtigsten Werte dieser Angriffsart für die Waffenkarte im Statusbildschirm (eine kurze Zeile).
+## Jede Angriffsart wählt eigene, z. B. eine Aura Schaden, Treffer pro Sekunde und Radius.
+func card_stats() -> Array[StringName]:
+	return [&"damage", &"cooldown"]
+
+
 ## Hat dieser Stat bei dieser Angriffsart eine Wirkung? Der Level-Up-Pool (M6) bietet nur Upgrades für unterstützte Stats an
 ## (z. B. keine „+1 Projektil“ für eine Aura).
 func supports_stat(stat: StringName) -> bool:

@@ -57,3 +57,27 @@ DEBUG_EXTRA_PROJECTILE_RESET,Projektile zurücksetzen
 OPTIONS_DAMAGE_NUMBERS,Schadenszahlen
 OPTIONS_ENEMY_HEALTH_BARS,Lebensleisten Gegner
 DEBUG_TEST_CRIT,Test-Crit (zufälliges Element)
+ELEMENT_PHYSICAL,Physisch
+ELEMENT_FIRE,Feuer
+ELEMENT_LIGHTNING,Blitz
+ELEMENT_POISON,Gift
+ELEMENT_COLD,Kälte
+STAT_DAMAGE,Schaden
+STAT_ATTACK_SPEED,Angriffe pro Sekunde
+STAT_AMOUNT,Projektile pro Angriff
+STAT_RANGE,Reichweite
+STAT_PIERCE,Durchschlag
+STAT_PROJECTILE_SPEED,Geschossgeschwindigkeit
+STAT_PER_SECOND,%s/s
+WEAPON_LEVEL_SHORT,Lv %d
+WEAPON_LEVEL_LONG,Level %d von %d
+WEAPON_EVOLUTION_LABEL,Entwicklung
+WEAPON_START_MARK,Startwaffe
+WEAPON_SLOT_EMPTY,Freier Waffenplatz
+WEAPON_SLOT_EMPTY_START,Keine Startwaffe
+WEAPON_SECTION_STATS,Werte
+WEAPON_SECTION_UPGRADES,Upgrades
+WEAPON_SECTION_EVOLUTION,Entwicklung
+WEAPON_NO_UPGRADES,Noch keine Upgrades.
+WEAPON_NO_EVOLUTION,Noch keine Entwicklung.
+WEAPON_DAMAGE_DEALT,Bisher verursachter Schaden: %d

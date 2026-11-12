@@ -19,6 +19,8 @@ extends Resource
 @export var element: StringName = Elements.PHYSICAL
 ## Gehört die Waffe zu den von Anfang an freigeschalteten Waffen? (später kommt eine Freischalt-ID dazu)
 @export var default_unlocked := true
+## Wie viele Entwicklungsstufen die Waffe hat (nach Level 10, Anzeige „Entwicklung 1 von 3“)
+@export var max_evolution := 3
 @export var base_stats: Dictionary = {}
 ## Wie die Waffe angreift (z. B. ProjectileBehavior)
 @export var behavior: WeaponBehavior

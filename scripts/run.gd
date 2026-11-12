@@ -147,6 +147,7 @@ func open_pause_menu() -> void:
 		return
 	var menu: PauseMenu = PAUSE_MENU.instantiate()
 	menu.player = player
+	menu.weapon_holder = weapon_holder
 	_pause_menu = menu
 	_pause_menu.tree_exited.connect(_on_pause_menu_closed)
 	hud.add_child(_pause_menu)

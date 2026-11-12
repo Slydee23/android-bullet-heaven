@@ -7,12 +7,16 @@ signal stats_changed
 
 var data: WeaponData
 var level := 1
+## Erreichte Entwicklungsstufe (0 = noch keine, höchstens data.max_evolution)
+var evolution := 0
 ## Sekunden bis zum nächsten Angriff
 var cooldown_left := 0.0
 ## Wie die Waffe ihre Ziele wählt. Eigene Kopie, damit ein Upgrade sie austauschen kann, ohne die Datendatei zu ändern.
 var target_picker: TargetPicker
 ## Effekte, die erst im Run dazukommen (z. B. durch ein Level-Up-Upgrade), zusätzlich zu data.effects
 var extra_effects: Array[WeaponEffect] = []
+## Bisher mit dieser Waffe verursachter Schaden (Statusbildschirm)
+var total_damage := 0.0
 
 ## Feste Boni je Stat (einfachste Vorstufe der Modifikatoren, ab M6 rechnet das Werte-System)
 var _flat_bonus: Dictionary[StringName, float] = {}

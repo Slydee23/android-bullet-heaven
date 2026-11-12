@@ -11,6 +11,11 @@ const COLD := &"cold"
 
 const ALL: Array[StringName] = [PHYSICAL, FIRE, LIGHTNING, POISON, COLD]
 
+## Anzeigename des Elements (Übersetzung ELEMENT_<ID>), translate = z. B. die tr-Funktion eines Nodes
+static func display_name(element: StringName, translate: Callable) -> String:
+	return translate.call("ELEMENT_" + String(element).to_upper())
+
+
 ## Farben der Schadenszahlen (hell, mit dunklem Rand lesbar auf dem Waldboden). Feuer ist ein helles Rotorange, damit es sich
 ## auch auf kleinen Bildschirmen vom Boden abhebt. Gift ist ein helles Limettengrün, weil dunkles Grün im Gras untergeht.
 const COLOR_PHYSICAL := Color("#f4f6f0")

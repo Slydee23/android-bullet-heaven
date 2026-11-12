@@ -343,7 +343,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/sprites/effects/death.png` | 32×32, Tod-Staub, Bild steht mit dem Unterrand auf den Füßen des Gegners. Platzhalter vorhanden, Pixellab-Ersatz willkommen | 6 (beliebig) | M4 |
 | `assets/sprites/effects/damage_digits.png` | Ziffern 0-9 und „!“ der Schadenszahlen, je 10×12-Zelle (Körper 7×9, dicker Rand, Schatten unten rechts), hell, damit sie per Elementfarbe eingefärbt werden. Generator `tools/gen_damage_digits.gd` | 11 Zeichen | M4c |
 | `assets/sprites/pickups/xp_crystal.png` | 16×16 | 4 | M6 |
-| `assets/sprites/icons/weapon_<id>.png` (je Waffe, z. B. `weapon_arcane_wand.png`) | 32×32, zeigt **die Waffe selbst** (Zauberstab, Schwert, Dreizack, Fackel, Peitsche, Bombenbeutel), nicht ihren Angriff | 1 | M4d |
+| `assets/sprites/icons/weapon_<id>.png` (je Waffe, z. B. `weapon_arcane_wand.png`) | 32×32, zeigt **die Waffe selbst** (Zauberstab, Schwert, Dreizack, Fackel, Peitsche, Bombenbeutel), nicht ihren Angriff, Bildinhalt zentriert. Zauberstab vorhanden (Generator `tools/gen_weapon_icons.gd`, Final-Kandidat) | 1 | M4d |
 | `assets/sprites/weapons/sword_orbit.png` | 32×32, umlaufende Klinge, Blick nach Osten (Vorschlag, Größe bei M4e festlegen) | 1–4 | M4e |
 | `assets/sprites/effects/aura_fire.png` | Fläche um den Helden, Größe bei M4e festlegen (Vorschlag: Vielfaches von 32) | 4–8 | M4e |
 | `assets/sprites/effects/lightning_strike.png` | 32×64 (hoch), Einschlag-Blitz (Vorschlag) | 4–6 | M4f |
@@ -447,7 +447,8 @@ Umsetzung in Teilschritten: M4a Waffen-Architektur, Magiegeschoss, Geschoss-Pool
 M4b (**erledigt**, am PC und Handy getestet, FPS auf dem Redmi stabil bei vielen Gegnern, Geschossen und Effekten – das ist der Maßstab für die nächsten Schritte) Treffer- und Tod-Effekte (`hit.png`, `death.png`) mit allgemeinem `EffectManager` und Treffer-Formen (`damage_in_radius`, `damage_in_crescent`) →
 M4c (**erledigt, am PC getestet; Feinschliff, sobald mehrere Waffen im Spiel sind**) Schadenszahlen und Gegner-Lebensleisten mit Optionen (Schadenszahlen in Elementfarbe) →
    `DamageNumberManager` (Pool 64, Bildschirm-Raum, eigene Ziffern-Grafik in Stufen 3/4/5, Crit mit „!“ und Ploppen, tödlich bleibt länger), Leisten nur bei verletzten Gegnern, Schalter in Anzeige, Debug „Test-Crit“. Signal `enemy_damaged(position, amount, element, crit, kill)`.
-M4d Statusbildschirm mit Waffen-Spalte (4 Plätze, Icon, Name, Fähigkeit) →
+M4d (**umgesetzt, am PC und Handy getestet**) Statusbildschirm mit Waffen-Spalte (4 Plätze, Icon, Name, Fähigkeit) →
+   Karte je Platz (Icon, Name, Element, Level-Leiste mit 10 Feldern, Werte), Antippen öffnet ein Detailfenster (Fähigkeit, alle Werte, Upgrades, Entwicklung, verursachter Schaden). Karte zeigt „Lv 4“ und dahinter die Entwicklungsstufe als Sterne (`EvolutionStars`, Stufen je Waffe `max_evolution`, Standard 3), im Detailfenster „Entwicklung“ mit denselben Sternen, oben rechts „Startwaffe“, unten rechts das Element, die wichtigsten Werte legt jede Angriffsart über `card_stats()` fest. `WeaponInstance.total_damage` zählt mit. Icon `weapon_arcane_wand.png` per Generator `tools/gen_weapon_icons.gd` (Ebenholzstab, goldene Mondsichel mit Kugel). →
 **M4e** Kreisendes Schwert (`OrbitBehavior`) und Flammenfackel (`AuraBehavior`) →
 **M4f** Dreizack und Bombenbeutel (`StrikeBehavior`, Warnfläche) →
 **M4g** Elemente und Status-Effekte (Burning, Shock, Poisoned, Freeze) →
@@ -738,6 +739,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
 - ~~Sprite-Auflösung 16×16 oder 32×32~~ → **entschieden: 32×32, Figurengröße 1,5×** (siehe „Technische Grundentscheidungen“).
   ~~Lizenz der Pixellab-Assets~~ → geklärt: Rechte liegen bei uns (Pixellab-Nutzungsbedingungen 1.3), siehe `CREDITS.md`.
   Ob die Figuren bei vielen Gegnern groß genug wirken, prüfen wir beim Testen. Feinwerte (Zoom, Geschwindigkeiten) beim Balancing.
+- **Menü-Schrift:** Pixelify Sans zeichnet die „5“ wie ein „S“ (Nutzer und Tester). Nächster Schritt nach M4d: 2–3 freie Pixelschriften mit klaren Ziffern und Umlauten per Vorschau vergleichen, der Nutzer wählt (Datei `assets/fonts/pixel_font.ttf` wird ersetzt).
 - **Waffen-Baukasten, noch offen** (jeweils vor der betreffenden Stufe klären):
   - ~~Shock-Effekt~~ → **entschieden: Kettenblitz** (Slow gehört zu Frost). Konkrete Werte (Anteil des Schadens, Anzahl Ziele, Reichweite) vor M4g.
   - ~~Überzählige Geschosse~~ → **entschieden:** Zauberstab = Salve reihum auf die gewählten Ziele, Dreizack = zufälliger Punkt im Bild (Dreizack vor M4f noch einmal ansehen).

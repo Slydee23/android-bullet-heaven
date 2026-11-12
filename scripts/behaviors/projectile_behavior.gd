@@ -30,5 +30,9 @@ func fire(weapon: WeaponInstance, context: WeaponContext) -> bool:
 	return true
 
 
+func card_stats() -> Array[StringName]:
+	return [&"damage", &"cooldown", &"amount"]
+
+
 func supports_stat(stat: StringName) -> bool:
 	return stat in PROJECTILE_STATS or super(stat)
