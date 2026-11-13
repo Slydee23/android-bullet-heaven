@@ -45,8 +45,60 @@ func _init() -> void:
 	_flame_torch().save_png(OUT + "weapon_flame_torch.png")
 	_trident().save_png(OUT + "weapon_trident.png")
 	_bomb_bag().save_png(OUT + "weapon_bomb_bag.png")
+	_thorn_whip().save_png(OUT + "weapon_thorn_whip.png")
 	print("ok")
 	quit()
+
+
+## Dornenpeitsche: kurzer Ebenholzgriff mit Goldring und Goldknauf (unten links), daran eine dunkle geflochtene Lederschnur,
+## die sich oben rechts zu einer Schlaufe rollt und mit einem Schwanz ausläuft. Kleine Stahldornen stehen nach außen ab.
+func _thorn_whip() -> Image:
+	var img := Image.create_empty(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+	var lash_light := Palette.snap(Color("#b96e36"))
+	var lash := Palette.snap(Color("#924b35"))
+	var lash_dark := Palette.snap(Color("#784030"))
+	var thorn := BONE_LIGHT
+	# Schnur: Spirale um die Mitte C, beginnt am Griffende, läuft gut eine Runde und endet als Schwanz oben rechts
+	var center := Vector2(19.0, 12.5)
+	var start_angle := (Vector2(12.0, 20.0) - center).angle()
+	var samples := 90
+	var last := Vector2.ZERO
+	for s in samples + 1:
+		var t := s / float(samples)
+		var angle := start_angle - t * TAU * 0.92
+		var radius := lerpf(9.5, 6.0, t)
+		var p := center + Vector2.from_angle(angle) * radius
+		last = p
+		var x := int(p.x)
+		var y := int(p.y)
+		# Geflochten: hell und dunkel wechseln entlang der Schnur
+		_px(img, x, y, lash_light if (s / 4) % 2 == 0 else lash)
+		_px(img, x + 1, y, lash_dark)
+		# Dornen: alle paar Schritte ein Stahlpixel nach außen
+		if s % 11 == 5:
+			var out := center + Vector2.from_angle(angle) * (radius + 2.2)
+			_px(img, int(out.x), int(out.y), thorn)
+			var base := center + Vector2.from_angle(angle) * (radius + 1.2)
+			_px(img, int(base.x), int(base.y), BONE_DARK)
+	# Schwanz: von der Spiralenden-Stelle nach oben rechts, wird dünn
+	var tail_end := Vector2(30.0, 2.0)
+	for s in 12:
+		var p := last.lerp(tail_end, s / 11.0)
+		_px(img, int(p.x), int(p.y), lash_light if s < 8 else lash)
+		if s < 6:
+			_px(img, int(p.x) + 1, int(p.y), lash_dark)
+	_px(img, int(tail_end.x), int(tail_end.y), thorn)
+	# Griff: Ebenholz diagonal, Goldring oben, Goldknauf unten
+	for k in range(0, 8):
+		var x := 4 + k
+		var y := 27 - k
+		var ring := k >= 6
+		_px(img, x, y, GOLD_LIGHT if ring else WOOD_LIGHT)
+		_px(img, x + 1, y, GOLD if ring else WOOD)
+		_px(img, x + 1, y + 1, GOLD_DARK if ring else WOOD_DARK)
+	_ball(img, Vector2(3.5, 28.5), 1.8, GOLD_LIGHT, GOLD, GOLD_DARK)
+	_outline(img)
+	return _centered(img)
 
 
 ## Füllt eine (sich zur Spitze hin verjüngende) Linie von a nach b mit Licht von oben links:

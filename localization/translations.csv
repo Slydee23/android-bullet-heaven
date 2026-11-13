@@ -131,3 +131,12 @@ STATUS_BURNING,Brennen
 STATUS_POISONED,Gift
 STATUS_SHOCKED,Schock
 STATUS_CHILLED,Frost
+WEAPON_THORN_WHIP_NAME,Dornenpeitsche
+WEAPON_THORN_WHIP_DESC,"Ein weiter Hieb schnellt vom Helden weg und trifft alles in seiner Bahn, weitere Hiebe schlagen in andere Richtungen."
+STAT_LASHES,Hiebe pro Angriff
+STAT_LENGTH,Länge
+STAT_WIDTH,Breite
+STAT_RICOCHET,Abpraller
+DEBUG_ADD_WHIP,Peitsche hinzufügen
+DEBUG_RICOCHET,Zauberstab: +1 Abpraller
+DEBUG_PIERCE,Zauberstab: Durchschlag ∞

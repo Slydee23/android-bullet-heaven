@@ -101,7 +101,7 @@ func _ready() -> void:
 	projectile_manager.shooter = player
 	strike_manager.enemy_manager = enemy_manager
 	strike_manager.effect_manager = effect_manager
-	weapon_holder.setup(player, enemy_manager, projectile_manager, aura_drawer, strike_manager)
+	weapon_holder.setup(player, enemy_manager, projectile_manager, aura_drawer, strike_manager, effect_manager)
 	var start_weapon: WeaponData = load("res://data/weapons/%s.tres" % START_WEAPON_ID)
 	weapon_holder.add_start_weapon(start_weapon)
 

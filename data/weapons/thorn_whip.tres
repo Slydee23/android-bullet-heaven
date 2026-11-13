@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/behaviors/sweep_behavior.gd" id="2_behavior"]
+[ext_resource type="Resource" path="res://data/effects/whip_slash.tres" id="3_effect"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_thorn_whip.png" id="4_icon"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+effect = ExtResource("3_effect")
+start_offset = 8.0
+
+[resource]
+script = ExtResource("1_script")
+id = &"thorn_whip"
+name_key = "WEAPON_THORN_WHIP_NAME"
+description_key = "WEAPON_THORN_WHIP_DESC"
+icon = ExtResource("4_icon")
+tags = Array[StringName]([&"melee", &"whip"])
+element = &"physical"
+default_unlocked = true
+base_stats = {
+&"amount": 1.0,
+&"area": 12.0,
+&"cooldown": 1.5,
+&"damage": 35.0,
+&"range": 90.0
+}
+stat_limits = {
+&"amount": Vector2(1, 8),
+&"area": Vector2(12, 24),
+&"range": Vector2(90, 180)
+}
+behavior = SubResource("Resource_behavior")

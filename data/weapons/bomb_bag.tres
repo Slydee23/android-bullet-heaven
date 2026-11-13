@@ -32,7 +32,7 @@ base_stats = {
 &"amount": 1.0,
 &"area": 40.0,
 &"cooldown": 2.5,
-&"damage": 150.0,
+&"damage": 30.0,
 &"fuse": 1.0,
 &"range": 160.0
 }

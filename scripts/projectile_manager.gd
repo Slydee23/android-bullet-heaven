@@ -34,6 +34,12 @@ var _velocities := PackedVector2Array()
 var _damage := PackedFloat32Array()
 var _life := PackedFloat32Array()
 var _pierce := PackedInt32Array()
+## Restliche Abpraller (Stat ricochet): Statt zu verschwinden, fliegt das Geschoss zum nächsten Gegner weiter
+var _bounces := PackedInt32Array()
+## ID des Gegners vor dem zuletzt getroffenen: Abpraller springen nie direkt dorthin zurück
+var _prev_hit_id := PackedInt32Array()
+## Arbeitsspeicher für die Abpraller-Ziele
+var _bounce_targets := PackedInt32Array()
 var _weapon_index := PackedInt32Array()
 ## ID des zuletzt getroffenen Gegners (nicht der Platz: Plätze ändern sich beim Tod anderer Gegner)
 var _last_hit_id := PackedInt32Array()
@@ -61,6 +67,8 @@ func _ready() -> void:
 	_damage.resize(MAX_PROJECTILES)
 	_life.resize(MAX_PROJECTILES)
 	_pierce.resize(MAX_PROJECTILES)
+	_bounces.resize(MAX_PROJECTILES)
+	_prev_hit_id.resize(MAX_PROJECTILES)
 	_weapon_index.resize(MAX_PROJECTILES)
 	_last_hit_id.resize(MAX_PROJECTILES)
 	_mode.resize(MAX_PROJECTILES)
@@ -85,6 +93,8 @@ func spawn(weapon: WeaponInstance, from: Vector2, direction: Vector2) -> void:
 	_damage[count] = weapon.get_stat(&"damage")
 	_life[count] = weapon.get_stat(&"projectile_lifetime")
 	_pierce[count] = maxi(1, roundi(weapon.get_stat(&"pierce")))
+	_bounces[count] = maxi(0, roundi(weapon.get_stat(&"ricochet")))
+	_prev_hit_id[count] = -1
 	_weapon_index[count] = _weapon_slot(weapon)
 	_last_hit_id[count] = -1
 	_mode[count] = Mode.FLY
@@ -102,6 +112,7 @@ func spawn_orbit(weapon: WeaponInstance, angle: float) -> void:
 	_damage[count] = weapon.get_stat(&"damage")
 	_life[count] = INF
 	_pierce[count] = 0
+	_bounces[count] = 0
 	_weapon_index[count] = _weapon_slot(weapon)
 	_last_hit_id[count] = -1
 	_mode[count] = Mode.ORBIT
@@ -163,6 +174,8 @@ func remove(i: int) -> void:
 	_damage[i] = _damage[count]
 	_life[i] = _life[count]
 	_pierce[i] = _pierce[count]
+	_bounces[i] = _bounces[count]
+	_prev_hit_id[i] = _prev_hit_id[count]
 	_weapon_index[i] = _weapon_index[count]
 	_last_hit_id[i] = _last_hit_id[count]
 	_mode[i] = _mode[count]
@@ -207,11 +220,29 @@ func _process(delta: float) -> void:
 		if hit_id == _last_hit_id[i]:
 			continue
 		_hit(weapon, hit, _damage[i])
+		_prev_hit_id[i] = _last_hit_id[i]
 		_last_hit_id[i] = hit_id
 		_pierce[i] -= 1
 		if _pierce[i] <= 0:
-			remove(i)
+			if _bounces[i] > 0 and _bounce(i, weapon, hit):
+				_bounces[i] -= 1
+				_pierce[i] = 1
+			else:
+				remove(i)
 	queue_redraw()
+
+
+## Abpraller: Geschoss i fliegt vom getroffenen Gegner zum nächsten Gegner in Reichweite weiter, aber nie zurück zum
+## gerade oder davor getroffenen. false = kein weiteres Ziel, das Geschoss verschwindet.
+func _bounce(i: int, weapon: WeaponInstance, hit: int) -> bool:
+	var found := enemy_manager.find_nearest_n(_positions[i], weapon.get_stat(&"range"), 3, _bounce_targets)
+	for k in found:
+		var target := _bounce_targets[k]
+		if target != hit and enemy_manager.get_id(target) != _prev_hit_id[i]:
+			_velocities[i] = _positions[i].direction_to(enemy_manager.get_enemy_position(target)) * weapon.get_stat(&"projectile_speed")
+			_life[i] = weapon.get_stat(&"projectile_lifetime")
+			return true
+	return false
 
 
 ## Schaden an Gegner hit, Schadenszähler der Waffe und Treffer-Effekte

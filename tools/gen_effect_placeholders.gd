@@ -1,6 +1,7 @@
 extends SceneTree
 ## Erzeugt die Platzhalter für Treffer-Funken (hit.png, 4 Frames) und Tod-Staub (death.png, 6 Frames), je 32×32 pro Frame,
-## und die kleine Flamme des Feuerrings der Flammenfackel (aura_flame.png, 16×16, 4 Frames).
+## die kleine Flamme des Feuerrings der Flammenfackel (aura_flame.png, 16×16, 4 Frames) und den Sichel-Wisch der Peitsche
+## (whip_slash.png, Größe aus SLASH_START/LENGTH/HOOK, 4 Frames, Blick nach Osten, Drehpunkt = Held am linken Rand in der Mitte).
 ## Aufruf (im Projektordner): Godot --headless --path . -s tools/gen_effect_placeholders.gd
 ## Die Farben kommen aus der gemeinsamen Palette der Spielwelt (tools/palette.gd). Beide Dateien lassen sich jederzeit
 ## durch Alpha-Assets überschreiben (gleicher Name, beliebig viele 32×32-Frames).
@@ -14,6 +15,15 @@ const BOLT_SIZE := Vector2i(32, 64)
 const BOLT_FRAMES := 7
 const BLAST_FRAME := 96
 const BLAST_FRAMES := 6
+## Peitschenhieb wie in Vampire Survivors (Referenz-Screenshot des Nutzers): lange, leicht geschwungene Bahn, dünn und durchscheinend
+## am Helden, nach außen dicker und heller, die Spitze rollt sich nach oben ein. Wächst von kurz auf volle Länge und verblasst.
+## START = Abstand vom Helden, LENGTH = Länge, HOOK = wie weit sich die Spitze nach oben einrollt. Passt zu data/weapons/thorn_whip.tres.
+const SLASH_START := 8.0
+const SLASH_LENGTH := 90.0
+const SLASH_HOOK := 10.0
+const SLASH_FRAMES := 4
+## Abstand vom linken Bildrand zum Drehpunkt (Held), in Pixeln
+const SLASH_PIVOT_X := 4
 
 var WHITE := Palette.snap(Color("#f4f6f0"))
 var CYAN_LIGHT := Palette.snap(Color("#cdfcfa"))
@@ -38,6 +48,12 @@ func _init() -> void:
 	_make_aura_flame().save_png(OUT + "aura_flame.png")
 	_make_lightning().save_png(OUT + "lightning_strike.png")
 	_make_explosion().save_png(OUT + "explosion.png")
+	_make_slash(SLASH_START, SLASH_LENGTH, SLASH_HOOK).save_png(OUT + "whip_slash.png")
+	# Probebilder für die Abstimmung der Schlag-Länge: Godot ... -s tools/gen_effect_placeholders.gd -- slash_probe <Ordner>
+	var args := OS.get_cmdline_user_args()
+	if args.size() >= 2 and args[0] == "slash_probe":
+		for v: Array in [["s", 8.0, 90.0, 10.0], ["m", 8.0, 115.0, 12.0], ["l", 8.0, 140.0, 14.0]]:
+			_make_slash(v[1], v[2], v[3]).save_png(args[1] + "/slash_" + v[0] + ".png")
 	print("ok")
 	quit()
 
@@ -319,3 +335,43 @@ func _outline_rect(img: Image) -> void:
 					break
 	for e in edge:
 		img.set_pixel(e.x, e.y, OUTLINE)
+
+
+## Peitschenhieb: Mittellinie leicht durchhängend (sin-Bogen nach unten) und am äußeren Ende nach oben eingerollt (Haken).
+## Dicke wächst nach außen (dünn am Helden), die Spitze läuft spitz aus. Deckkraft ebenso: fast durchsichtig am Helden,
+## kräftig an der Spitze. Weißer Kern, cremefarbener weicher Rand, kein dunkler Umriss (wie im Vorbild).
+## Frames wachsen: 0 = 45 % der Länge, 1 = 75 %, 2 = voll, 3 = voll und verblassend. Drehpunkt (Held) am linken Rand in der Mitte.
+func _make_slash(start: float, length: float, hook: float) -> Image:
+	var growth: Array[float] = [0.45, 0.75, 1.0, 1.0]
+	var fade: Array[float] = [1.0, 1.0, 1.0, 0.45]
+	var max_half := 7.5
+	var sag := 5.0
+	var w := SLASH_PIVOT_X + int(ceilf(start + length)) + 4
+	var h := int(ceilf(hook + sag + max_half)) * 2 + 8
+	var pivot := Vector2(SLASH_PIVOT_X, h * 0.5)
+	var sheet := Image.create_empty(w * SLASH_FRAMES, h, false, Image.FORMAT_RGBA8)
+	for f in SLASH_FRAMES:
+		var frame := Image.create_empty(w, h, false, Image.FORMAT_RGBA8)
+		var len_f := length * growth[f]
+		for y in h:
+			for x in w:
+				var q := Vector2(x + 0.5, y + 0.5) - pivot
+				var t := (q.x - start) / len_f
+				if t <= 0.0 or t >= 1.0:
+					continue
+				var hook_part := maxf(0.0, (t - 0.72) / 0.28)
+				var center_y := sag * sin(PI * t) - hook * growth[f] * hook_part * hook_part
+				# Am Haken steigt die Linie steil an: Dicke senkrecht dazu leicht aufweiten, damit er nicht abreißt
+				var slope := absf(2.0 * hook * growth[f] * hook_part / (0.28 * len_f))
+				var half := max_half * growth[f] * pow(t, 1.4) * minf(1.0, (1.0 - t) / 0.12) * sqrt(1.0 + slope * slope)
+				var off := absf(q.y - center_y)
+				if off > half:
+					continue
+				var core := off < half * 0.45
+				var alpha := (0.2 + 0.8 * pow(t, 0.8)) * fade[f]
+				var c: Color = WHITE if core else BONE_LIGHT
+				if not core:
+					alpha *= 0.75
+				_px(frame, x, y, Color(c, alpha))
+		sheet.blit_rect(frame, Rect2i(0, 0, w, h), Vector2i(f * w, 0))
+	return sheet

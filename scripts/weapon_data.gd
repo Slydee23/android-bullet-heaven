@@ -6,7 +6,9 @@ extends Resource
 ## Gelesen werden sie immer über WeaponInstance.get_stat() (ab M6 rechnet dort das Werte-System).
 ##
 ## Bekannte Stats (Geschoss-Waffen): damage, cooldown (Sekunden), range (Welt-Pixel), amount (Geschosse pro Angriff),
-## projectile_speed, projectile_radius, projectile_lifetime (Sekunden), pierce (Anzahl Gegner, die ein Geschoss trifft).
+## projectile_speed, projectile_radius, projectile_lifetime (Sekunden), pierce (Anzahl Gegner, die ein Geschoss trifft),
+## ricochet (so oft prallt ein Geschoss nach dem letzten Durchschlag zum nächsten Gegner ab; nur für Waffen, die schießen oder werfen).
+## Peitsche: amount (Hiebe), range (Länge des Hiebs), area (halbe Breite des Treffer-Streifens).
 ## Kreisende Klingen: amount (Klingen), range (Kreisradius), orbit_speed (Bogenmaß pro Sekunde), duration (Sekunden sichtbar),
 ## cooldown (Zyklus in Sekunden), hit_interval (Sekunden, bis eine Klinge denselben Gegner wieder trifft), projectile_radius.
 ## Aura: range (Radius), cooldown (Sekunden zwischen zwei Schadens-Pulsen), damage (pro Puls).

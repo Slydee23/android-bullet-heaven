@@ -292,6 +292,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_ADD_BOMBS"
 
+[node name="AddWhipButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/StrikeWeaponButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_ADD_WHIP"
+
 [node name="ClearWeaponsButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -343,6 +349,22 @@ text = "DEBUG_BONUS_TICK"
 unique_name_in_owner = true
 layout_mode = 2
 text = "DEBUG_TEST_CRIT"
+
+[node name="ProjectileTestButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RicochetButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/ProjectileTestButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_RICOCHET"
+
+[node name="PierceButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/ProjectileTestButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_PIERCE"
 
 [node name="EnemiesPage" type="VBoxContainer" parent="Panel/Content/Scroll/Pages"]
 unique_name_in_owner = true

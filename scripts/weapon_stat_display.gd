@@ -14,6 +14,7 @@ const DETAIL_STATS := [
 	[&"area", "STAT_AREA"],
 	[&"fuse", "STAT_FUSE"],
 	[&"pierce", "STAT_PIERCE"],
+	[&"ricochet", "STAT_RICOCHET"],
 	[&"projectile_speed", "STAT_PROJECTILE_SPEED"],
 	[&"orbit_speed", "STAT_ORBIT_SPEED"],
 ]
@@ -57,7 +58,7 @@ static func value_text(weapon: WeaponInstance, stat: StringName, translate: Call
 			return translate.call("STAT_SECONDS") % [_number(value)]
 		&"orbit_speed":
 			return translate.call("STAT_PER_ROTATION") % [snappedf(value / TAU, 0.01)]
-		&"amount", &"pierce":
+		&"amount", &"pierce", &"ricochet":
 			return "×%d" % roundi(value)
 		&"damage":
 			return _number(value)

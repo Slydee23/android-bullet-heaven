@@ -8,7 +8,7 @@ extends WeaponBehavior
 ## Abstand der Salven-Geschosse in Sekunden
 const SALVO_DELAY := 0.1
 const PROJECTILE_STATS: Array[StringName] = [
-	&"amount", &"pierce", &"projectile_speed", &"projectile_radius", &"projectile_lifetime",
+	&"amount", &"pierce", &"ricochet", &"projectile_speed", &"projectile_radius", &"projectile_lifetime",
 ]
 
 ## Arbeitsspeicher für die Zielplätze (gilt nur innerhalb eines fire()-Aufrufs, deshalb darf er geteilt sein)

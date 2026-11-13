@@ -13,12 +13,13 @@ var _context := WeaponContext.new()
 
 
 ## Verweise setzen (die Run-Szene ruft das einmal beim Start auf).
-func setup(player: Player, enemy_manager: EnemyManager, projectiles: ProjectileManager, auras: AuraDrawer, strikes: StrikeManager) -> void:
+func setup(player: Player, enemy_manager: EnemyManager, projectiles: ProjectileManager, auras: AuraDrawer, strikes: StrikeManager, effects: EffectManager) -> void:
 	_context.player = player
 	_context.enemy_manager = enemy_manager
 	_context.projectiles = projectiles
 	_context.auras = auras
 	_context.strikes = strikes
+	_context.effects = effects
 
 
 func add_start_weapon(data: WeaponData) -> WeaponInstance:

@@ -12,6 +12,9 @@ var _positions := PackedVector2Array()
 var _ages := PackedFloat32Array()
 ## Index in _effects (ein Effekt speichert nur diese Zahl statt der ganzen Datendatei)
 var _slots := PackedInt32Array()
+## Drehung (Bogenmaß) und Streckung je Effekt (Peitschenhieb in 8 Richtungen, länger durch Upgrades)
+var _rotations := PackedFloat32Array()
+var _scales := PackedVector2Array()
 var _effects: Array[EffectData] = []
 var _was_drawn := false
 
@@ -20,11 +23,14 @@ func _ready() -> void:
 	_positions.resize(MAX_EFFECTS)
 	_ages.resize(MAX_EFFECTS)
 	_slots.resize(MAX_EFFECTS)
+	_rotations.resize(MAX_EFFECTS)
+	_scales.resize(MAX_EFFECTS)
 
 
 ## Spielt den Effekt einmal an der Weltposition pos ab (Fußpunkt-Ebene, wie alle Positionen im Spiel).
-## Ist der Pool voll, entfällt der Effekt einfach (er ist nur Optik).
-func play(effect: EffectData, pos: Vector2) -> void:
+## Ist der Pool voll, entfällt der Effekt einfach (er ist nur Optik). rotation dreht das Bild um seinen Ankerpunkt,
+## scale streckt es (negatives y spiegelt es, z. B. damit der Peitschenhaken auch links nach oben zeigt).
+func play(effect: EffectData, pos: Vector2, rotation := 0.0, scale := Vector2.ONE) -> void:
 	if count >= MAX_EFFECTS or not effect or not effect.texture:
 		return
 	var slot := _effects.find(effect)
@@ -34,6 +40,8 @@ func play(effect: EffectData, pos: Vector2) -> void:
 	_positions[count] = pos
 	_ages[count] = 0.0
 	_slots[count] = slot
+	_rotations[count] = rotation
+	_scales[count] = scale
 	count += 1
 
 
@@ -47,6 +55,8 @@ func _process(delta: float) -> void:
 			_positions[i] = _positions[count]
 			_ages[i] = _ages[count]
 			_slots[i] = _slots[count]
+			_rotations[i] = _rotations[count]
+			_scales[i] = _scales[count]
 	# Nur neu zeichnen, solange etwas läuft (und einmal danach, um das letzte Bild zu löschen)
 	if count > 0 or _was_drawn:
 		queue_redraw()
@@ -59,11 +69,15 @@ func _draw() -> void:
 		var frames := _frame_count(effect)
 		var frame := mini(int(_ages[i] * effect.fps), frames - 1)
 		var size := Vector2(effect.frame_width, effect.texture.get_height())
-		var top_left := _positions[i] - size * 0.5
+		var top_left := -size * 0.5
 		if effect.anchor == EffectData.Anchor.FEET:
 			# Der Punkt ist der Fuß: Das Bild steht unten bündig darauf (wie die Gegner)
-			top_left = _positions[i] + Vector2(-size.x * 0.5, 1.0 - size.y)
+			top_left = Vector2(-size.x * 0.5, 1.0 - size.y)
+		elif effect.anchor == EffectData.Anchor.PIVOT:
+			top_left = -effect.pivot
+		draw_set_transform(_positions[i], _rotations[i], _scales[i])
 		draw_texture_rect_region(effect.texture, Rect2(top_left, size), Rect2(Vector2(frame * effect.frame_width, 0), size))
+	draw_set_transform(Vector2.ZERO)
 
 
 func _frame_count(effect: EffectData) -> int:

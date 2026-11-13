@@ -250,6 +250,32 @@ func damage_in_radius(center: Vector2, radius: float, amount: float, element: St
 	return dealt
 
 
+## Schadet allen lebenden Gegnern in einem Streifen, der von origin gerade in direction wegführt (Peitschenhieb):
+## von start bis start + length Pixel vor origin, half_width Pixel zu jeder Seite. Ein Gegner zählt, wenn sein Körperkreis
+## den Streifen berührt. Nutzt das Spatial Grid. Liefert den insgesamt verursachten Schaden.
+func damage_in_strip(origin: Vector2, direction: Vector2, start: float, length: float, half_width: float, amount: float, element: StringName = Elements.PHYSICAL) -> float:
+	var dir := direction.normalized()
+	var a := origin + dir * start
+	var b := origin + dir * (start + length)
+	var margin := half_width + CELL_SIZE * 0.5
+	var first := _cell_of(Vector2(minf(a.x, b.x), minf(a.y, b.y)) - Vector2(margin, margin))
+	var last := _cell_of(Vector2(maxf(a.x, b.x), maxf(a.y, b.y)) + Vector2(margin, margin))
+	var dealt := 0.0
+	for cy in range(first.y, last.y + 1):
+		for cx in range(first.x, last.x + 1):
+			var j := _cell_head[cy * _grid_size.x + cx]
+			while j != -1:
+				if _hp[j] > 0.0:
+					var body := _type_list[_types[j]].radius
+					var rel := _positions[j] - origin
+					var along := rel.dot(dir)
+					var side := absf(rel.cross(dir))
+					if along >= start - body and along <= start + length + body and side <= half_width + body:
+						dealt += damage(j, amount, element)
+				j = _cell_next[j]
+	return dealt
+
+
 ## Schadet allen lebenden Gegnern in einer Sichel (Peitsche): Die Form ist ein Kreis A ohne einen um `thickness`
 ## nach hinten verschobenen Kreis B gleicher Größe. Sie wölbt sich in Richtung `direction`, ihre Spitze liegt `reach` Pixel
 ## vor `origin`, vorne ist sie `thickness` dick und läuft zu den Seiten spitz aus. Ein größerer `radius` macht sie flacher und breiter.

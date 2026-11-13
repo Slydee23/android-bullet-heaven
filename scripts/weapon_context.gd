@@ -10,6 +10,8 @@ var projectiles: ProjectileManager
 var auras: AuraDrawer
 ## Einschläge mit Flug, Zünder und Warnfläche (Blitze, Bomben)
 var strikes: StrikeManager
+## Bildeffekte, die eine Angriffsart selbst abspielt (Peitschenhieb)
+var effects: EffectManager
 
 
 ## Sichtbarer Bereich der Welt (für Zufallspunkte im Bild).

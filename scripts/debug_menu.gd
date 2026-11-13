@@ -16,6 +16,9 @@ const SWORD := preload("res://data/weapons/orbit_sword.tres")
 const TORCH := preload("res://data/weapons/flame_torch.tres")
 const TRIDENT := preload("res://data/weapons/trident.tres")
 const BOMBS := preload("res://data/weapons/bomb_bag.tres")
+const WHIP := preload("res://data/weapons/thorn_whip.tres")
+## Durchschlag „unendlich“ für den Wellen-Test (so viele Gegner trifft ein Geschoss)
+const PIERCE_ENDLESS := 999.0
 const BONUS_DURATION := 1.0
 const BONUS_RADIUS := 16.0
 const BONUS_TICK := -0.1
@@ -80,6 +83,9 @@ var _shown_iframes := -1.0
 @onready var add_trident_button: Button = %AddTridentButton
 @onready var add_bombs_button: Button = %AddBombsButton
 @onready var clear_weapons_button: Button = %ClearWeaponsButton
+@onready var add_whip_button: Button = %AddWhipButton
+@onready var ricochet_button: Button = %RicochetButton
+@onready var pierce_button: Button = %PierceButton
 @onready var bonus_duration_button: Button = %BonusDurationButton
 @onready var bonus_radius_button: Button = %BonusRadiusButton
 @onready var bonus_tick_button: Button = %BonusTickButton
@@ -122,6 +128,9 @@ func _ready() -> void:
 	add_trident_button.pressed.connect(_on_add_weapon_pressed.bind(TRIDENT))
 	add_bombs_button.pressed.connect(_on_add_weapon_pressed.bind(BOMBS))
 	clear_weapons_button.pressed.connect(_on_clear_weapons_pressed)
+	add_whip_button.pressed.connect(_on_add_weapon_pressed.bind(WHIP))
+	ricochet_button.pressed.connect(_add_bonus.bind(&"ricochet", 1.0, &"arcane_wand"))
+	pierce_button.pressed.connect(_add_bonus.bind(&"pierce", PIERCE_ENDLESS, &"arcane_wand"))
 	bonus_duration_button.pressed.connect(_add_bonus.bind(&"duration", BONUS_DURATION, &""))
 	bonus_radius_button.pressed.connect(_add_bonus.bind(&"range", BONUS_RADIUS, &"flame_torch"))
 	bonus_tick_button.pressed.connect(_add_bonus.bind(&"cooldown", BONUS_TICK, &"flame_torch"))
