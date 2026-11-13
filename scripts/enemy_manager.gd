@@ -7,8 +7,10 @@ extends Node2D
 ## - Spatial Grid: Jeder Gegner prüft nur Gegner in den Nachbarzellen statt alle anderen.
 
 const MAX_ENEMIES := 2000
-## Kantenlänge einer Rasterzelle in Welt-Pixeln (größer als der größte Gegnerdurchmesser)
-const CELL_SIZE := 32.0
+## Kantenlänge einer Rasterzelle in Welt-Pixeln. Muss mindestens der größte Gegnerdurchmesser sein (die Abstandsprüfung
+## sieht nur die 3×3 Nachbarzellen), Suchen rechnen CELL_SIZE / 2 als Gegnerradius auf. Kleiner = weniger Kandidaten pro
+## Prüfung: 24 statt 32 hat die Gegnerbewegung bei 800 Gegnern deutlich beschleunigt (M5b).
+const CELL_SIZE := 24.0
 ## Wie stark sich überlappende Gegner pro Frame auseinanderschieben (0..1)
 const SEPARATION_STRENGTH := 0.5
 ## Sekunden zwischen zwei Spawns (M3: fester Wert, ab M7 aus den Wellen)
@@ -105,6 +107,8 @@ var _nearest_distances := PackedFloat32Array()
 var _grid_size := Vector2i.ONE
 var _cell_head := PackedInt32Array()
 var _cell_next := PackedInt32Array()
+## Körperradius je Gegner (Kopie aus EnemyData, damit die Abstandsprüfung keine Ressource abfragen muss)
+var _radii := PackedFloat32Array()
 ## Sortierung nach Höhe: pro Pixelzeile der Arena eine Liste der Gegner, die dort stehen
 var _row_head := PackedInt32Array()
 var _row_next := PackedInt32Array()
@@ -133,6 +137,7 @@ func _ready() -> void:
 	_chain_distances.resize(MAX_CHAIN_TARGETS)
 	_nearest_distances.resize(MAX_NEAREST)
 	_cell_next.resize(MAX_ENEMIES)
+	_radii.resize(MAX_ENEMIES)
 	_row_next.resize(MAX_ENEMIES)
 
 
@@ -153,6 +158,7 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 		type_index = _type_list.size() - 1
 	_types[count] = type_index
 	_positions[count] = pos
+	_radii[count] = data.radius
 	_hp[count] = data.max_hp * (1.0 if data.immortal else hp_multiplier)
 	_since_hit[count] = 0.0
 	_status_mask[count] = 0
@@ -172,6 +178,7 @@ func kill(i: int) -> void:
 		return
 	_types[i] = _types[count]
 	_positions[i] = _positions[count]
+	_radii[i] = _radii[count]
 	_hp[i] = _hp[count]
 	_anim_offsets[i] = _anim_offsets[count]
 	_flipped[i] = _flipped[count]
@@ -538,13 +545,15 @@ func find_nearest_n(pos: Vector2, max_range: float, n: int, out: PackedInt32Arra
 
 ## Erster lebender Gegner, dessen Körperkreis den Kreis (pos, radius) berührt, oder -1. Nutzt das Spatial Grid.
 func find_hit(pos: Vector2, radius: float) -> int:
-	var cell := _cell_of(pos)
-	for cy in range(maxi(cell.y - 1, 0), mini(cell.y + 2, _grid_size.y)):
-		for cx in range(maxi(cell.x - 1, 0), mini(cell.x + 2, _grid_size.x)):
+	var margin := radius + CELL_SIZE * 0.5
+	var first := _cell_of(pos - Vector2(margin, margin))
+	var last := _cell_of(pos + Vector2(margin, margin))
+	for cy in range(first.y, last.y + 1):
+		for cx in range(first.x, last.x + 1):
 			var j := _cell_head[cy * _grid_size.x + cx]
 			while j != -1:
 				if _hp[j] > 0.0:
-					var reach := radius + _type_list[_types[j]].radius
+					var reach := radius + _radii[j]
 					if pos.distance_squared_to(_positions[j]) <= reach * reach:
 						return j
 				j = _cell_next[j]
@@ -680,21 +689,7 @@ func _move(delta: float) -> void:
 		_flipped[i] = 1 if direction.x < 0.0 else 0
 
 		# Abstand zu Nachbarn halten, damit sie sich nicht auf einem Punkt stapeln
-		var push := Vector2.ZERO
-		var cell := _cell_of(pos)
-		for cy in range(maxi(cell.y - 1, 0), mini(cell.y + 2, _grid_size.y)):
-			for cx in range(maxi(cell.x - 1, 0), mini(cell.x + 2, _grid_size.x)):
-				var j := _cell_head[cy * _grid_size.x + cx]
-				while j != -1:
-					if j != i:
-						var offset := pos - _positions[j]
-						var min_distance := data.radius + _type_list[_types[j]].radius
-						var distance_sq := offset.length_squared()
-						if distance_sq < min_distance * min_distance and distance_sq > 0.0001:
-							var distance := sqrt(distance_sq)
-							push += offset / distance * (min_distance - distance)
-					j = _cell_next[j]
-		pos += push * SEPARATION_STRENGTH
+		pos += _separation_push(i, pos) * SEPARATION_STRENGTH
 
 		# Nie im Helden stehen: Läuft er in Gegner hinein, weichen sie zur Seite. Ihn selbst bremst das nicht.
 		var away := pos - target_pos
@@ -704,6 +699,38 @@ func _move(delta: float) -> void:
 		_positions[i] = pos
 
 		_update_attack(i, data, pos.distance_to(target_pos) <= stop_distance + ATTACK_TOLERANCE, delta)
+
+
+## Schub weg von überlappenden Nachbarn (3×3 Zellen um Gegner i). Die Gegner weichen nacheinander aus und sehen
+## dabei schon die neuen Positionen der vorherigen: Das bleibt auch in dichten Massen ruhig (gleichzeitiges
+## Schieben aller Paare hat getestet gezittert oder die Masse zusammengedrückt).
+## Heiße Schleife: Arrays als lokale Variablen und Radien aus _radii statt aus den Gegnerdaten.
+func _separation_push(i: int, pos: Vector2) -> Vector2:
+	var positions := _positions
+	var radii := _radii
+	var cell_next := _cell_next
+	var cell_head := _cell_head
+	var width := _grid_size.x
+	var radius := radii[i]
+	var cell := _cell_of(pos)
+	var push := Vector2.ZERO
+	for cy in range(maxi(cell.y - 1, 0), mini(cell.y + 2, _grid_size.y)):
+		for cx in range(maxi(cell.x - 1, 0), mini(cell.x + 2, width)):
+			var j := cell_head[cy * width + cx]
+			while j != -1:
+				if j != i:
+					var offset := pos - positions[j]
+					var min_distance := radius + radii[j]
+					var distance_sq := offset.length_squared()
+					if distance_sq < min_distance * min_distance:
+						if distance_sq > 0.0001:
+							var distance := sqrt(distance_sq)
+							push += offset * ((min_distance - distance) / distance)
+						else:
+							# Genau aufeinander: feste Ausweichrichtung je Gegner, sonst blieben beide für immer gestapelt
+							push += Vector2.from_angle(float(i)) * min_distance * 0.5
+				j = cell_next[j]
+	return push
 
 
 func _update_attack(i: int, data: EnemyData, in_range: bool, delta: float) -> void:

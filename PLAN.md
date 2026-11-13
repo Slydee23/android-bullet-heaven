@@ -7,7 +7,7 @@
 - [x] M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
 - [x] M3 – Gegner (mit Performance-Grundlage) + Debug-Menü-Grundgerüst
 - [x] M4 – Auto-Angriff (6 Startwaffen, Status-Effekte, Schadenszahlen, Statusbildschirm)
-- [ ] M5 – Debug-Menü erweitern, Stresstest & Optimierung
+- [x] M5 – Debug-Menü erweitern, Stresstest & Optimierung
 - [ ] M6 – XP & Level-Up
 - [ ] M7 – Wellen & Run-Ende
 - [ ] M8 – Run speichern & fortsetzen
@@ -485,7 +485,9 @@ M4h (**umgesetzt, am PC getestet**) Dornenpeitsche (`SweepBehavior`) und Grundla
 
 ### M5 – Debug-Menü erweitern, Stresstest & Optimierung
 
-**M5a (umgesetzt, Handy-Messung offen):** Werkzeuge für den Stresstest: „Unverwundbar“ (Reiter Allgemein, `Player.debug_invincible`), „Startwaffe wechseln“ (Reiter Waffen, reihum alle 6 Waffen, `WeaponHolder.replace_start_weapon`), Leistungsanzeige oben links: FPS, durchschnittliche und längste Bildzeit der letzten ~2 s (ms, die längste zeigt Ruckler), Anzahl Gegner, Geschosse/Einschläge und Effekte. PC-Vorabtest: 500 Gegner (LP ×20) mit 4 Waffen (je +2 Projektile) bei stabilen 60 FPS (Vsync-Grenze). **M5b:** Messung am Redmi in 100er-Schritten, danach gezielt optimieren.
+**M5b (umgesetzt, am Handy bestätigt: 800 Gegner fast 60 FPS, max. 30–40 ms):** Erste Messung am Redmi: bis 500 Gegner über 50 FPS und unter 20 ms, bei 800 Gegnern ruckelig (max. ~50 ms). PC-Profil: Zeichnen ~1 ms, aber die Abstandsberechnung zwischen Nachbarn in `EnemyManager._move` 7,4 ms bei 800 Gegnern. Umbau: Abstandsprüfung in `_separation_push()` mit lokalen Arrays, Radius je Gegner in `_radii` statt aus den Gegnerdaten, Rasterzellen 24 statt 32 px (weniger Kandidaten), `find_hit` sucht nach Reichweite statt fest 3×3 Zellen. Genau übereinanderliegende Gegner bekommen eine feste Ausweichrichtung (blieben vorher für immer gestapelt). Ergebnis PC bei 800 Gegnern: 5,1 statt 7,4 ms. **Verworfen** (mit Zitter-Messung `m5_jitter.gd` geprüft): jedes Paar nur einmal mit gleichzeitigem Schub (zittert bzw. drückt die Masse auf ~11 statt 20 px Abstand zusammen), alten Schub jedes zweite Frame wiederverwenden (springt), nur halbe Gegner pro Frame ausweichen lassen (wackelt sichtbar). Die Gegner weichen weiter nacheinander aus, das bleibt ruhig. Nächste Stufe, falls nötig: Zeichnen per MultiMesh, oder ein Gegner-Limit auf dem Bildschirm.
+
+**M5a (umgesetzt):** Werkzeuge für den Stresstest: „Unverwundbar“ (Reiter Allgemein, `Player.debug_invincible`), „Startwaffe wechseln“ (Reiter Waffen, reihum alle 6 Waffen, `WeaponHolder.replace_start_weapon`), Leistungsanzeige oben links: FPS, durchschnittliche und längste Bildzeit der letzten ~2 s (ms, die längste zeigt Ruckler), Anzahl Gegner, Geschosse/Einschläge und Effekte. PC-Vorabtest: 500 Gegner (LP ×20) mit 4 Waffen (je +2 Projektile) bei stabilen 60 FPS (Vsync-Grenze). **M5b:** Messung am Redmi in 100er-Schritten, danach gezielt optimieren.
 
 - **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
   Das Grundgerüst gibt es schon seit M3: erreichbar über den Debug-Knopf neben dem Pause-Knopf, das Spiel kann dabei weiterlaufen
