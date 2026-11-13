@@ -17,6 +17,10 @@ const TORCH := preload("res://data/weapons/flame_torch.tres")
 const TRIDENT := preload("res://data/weapons/trident.tres")
 const BOMBS := preload("res://data/weapons/bomb_bag.tres")
 const WHIP := preload("res://data/weapons/thorn_whip.tres")
+## Reihenfolge für „Startwaffe wechseln“
+const START_WEAPONS: Array[WeaponData] = [
+	preload("res://data/weapons/arcane_wand.tres"), SWORD, TORCH, TRIDENT, BOMBS, WHIP,
+]
 ## Durchschlag „unendlich“ für den Wellen-Test (so viele Gegner trifft ein Geschoss)
 const PIERCE_ENDLESS := 999.0
 const BONUS_DURATION := 1.0
@@ -84,6 +88,9 @@ var _shown_iframes := -1.0
 @onready var add_bombs_button: Button = %AddBombsButton
 @onready var clear_weapons_button: Button = %ClearWeaponsButton
 @onready var add_whip_button: Button = %AddWhipButton
+@onready var start_weapon_button: Button = %StartWeaponButton
+@onready var vulnerable_button: Button = %VulnerableButton
+@onready var invincible_button: Button = %InvincibleButton
 @onready var ricochet_button: Button = %RicochetButton
 @onready var pierce_button: Button = %PierceButton
 @onready var bonus_duration_button: Button = %BonusDurationButton
@@ -129,6 +136,13 @@ func _ready() -> void:
 	add_bombs_button.pressed.connect(_on_add_weapon_pressed.bind(BOMBS))
 	clear_weapons_button.pressed.connect(_on_clear_weapons_pressed)
 	add_whip_button.pressed.connect(_on_add_weapon_pressed.bind(WHIP))
+	start_weapon_button.pressed.connect(_on_start_weapon_pressed)
+	_show_start_weapon()
+	if player:
+		vulnerable_button.button_pressed = not player.debug_invincible
+		invincible_button.button_pressed = player.debug_invincible
+	vulnerable_button.pressed.connect(_set_invincible.bind(false))
+	invincible_button.pressed.connect(_set_invincible.bind(true))
 	ricochet_button.pressed.connect(_add_bonus.bind(&"ricochet", 1.0, &"arcane_wand"))
 	pierce_button.pressed.connect(_add_bonus.bind(&"pierce", PIERCE_ENDLESS, &"arcane_wand"))
 	bonus_duration_button.pressed.connect(_add_bonus.bind(&"duration", BONUS_DURATION, &""))
@@ -153,6 +167,29 @@ func _ready() -> void:
 	poison_button.pressed.connect(_give_status.bind(POISONED))
 	shock_button.pressed.connect(_give_status.bind(SHOCKED))
 	chill_button.pressed.connect(_give_status.bind(CHILLED))
+
+
+func _set_invincible(on: bool) -> void:
+	if player:
+		player.debug_invincible = on
+
+
+## Startwaffe reihum gegen die nächste der sechs Waffen tauschen
+func _on_start_weapon_pressed() -> void:
+	if not weapon_holder or weapon_holder.start_weapons.is_empty():
+		return
+	var current := weapon_holder.start_weapons[0].data
+	var index := 0
+	for k in START_WEAPONS.size():
+		if START_WEAPONS[k].id == current.id:
+			index = k
+	weapon_holder.replace_start_weapon(START_WEAPONS[(index + 1) % START_WEAPONS.size()])
+	_show_start_weapon()
+
+
+func _show_start_weapon() -> void:
+	if weapon_holder and not weapon_holder.start_weapons.is_empty():
+		start_weapon_button.text = tr("DEBUG_START_WEAPON") % tr(weapon_holder.start_weapons[0].data.name_key)
 
 
 ## Zeigt nur die Seite des gewählten Reiters

@@ -34,6 +34,8 @@ const START_WEAPON_ID := &"arcane_wand"
 const ZOOM_FULL_ENEMIES := 50
 ## Wie oft die FPS-Anzeige aktualisiert wird (Sekunden)
 const FPS_UPDATE_INTERVAL := 0.5
+## So viele letzte Bildzeiten fließen in die Leistungsanzeige ein (bei 60 FPS etwa 2 Sekunden)
+const FRAME_SAMPLES := 120
 ## Treffer-Feedback: Mindeststärke (kleine Treffer) und wie stark der Trefferanteil an max_hp dazukommt
 ## (5 % Treffer → 0,43 leicht, 20 % Treffer → 0,95 kräftig)
 const HIT_FEEDBACK_MIN := 0.25
@@ -52,6 +54,9 @@ var _debug_menu: DebugMenu
 var _game_over := false
 var _game_over_menu: Control
 var _fps_timer := 0.0
+## Ringpuffer der letzten Bildzeiten (Sekunden) für Durchschnitt und langsamstes Bild
+var _frame_times := PackedFloat32Array()
+var _frame_index := 0
 
 @onready var ground: TileMapLayer = $Ground
 @onready var ground_details: TileMapLayer = $GroundDetails
@@ -127,10 +132,27 @@ func _process(delta: float) -> void:
 	camera.pressure = enemy_manager.count / float(ZOOM_FULL_ENEMIES)
 	if not fps_label.visible:
 		return
+	if _frame_times.is_empty():
+		_frame_times.resize(FRAME_SAMPLES)
+	_frame_times[_frame_index] = delta
+	_frame_index = (_frame_index + 1) % FRAME_SAMPLES
 	_fps_timer -= delta
 	if _fps_timer <= 0.0:
 		_fps_timer = FPS_UPDATE_INTERVAL
-		fps_label.text = tr("DEBUG_FPS") % [Engine.get_frames_per_second(), enemy_manager.count]
+		_update_fps_label()
+
+
+## Leistungsanzeige (nur Test-Builds): FPS, durchschnittliche und längste Bildzeit der letzten ~2 s in Millisekunden
+## (die längste zeigt Ruckler, die der FPS-Wert verschluckt), dazu Gegner, Geschosse und Effekte.
+func _update_fps_label() -> void:
+	var total := 0.0
+	var longest := 0.0
+	for t in _frame_times:
+		total += t
+		longest = maxf(longest, t)
+	var average := total / FRAME_SAMPLES
+	fps_label.text = tr("DEBUG_FPS") % [Engine.get_frames_per_second(), average * 1000.0, longest * 1000.0,
+			enemy_manager.count, projectile_manager.count + strike_manager.count, effect_manager.count]
 
 
 func _unhandled_input(event: InputEvent) -> void:

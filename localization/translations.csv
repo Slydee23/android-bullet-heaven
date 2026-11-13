@@ -33,7 +33,7 @@ PAUSE_COMING_SOON,Wird im Laufe der Entwicklung gefüllt.
 PAUSE_RESUME,Weiter
 PAUSE_ABANDON,Run aufgeben
 PAUSE_ABANDON_CONFIRM,Wirklich aufgeben?
-DEBUG_FPS,%d FPS · %d Gegner
+DEBUG_FPS,%d FPS · Ø %.1f ms · max %.1f ms\n%d Gegner · %d Geschosse · %d Effekte
 DEBUG_TITLE,Debug-Menü
 DEBUG_CAMERA_ZOOM,Kamera-Zoom
 DEBUG_ZOOM_NEAR,Nah (3×)
@@ -140,3 +140,7 @@ STAT_RICOCHET,Abpraller
 DEBUG_ADD_WHIP,Peitsche hinzufügen
 DEBUG_RICOCHET,Zauberstab: +1 Abpraller
 DEBUG_PIERCE,Zauberstab: Durchschlag ∞
+DEBUG_HERO,Held
+DEBUG_VULNERABLE,Verwundbar
+DEBUG_INVINCIBLE,Unverwundbar
+DEBUG_START_WEAPON,Startwaffe: %s (wechseln)

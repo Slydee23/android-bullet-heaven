@@ -39,6 +39,16 @@ func add_run_weapon(data: WeaponData) -> WeaponInstance:
 	return weapon
 
 
+## Tauscht die Startwaffe aus (Debug „Startwaffe wechseln“): Die alte räumt ihre Klingen, Auren und Einschläge weg.
+func replace_start_weapon(data: WeaponData) -> WeaponInstance:
+	for weapon in start_weapons:
+		weapon.data.behavior.on_removed(weapon, _context)
+	start_weapons.clear()
+	var weapon := _register(data)
+	start_weapons.append(weapon)
+	return weapon
+
+
 ## Legt alle Run-Waffen ab (Debug). Jede Angriffsart räumt dabei ihre Klingen, Auren und Einschläge weg.
 func clear_run_weapons() -> void:
 	for weapon in run_weapons:

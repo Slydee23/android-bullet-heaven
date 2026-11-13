@@ -49,6 +49,8 @@ var hp := max_hp
 var iframe_rule: IFrameRule
 ## Dauer der letzten I-Frames in Sekunden (Anzeige im Debug-Menü)
 var last_iframe_duration := 0.0
+## Debug „Unverwundbar“: Treffer von Gegnern zählen nicht (für lange Stresstests)
+var debug_invincible := false
 
 var _current_texture: Texture2D
 var _animation_time := 0.0
@@ -76,7 +78,7 @@ func _ready() -> void:
 ## Treffer von außen: Zieht Lebenspunkte ab und startet die I-Frames.
 ## Gibt false zurück, wenn der Treffer nicht zählt (unverwundbar oder schon tot).
 func take_damage(amount: float) -> bool:
-	if hp <= 0.0 or _invulnerable_left > 0.0:
+	if hp <= 0.0 or _invulnerable_left > 0.0 or debug_invincible:
 		return false
 	last_iframe_duration = iframe_rule.duration_for(amount, max_hp)
 	_invulnerable_left = last_iframe_duration

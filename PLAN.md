@@ -485,6 +485,8 @@ M4h (**umgesetzt, am PC getestet**) Dornenpeitsche (`SweepBehavior`) und Grundla
 
 ### M5 – Debug-Menü erweitern, Stresstest & Optimierung
 
+**M5a (umgesetzt, Handy-Messung offen):** Werkzeuge für den Stresstest: „Unverwundbar“ (Reiter Allgemein, `Player.debug_invincible`), „Startwaffe wechseln“ (Reiter Waffen, reihum alle 6 Waffen, `WeaponHolder.replace_start_weapon`), Leistungsanzeige oben links: FPS, durchschnittliche und längste Bildzeit der letzten ~2 s (ms, die längste zeigt Ruckler), Anzahl Gegner, Geschosse/Einschläge und Effekte. PC-Vorabtest: 500 Gegner (LP ×20) mit 4 Waffen (je +2 Projektile) bei stabilen 60 FPS (Vsync-Grenze). **M5b:** Messung am Redmi in 100er-Schritten, danach gezielt optimieren.
+
 - **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
   Das Grundgerüst gibt es schon seit M3: erreichbar über den Debug-Knopf neben dem Pause-Knopf, das Spiel kann dabei weiterlaufen
   (Zoom, I-Frames). Das Fenster ist scrollbar: Neue Einträge kommen in den Scrollbereich, Titel und „Zurück“ bleiben fest.
