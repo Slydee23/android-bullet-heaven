@@ -10,6 +10,6 @@ walk_texture = ExtResource("2_walk")
 frame_width = 32
 animation_fps = 5.0
 speed = 53.0
-max_hp = 10.0
+max_hp = 100.0
 contact_damage = 5.0
 radius = 10.0

@@ -60,7 +60,7 @@ static func value_text(weapon: WeaponInstance, stat: StringName, translate: Call
 		&"amount", &"pierce":
 			return "×%d" % roundi(value)
 		&"damage":
-			return str(snappedf(value, 0.1))
+			return _number(value)
 	return str(roundi(value))
 
 

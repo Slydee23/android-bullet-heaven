@@ -7,8 +7,7 @@ extends WeaponBehavior
 
 func fire(weapon: WeaponInstance, context: WeaponContext) -> bool:
 	var amount := weapon.get_stat(&"damage")
-	var hits := context.enemy_manager.damage_in_radius(context.player.global_position, weapon.get_stat(&"range"), amount, weapon.data.element)
-	weapon.total_damage += hits * amount
+	weapon.total_damage += context.enemy_manager.damage_in_radius(context.player.global_position, weapon.get_stat(&"range"), amount, weapon.data.element)
 	# Die Aura pulst immer weiter, auch ohne Gegner im Radius
 	return true
 

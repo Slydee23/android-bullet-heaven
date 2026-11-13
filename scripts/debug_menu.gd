@@ -196,7 +196,7 @@ func _on_test_crit_pressed() -> void:
 		return
 	var target := enemy_manager.find_nearest(player.global_position, 600.0)
 	if target != -1:
-		enemy_manager.damage(target, randf_range(4.0, 14.0), Elements.ALL.pick_random(), true)
+		enemy_manager.damage(target, randf_range(40.0, 140.0), Elements.ALL.pick_random(), true)
 
 
 func _on_iframe_reset_pressed() -> void:

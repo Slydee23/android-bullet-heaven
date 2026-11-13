@@ -90,8 +90,7 @@ func _remove(i: int) -> void:
 func _detonate(weapon: WeaponInstance, at: Vector2) -> void:
 	var amount := weapon.get_stat(&"damage")
 	if enemy_manager:
-		var hits := enemy_manager.damage_in_radius(at, weapon.get_stat(&"area"), amount, weapon.data.element)
-		weapon.total_damage += hits * amount
+		weapon.total_damage += enemy_manager.damage_in_radius(at, weapon.get_stat(&"area"), amount, weapon.data.element)
 	var behavior := weapon.data.behavior as StrikeBehavior
 	if effect_manager and behavior and behavior.effect:
 		effect_manager.play(behavior.effect, at)

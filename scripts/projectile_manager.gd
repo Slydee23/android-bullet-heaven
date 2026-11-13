@@ -217,8 +217,7 @@ func _process(delta: float) -> void:
 ## Schaden an Gegner hit, Schadenszähler der Waffe und Treffer-Effekte
 func _hit(weapon: WeaponInstance, hit: int, amount: float) -> void:
 	var hit_position := enemy_manager.get_enemy_position(hit)
-	enemy_manager.damage(hit, amount, weapon.data.element)
-	weapon.total_damage += amount
+	weapon.total_damage += enemy_manager.damage(hit, amount, weapon.data.element)
 	for effect in weapon.data.effects:
 		effect.on_hit(weapon, hit_position, hit, self)
 	for effect in weapon.extra_effects:

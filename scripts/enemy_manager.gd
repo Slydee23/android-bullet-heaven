@@ -24,6 +24,9 @@ const ATTACK_TOLERANCE := 1.0
 const HIT_FLASH_TIME := 0.1
 ## Farbe des Aufleuchtens (über 1 = heller als das Bild, wird auf Weiß begrenzt)
 const HIT_FLASH_COLOR := Color(3.0, 3.0, 3.0)
+## Jeder Treffer streut zufällig um diesen Anteil um den Waffenschaden (0.1 = 90–110 %) und wird auf ganze Zahlen gerundet,
+## damit Schadenszahlen lebendig wirken. Die Durchschnittswerte (und damit die Balance) bleiben gleich.
+const DAMAGE_SPREAD := 0.1
 
 ## Höchstanzahl der Ziele, die find_nearest_n auf einmal liefert
 const MAX_NEAREST := 16
@@ -150,19 +153,23 @@ func is_alive(i: int) -> bool:
 	return i >= 0 and i < count and _hp[i] > 0.0
 
 
-## Zieht Gegner i Lebenspunkte ab. Stirbt er, wird er erst zu Beginn des nächsten Frames entfernt
+## Zieht Gegner i Lebenspunkte ab: amount streut um ±DAMAGE_SPREAD und wird gerundet (mindestens 1).
+## Liefert den tatsächlich verursachten Schaden (für die Schadenszähler der Waffen).
+## Stirbt er, wird er erst zu Beginn des nächsten Frames entfernt
 ## (sofortiges Entfernen würde die Plätze der anderen Gegner mitten in einer Schleife verschieben).
-func damage(i: int, amount: float, element: StringName = Elements.PHYSICAL, crit := false) -> void:
+func damage(i: int, amount: float, element: StringName = Elements.PHYSICAL, crit := false) -> float:
+	var dealt := maxf(1.0, roundf(amount * randf_range(1.0 - DAMAGE_SPREAD, 1.0 + DAMAGE_SPREAD)))
 	var was_alive := _hp[i] > 0.0
-	_hp[i] -= amount
+	_hp[i] -= dealt
 	_flash[i] = HIT_FLASH_TIME
-	enemy_damaged.emit(_positions[i], amount, element, crit, was_alive and _hp[i] <= 0.0)
+	enemy_damaged.emit(_positions[i], dealt, element, crit, was_alive and _hp[i] <= 0.0)
+	return dealt
 
 
 ## Schadet allen lebenden Gegnern, deren Körperkreis den Kreis (center, radius) berührt (Bomben, Blitze, Auren).
-## Nutzt das Spatial Grid. Liefert die Anzahl getroffener Gegner.
-func damage_in_radius(center: Vector2, radius: float, amount: float, element: StringName = Elements.PHYSICAL) -> int:
-	var hits := 0
+## Nutzt das Spatial Grid. Jeder Gegner bekommt seinen eigenen gestreuten Wert. Liefert den insgesamt verursachten Schaden.
+func damage_in_radius(center: Vector2, radius: float, amount: float, element: StringName = Elements.PHYSICAL) -> float:
+	var dealt := 0.0
 	var reach := radius + CELL_SIZE * 0.5
 	var first := _cell_of(center - Vector2(reach, reach))
 	var last := _cell_of(center + Vector2(reach, reach))
@@ -173,21 +180,20 @@ func damage_in_radius(center: Vector2, radius: float, amount: float, element: St
 				if _hp[j] > 0.0:
 					var touch := radius + _type_list[_types[j]].radius
 					if center.distance_squared_to(_positions[j]) <= touch * touch:
-						damage(j, amount, element)
-						hits += 1
+						dealt += damage(j, amount, element)
 				j = _cell_next[j]
-	return hits
+	return dealt
 
 
 ## Schadet allen lebenden Gegnern in einer Sichel (Peitsche): Die Form ist ein Kreis A ohne einen um `thickness`
 ## nach hinten verschobenen Kreis B gleicher Größe. Sie wölbt sich in Richtung `direction`, ihre Spitze liegt `reach` Pixel
 ## vor `origin`, vorne ist sie `thickness` dick und läuft zu den Seiten spitz aus. Ein größerer `radius` macht sie flacher und breiter.
-## Ein Gegner zählt, wenn sein Körperkreis die Sichel berührt. Liefert die Anzahl getroffener Gegner.
-func damage_in_crescent(origin: Vector2, direction: Vector2, reach: float, radius: float, thickness: float, amount: float, element: StringName = Elements.PHYSICAL) -> int:
+## Ein Gegner zählt, wenn sein Körperkreis die Sichel berührt. Liefert den insgesamt verursachten Schaden.
+func damage_in_crescent(origin: Vector2, direction: Vector2, reach: float, radius: float, thickness: float, amount: float, element: StringName = Elements.PHYSICAL) -> float:
 	var dir := direction.normalized()
 	var center_a := origin + dir * (reach - radius)
 	var center_b := center_a - dir * thickness
-	var hits := 0
+	var dealt := 0.0
 	var margin := radius + CELL_SIZE * 0.5
 	var first := _cell_of(center_a - Vector2(margin, margin))
 	var last := _cell_of(center_a + Vector2(margin, margin))
@@ -201,10 +207,9 @@ func damage_in_crescent(origin: Vector2, direction: Vector2, reach: float, radiu
 					# Nicht ganz im Kreis B: der Gegner muss über dessen Rand hinausragen
 					var not_in_b := center_b.distance_to(_positions[j]) > radius - body
 					if in_a and not_in_b:
-						damage(j, amount, element)
-						hits += 1
+						dealt += damage(j, amount, element)
 				j = _cell_next[j]
-	return hits
+	return dealt
 
 
 func get_enemy_position(i: int) -> Vector2:

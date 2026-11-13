@@ -24,7 +24,7 @@ default_unlocked = true
 base_stats = {
 &"amount": 1.0,
 &"cooldown": 0.8,
-&"damage": 5.0,
+&"damage": 50.0,
 &"pierce": 1.0,
 &"projectile_lifetime": 1.5,
 &"projectile_radius": 4.0,

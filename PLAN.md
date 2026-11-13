@@ -471,6 +471,7 @@ M4f (**umgesetzt, am PC getestet**, Handy-Test der FPS offen) Dreizack und Bombe
   `EnemyManager.enemy_damaged`) und Tod-Staub (bei `enemy_killed`) ab. Dazu die Treffer-Formen `damage_in_radius` und `damage_in_crescent` (Sichel) im `EnemyManager`,
   die Bomben, Blitze, Aura und Peitsche später nutzen.
 - **Schadenszahlen** über getroffenen Gegnern (Option „Schadenszahlen“), aus einem Pool.
+- **Schadens-Skala und Streuung (entschieden nach M4f):** Alle Schadens- und Gegner-LP-Werte ×10 (Skelett 100 LP, Zauberstab 50, Schwert 60, Fackel 30, Dreizack 100, Bomben 150), Balance unverändert. Jeder Treffer streut ±10 % (`EnemyManager.DAMAGE_SPREAD`) und wird auf ganze Zahlen gerundet, damit die Zahlen lebendig wirken; Karten zeigen den Durchschnitt. `EnemyManager.damage()` und die Flächen-Treffer liefern den tatsächlich verursachten Schaden (Schadenszähler der Waffen). Crits (Chance, Schaden) kommen erst mit dem Werte-System (M6).
 - **Lebensleisten über Gegnern** (Option „Lebensleisten Gegner“). Sie erscheinen nur bei bereits verletzten Gegnern und
   werden alle in einem einzigen Zeichenaufruf des EnemyManagers gezeichnet, nicht als eigene Nodes. Das ist wichtig für die Performance.
 - Statusbildschirm zeigt die Waffe mit ihren Werten.
