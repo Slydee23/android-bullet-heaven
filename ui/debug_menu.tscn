@@ -179,6 +179,26 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_hero")
 text = "DEBUG_INVINCIBLE"
 
+[node name="XpLabel" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage"]
+layout_mode = 2
+text = "DEBUG_XP"
+
+[node name="XpButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="XpHalfButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/XpButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_XP_HALF"
+
+[node name="LevelUpButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/XpButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_LEVEL_UP"
+
 [node name="IFrameMinRow" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 24

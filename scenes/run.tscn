@@ -13,6 +13,10 @@
 [ext_resource type="Script" path="res://scripts/damage_number_manager.gd" id="11_numbers"]
 [ext_resource type="Script" path="res://scripts/aura_drawer.gd" id="12_auras"]
 [ext_resource type="Script" path="res://scripts/strike_manager.gd" id="13_strikes"]
+[ext_resource type="Script" path="res://scripts/hud/hud_root.gd" id="14_hud_root"]
+[ext_resource type="PackedScene" path="res://ui/hud/xp_display.tscn" id="15_xp"]
+[ext_resource type="PackedScene" path="res://ui/hud/health_display.tscn" id="16_health"]
+[ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="17_slots"]
 
 [node name="Run" type="Node2D" unique_id=439059942]
 script = ExtResource("1_script")
@@ -76,7 +80,46 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("3_joystick")
 
-[node name="DebugButton" type="TextureButton" parent="HUD" groups=["joystick_blocker"]]
+[node name="HudRoot" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("14_hud_root")
+
+[node name="XpDisplay" parent="HUD/HudRoot" instance=ExtResource("15_xp")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -480.0
+offset_top = -76.0
+offset_right = 480.0
+offset_bottom = -36.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="TopLeft" type="VBoxContainer" parent="HUD/HudRoot"]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 48.0
+offset_right = 568.0
+offset_bottom = 180.0
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="HealthDisplay" parent="HUD/HudRoot/TopLeft" instance=ExtResource("16_health")]
+layout_mode = 2
+
+[node name="WeaponSlots" parent="HUD/HudRoot/TopLeft" instance=ExtResource("17_slots")]
+layout_mode = 2
+
+[node name="DebugButton" type="TextureButton" parent="HUD/HudRoot" groups=["joystick_blocker"]]
 process_mode = 3
 layout_mode = 3
 anchors_preset = 1
@@ -91,7 +134,7 @@ texture_normal = ExtResource("6_debug")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="PauseButton" type="TextureButton" parent="HUD" groups=["joystick_blocker"]]
+[node name="PauseButton" type="TextureButton" parent="HUD/HudRoot" groups=["joystick_blocker"]]
 process_mode = 3
 layout_mode = 3
 anchors_preset = 1
@@ -106,11 +149,11 @@ texture_normal = ExtResource("4_pause")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="FpsLabel" type="Label" parent="HUD"]
+[node name="FpsLabel" type="Label" parent="HUD/HudRoot"]
 offset_left = 48.0
-offset_top = 40.0
+offset_top = 200.0
 offset_right = 648.0
-offset_bottom = 90.0
+offset_bottom = 250.0
 theme_override_colors/font_color = Color(0.91, 0.87, 0.78, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.03, 0.08, 1)
 theme_override_constants/outline_size = 8

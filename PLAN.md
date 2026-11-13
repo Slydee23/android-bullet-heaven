@@ -506,6 +506,12 @@ M4h (**umgesetzt, am PC getestet**) Dornenpeitsche (`SweepBehavior`) und Grundla
 
 ### M6 – XP & Level-Up
 
+**Entscheidungen (2026-11-13):** XP-Kristalle sind **Seelensplitter, Farbe nach Wert** (blau klein, grün mittel, rot/violett groß, leichtes Funkeln). Einsammeln mit **Sammelradius, Kristalle fliegen dann beschleunigend zum Helden**; liegen sehr viele herum, verschmelzen die ältesten zu einem großen. XP-Kurve **schnell am Anfang** (wie Vampire Survivors). Level-Up: **3 Karten nebeneinander** (Icon, Name, „Neu“ bzw. „Lv 3 → 4“, Wertänderung). HUD: **XP-Leiste unten mittig** (halbe Bildschirmbreite, Stufe rechts darin; zuerst oben quer probiert, wirkte zu voll), oben links **Lebensleiste** (Herz, Blutrot) und die **4 Waffenplätze** (nur Anzeige). XP in Seelenblau.
+
+Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6c** Werte-System (StatBlock, Modifikatoren) · **M6d** Level-Up-Karten und Upgrade-Pools · **M6e** Statusbildschirm.
+
+**M6a (umgesetzt, am Handy bestätigt):** `RunState` (Stufe, XP, Signale `xp_changed`/`leveled_up`, nur im Run), `XpCurve` (`data/progression/xp_curve.tres`: 5 XP für Stufe 2, danach +10 je Stufe, ab Stufe 20 +13, ab 40 +16). HUD in `ui/hud/`: `HudRoot` (verbindet Anzeigen per `bind_hud`; Pause-/Debug-Knopf und FPS-Anzeige hängen mit daran; **keine Safe-Area-Einrückung**: am Redmi wirkte das HUD dadurch schief bzw. zu weit im Bild, die Kamera liegt im Querformat links auf halber Höhe), `XpDisplay`, `HealthDisplay` (Signal `Player.hp_changed`), `WeaponSlots` (Signal `WeaponHolder.weapons_changed`, Startwaffe mit Goldrand). Grafiken `tools/gen_hud.gd`. FPS-Anzeige unter die Waffenplätze gerückt. Debug (Allgemein): „+ halbe Stufe XP“, „Stufe +1“ (Level-Up vorerst ohne Karten).
+
 - **Zuerst das HUD-Grundgerüst** nach „UI-Konzepte → HUD“: HUD-Szene mit Bereichen, feste HP-Leiste, XP-Leiste, Level und Waffen-Icons.
 - Gegner lassen XP-Kristalle fallen, die per Magnet eingesammelt werden. Am oberen Rand gibt es eine XP-Leiste.
 - Beim Level-Up pausiert das Spiel, und es erscheinen **3 Karten** zum Antippen, gezogen aus einem Pool: eine neue Waffe (nur solange

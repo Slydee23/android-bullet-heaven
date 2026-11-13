@@ -27,6 +27,7 @@ const GAME_OVER_MENU := preload("res://ui/game_over_menu.tscn")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
 const HIT_EFFECT := preload("res://data/effects/hit.tres")
 const DEATH_EFFECT := preload("res://data/effects/death.tres")
+const XP_CURVE := preload("res://data/progression/xp_curve.tres")
 ## Startwaffe des Runs (vorerst fest, die Auswahl im Hub kommt mit E10). Datei: data/weapons/<id>.tres
 const START_WEAPON_ID := &"arcane_wand"
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
@@ -48,6 +49,8 @@ const VIBRATION_MAX_MS := 120
 const VIBRATION_MIN_AMPLITUDE := -1.0
 const VIBRATION_MAX_AMPLITUDE := -1.0
 
+## Zustand, der nur in diesem Run gilt (Stufe, Erfahrung), getrennt vom dauerhaften Spielstand
+var run_state := RunState.new(XP_CURVE)
 var _pause_menu: Control
 var _debug_menu: DebugMenu
 ## Der Held ist gestorben (sperrt die Pause), auch schon während der Tod-Animation
@@ -67,8 +70,8 @@ var _frame_index := 0
 @onready var camera: RunCamera = $Player/Camera2D
 @onready var joystick: TouchJoystick = $HUD/TouchJoystick
 @onready var hud: CanvasLayer = $HUD
-@onready var pause_button: TextureButton = $HUD/PauseButton
-@onready var debug_button: TextureButton = $HUD/DebugButton
+@onready var pause_button: TextureButton = $HUD/HudRoot/PauseButton
+@onready var debug_button: TextureButton = $HUD/HudRoot/DebugButton
 @onready var enemy_manager: EnemyManager = $EnemyManager
 @onready var projectile_manager: ProjectileManager = $ProjectileManager
 @onready var weapon_holder: WeaponHolder = $Weapons
@@ -76,7 +79,8 @@ var _frame_index := 0
 @onready var aura_drawer: AuraDrawer = $AuraDrawer
 @onready var strike_manager: StrikeManager = $StrikeManager
 @onready var damage_numbers: DamageNumberManager = $DamageNumbersLayer/DamageNumbers
-@onready var fps_label: Label = $HUD/FpsLabel
+@onready var fps_label: Label = $HUD/HudRoot/FpsLabel
+@onready var hud_root: HudRoot = $HUD/HudRoot
 
 
 func _ready() -> void:
@@ -109,6 +113,7 @@ func _ready() -> void:
 	weapon_holder.setup(player, enemy_manager, projectile_manager, aura_drawer, strike_manager, effect_manager)
 	var start_weapon: WeaponData = load("res://data/weapons/%s.tres" % START_WEAPON_ID)
 	weapon_holder.add_start_weapon(start_weapon)
+	hud_root.bind(player, run_state, weapon_holder)
 
 	# FPS-Anzeige nur in Test-Builds (aus Godot gestartet), nicht in einer späteren Veröffentlichung
 	fps_label.visible = OS.is_debug_build()
@@ -236,6 +241,7 @@ func _toggle_debug_menu() -> void:
 	_debug_menu.player = player
 	_debug_menu.weapon_holder = weapon_holder
 	_debug_menu.enemy_manager = enemy_manager
+	_debug_menu.run_state = run_state
 	_debug_menu.tree_exited.connect(_on_debug_menu_closed)
 	hud.add_child(_debug_menu)
 	_update_pause()

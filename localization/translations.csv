@@ -144,3 +144,7 @@ DEBUG_HERO,Held
 DEBUG_VULNERABLE,Verwundbar
 DEBUG_INVINCIBLE,Unverwundbar
 DEBUG_START_WEAPON,Startwaffe: %s (wechseln)
+HUD_LEVEL,Lv %d
+DEBUG_XP,Erfahrung
+DEBUG_XP_HALF,+ halbe Stufe XP
+DEBUG_LEVEL_UP,Stufe +1

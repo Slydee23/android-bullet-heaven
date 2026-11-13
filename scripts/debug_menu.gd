@@ -50,6 +50,8 @@ var player: Player
 var weapon_holder: WeaponHolder
 ## Gegner für „Test-Crit“ (setzt die Run-Szene vor dem Öffnen)
 var enemy_manager: EnemyManager
+## Run-Zustand (Stufe, Erfahrung; setzt die Run-Szene)
+var run_state: RunState
 
 var _closing := false
 var _shown_iframes := -1.0
@@ -91,6 +93,8 @@ var _shown_iframes := -1.0
 @onready var start_weapon_button: Button = %StartWeaponButton
 @onready var vulnerable_button: Button = %VulnerableButton
 @onready var invincible_button: Button = %InvincibleButton
+@onready var xp_half_button: Button = %XpHalfButton
+@onready var level_up_button: Button = %LevelUpButton
 @onready var ricochet_button: Button = %RicochetButton
 @onready var pierce_button: Button = %PierceButton
 @onready var bonus_duration_button: Button = %BonusDurationButton
@@ -142,6 +146,8 @@ func _ready() -> void:
 		vulnerable_button.button_pressed = not player.debug_invincible
 		invincible_button.button_pressed = player.debug_invincible
 	vulnerable_button.pressed.connect(_set_invincible.bind(false))
+	xp_half_button.pressed.connect(_on_xp_half_pressed)
+	level_up_button.pressed.connect(_on_level_up_pressed)
 	invincible_button.pressed.connect(_set_invincible.bind(true))
 	ricochet_button.pressed.connect(_add_bonus.bind(&"ricochet", 1.0, &"arcane_wand"))
 	pierce_button.pressed.connect(_add_bonus.bind(&"pierce", PIERCE_ENDLESS, &"arcane_wand"))
@@ -167,6 +173,18 @@ func _ready() -> void:
 	poison_button.pressed.connect(_give_status.bind(POISONED))
 	shock_button.pressed.connect(_give_status.bind(SHOCKED))
 	chill_button.pressed.connect(_give_status.bind(CHILLED))
+
+
+## Erfahrung für eine halbe Stufe (zeigt die XP-Leiste)
+func _on_xp_half_pressed() -> void:
+	if run_state:
+		run_state.add_xp(ceili(run_state.xp_needed() * 0.5))
+
+
+## Genau so viel Erfahrung, wie bis zur nächsten Stufe fehlt
+func _on_level_up_pressed() -> void:
+	if run_state:
+		run_state.add_xp(run_state.xp_needed() - run_state.xp)
 
 
 func _set_invincible(on: bool) -> void:

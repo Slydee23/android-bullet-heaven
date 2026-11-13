@@ -3,6 +3,9 @@ extends Node
 ## Die Waffen des Helden im Run. Der Held selbst bleibt waffenfrei (Grundsatz 8): Die Run-Szene hängt diesen Baustein an.
 ## 4 Plätze: 1 Startwaffen-Platz (im Hub gewählt) + 3 Run-Plätze (über Level-Up belegt).
 
+## Waffen kamen dazu, wurden getauscht oder entfernt (für die Waffenplätze im HUD)
+signal weapons_changed
+
 const START_SLOTS := 1
 const RUN_SLOTS := 3
 
@@ -27,6 +30,7 @@ func add_start_weapon(data: WeaponData) -> WeaponInstance:
 		return null
 	var weapon := _register(data)
 	start_weapons.append(weapon)
+	weapons_changed.emit()
 	return weapon
 
 
@@ -36,6 +40,7 @@ func add_run_weapon(data: WeaponData) -> WeaponInstance:
 		return null
 	var weapon := _register(data)
 	run_weapons.append(weapon)
+	weapons_changed.emit()
 	return weapon
 
 
@@ -46,6 +51,7 @@ func replace_start_weapon(data: WeaponData) -> WeaponInstance:
 	start_weapons.clear()
 	var weapon := _register(data)
 	start_weapons.append(weapon)
+	weapons_changed.emit()
 	return weapon
 
 
@@ -54,6 +60,7 @@ func clear_run_weapons() -> void:
 	for weapon in run_weapons:
 		weapon.data.behavior.on_removed(weapon, _context)
 	run_weapons.clear()
+	weapons_changed.emit()
 
 
 func can_add_run_weapon() -> bool:

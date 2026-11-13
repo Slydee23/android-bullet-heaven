@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/hud/health_display.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/hud/hud_bar.gd" id="2_bar"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud_fill_hp.png" id="3_fill"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud_heart.png" id="4_heart"]
+
+[node name="HealthDisplay" type="HBoxContainer"]
+mouse_filter = 2
+theme_override_constants/separation = 12
+script = ExtResource("1_script")
+
+[node name="Heart" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(36, 32)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("4_heart")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="Bar" type="Control" parent="."]
+custom_minimum_size = Vector2(360, 40)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_bar")
+fill_texture = ExtResource("3_fill")
+
+[node name="HpLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_vertical = 1
+text = "100 / 100"
+vertical_alignment = 1

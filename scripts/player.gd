@@ -9,6 +9,8 @@ signal died
 signal damaged(amount: float)
 ## Die Tod-Animation ist durchgelaufen und der Held lag kurz da (danach kommt Game Over)
 signal death_animation_finished
+## Lebenspunkte haben sich geändert (für die feste Lebensleiste im HUD)
+signal hp_changed(hp: float, max_hp: float)
 
 ## Breite eines Animationsframes im Spritesheet (Pixel)
 const FRAME_WIDTH := 32
@@ -113,6 +115,7 @@ func take_self_damage(amount: float) -> void:
 func _set_hp(value: float) -> void:
 	hp = value
 	health_bar.value = hp
+	hp_changed.emit(hp, max_hp)
 
 
 func _apply_settings() -> void:
