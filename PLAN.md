@@ -5,8 +5,8 @@
 - [x] M0 – Umstellung auf Querformat
 - [x] M1 – Hauptmenü, Arena, Spielfigur, Kamera
 - [x] M2 – Touch-Steuerung, Pause, Optionen + GitHub-README
-- [ ] M3 – Gegner (mit Performance-Grundlage) + Debug-Menü-Grundgerüst
-- [ ] M4 – Auto-Angriff
+- [x] M3 – Gegner (mit Performance-Grundlage) + Debug-Menü-Grundgerüst
+- [x] M4 – Auto-Angriff (6 Startwaffen, Status-Effekte, Schadenszahlen, Statusbildschirm)
 - [ ] M5 – Debug-Menü erweitern, Stresstest & Optimierung
 - [ ] M6 – XP & Level-Up
 - [ ] M7 – Wellen & Run-Ende
