@@ -23,6 +23,7 @@
 | `assets/sprites/weapons/sword_orbit.png` | Selbst erstellt (Generator `tools/gen_weapon_placeholders.gd`, Palettenfarben) | Eigenes Werk |
 | `assets/sprites/effects/aura_flame.png` | Selbst erstellt (Generator `tools/gen_effect_placeholders.gd`, Palettenfarben) | Eigenes Werk |
 | `assets/sprites/icons/weapon_trident.png`, `weapon_bomb_bag.png` | Selbst erstellt (Generator `tools/gen_weapon_icons.gd`, Palettenfarben) | Eigenes Werk |
+| `assets/sprites/enemies/training_dummy.png` | Selbst erstellt (Generator `tools/gen_training_dummy.gd`, Palettenfarben) | Eigenes Werk |
 | `assets/sprites/weapons/bomb.png` | Selbst erstellt (Generator `tools/gen_weapon_placeholders.gd`, Palettenfarben) | Eigenes Werk |
 | `assets/sprites/effects/lightning_strike.png`, `explosion.png` | Selbst erstellt (Generator `tools/gen_effect_placeholders.gd`, Palettenfarben) | Eigene Werke |
 

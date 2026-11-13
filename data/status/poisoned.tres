@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StatusEffectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/status_effect_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"poisoned"
+name_key = "STATUS_POISONED"
+element = &"poison"
+kind = 0
+duration = 4.0
+tick_interval = 0.5
+power = 8.0
+max_stacks = 10
+chain_targets = 2
+chain_range = 64.0
+tint = 0.45

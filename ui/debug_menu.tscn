@@ -6,6 +6,10 @@
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_game"]
 
+[sub_resource type="ButtonGroup" id="ButtonGroup_tabs"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_hp"]
+
 [node name="DebugMenu" type="Control"]
 process_mode = 3
 layout_mode = 3
@@ -32,6 +36,7 @@ grow_vertical = 2
 
 [node name="Content" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
+custom_minimum_size = Vector2(1240, 0)
 theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="Panel/Content"]
@@ -40,25 +45,67 @@ theme_override_font_sizes/font_size = 40
 text = "DEBUG_TITLE"
 horizontal_alignment = 1
 
+[node name="Tabs" type="HBoxContainer" parent="Panel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TabGeneral" type="Button" parent="Panel/Content/Tabs"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "DEBUG_TAB_GENERAL"
+
+[node name="TabWeapons" type="Button" parent="Panel/Content/Tabs"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "DEBUG_TAB_WEAPONS"
+
+[node name="TabEnemies" type="Button" parent="Panel/Content/Tabs"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "DEBUG_TAB_ENEMIES"
+
+[node name="TabStatus" type="Button" parent="Panel/Content/Tabs"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "DEBUG_TAB_STATUS"
+
 [node name="Scroll" type="ScrollContainer" parent="Panel/Content"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="Rows" type="VBoxContainer" parent="Panel/Content/Scroll"]
+[node name="Pages" type="VBoxContainer" parent="Panel/Content/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GeneralPage" type="VBoxContainer" parent="Panel/Content/Scroll/Pages"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="ZoomLabel" type="Label" parent="Panel/Content/Scroll/Rows"]
+[node name="ZoomLabel" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 text = "DEBUG_CAMERA_ZOOM"
 
-[node name="ZoomButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="ZoomButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ZoomNearButton" type="Button" parent="Panel/Content/Scroll/Rows/ZoomButtons"]
+[node name="ZoomNearButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/ZoomButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -66,7 +113,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_zoom")
 text = "DEBUG_ZOOM_NEAR"
 
-[node name="ZoomFarButton" type="Button" parent="Panel/Content/Scroll/Rows/ZoomButtons"]
+[node name="ZoomFarButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/ZoomButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -74,7 +121,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_zoom")
 text = "DEBUG_ZOOM_FAR"
 
-[node name="ZoomDynamicButton" type="Button" parent="Panel/Content/Scroll/Rows/ZoomButtons"]
+[node name="ZoomDynamicButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/ZoomButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -82,15 +129,15 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_zoom")
 text = "DEBUG_ZOOM_DYNAMIC"
 
-[node name="GameLabel" type="Label" parent="Panel/Content/Scroll/Rows"]
+[node name="GameLabel" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 text = "DEBUG_GAME_STATE"
 
-[node name="GameButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="GameButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="GamePausedButton" type="Button" parent="Panel/Content/Scroll/Rows/GameButtons"]
+[node name="GamePausedButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/GameButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -98,7 +145,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_game")
 text = "DEBUG_GAME_PAUSED"
 
-[node name="GameRunningButton" type="Button" parent="Panel/Content/Scroll/Rows/GameButtons"]
+[node name="GameRunningButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/GameButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -106,183 +153,301 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_game")
 text = "DEBUG_GAME_RUNNING"
 
-[node name="IFrameMinRow" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="IFrameMinRow" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="Label" type="Label" parent="Panel/Content/Scroll/Rows/IFrameMinRow"]
+[node name="Label" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameMinRow"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 text = "DEBUG_IFRAME_MIN"
 
-[node name="IFrameMinSlider" type="HSlider" parent="Panel/Content/Scroll/Rows/IFrameMinRow"]
+[node name="IFrameMinSlider" type="HSlider" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameMinRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 64)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="IFrameMinValue" type="Label" parent="Panel/Content/Scroll/Rows/IFrameMinRow"]
+[node name="IFrameMinValue" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameMinRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="IFrameMaxRow" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="IFrameMaxRow" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="Label" type="Label" parent="Panel/Content/Scroll/Rows/IFrameMaxRow"]
+[node name="Label" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameMaxRow"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 text = "DEBUG_IFRAME_MAX"
 
-[node name="IFrameMaxSlider" type="HSlider" parent="Panel/Content/Scroll/Rows/IFrameMaxRow"]
+[node name="IFrameMaxSlider" type="HSlider" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameMaxRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 64)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="IFrameMaxValue" type="Label" parent="Panel/Content/Scroll/Rows/IFrameMaxRow"]
+[node name="IFrameMaxValue" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameMaxRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="IFrameShareRow" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="IFrameShareRow" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="Label" type="Label" parent="Panel/Content/Scroll/Rows/IFrameShareRow"]
+[node name="Label" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameShareRow"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 text = "DEBUG_IFRAME_SHARE"
 
-[node name="IFrameShareSlider" type="HSlider" parent="Panel/Content/Scroll/Rows/IFrameShareRow"]
+[node name="IFrameShareSlider" type="HSlider" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameShareRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 64)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="IFrameShareValue" type="Label" parent="Panel/Content/Scroll/Rows/IFrameShareRow"]
+[node name="IFrameShareValue" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage/IFrameShareRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="IFrameLastLabel" type="Label" parent="Panel/Content/Scroll/Rows"]
+[node name="IFrameLastLabel" type="Label" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="TestButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="IFrameResetButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "DEBUG_IFRAME_RESET"
+
+[node name="TestButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TestSmallHitButton" type="Button" parent="Panel/Content/Scroll/Rows/TestButtons"]
+[node name="TestSmallHitButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/TestButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_TEST_SMALL_HIT"
 
-[node name="TestHitButton" type="Button" parent="Panel/Content/Scroll/Rows/TestButtons"]
+[node name="TestHitButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/TestButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_TEST_HIT"
 
-[node name="TestSelfDamageButton" type="Button" parent="Panel/Content/Scroll/Rows/TestButtons"]
+[node name="TestSelfDamageButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/TestButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_TEST_SELF_DAMAGE"
 
-[node name="ProjectileButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="ExtraProjectileButton" type="Button" parent="Panel/Content/Scroll/Rows/ProjectileButtons"]
+[node name="WeaponsPage" type="VBoxContainer" parent="Panel/Content/Scroll/Pages"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "DEBUG_EXTRA_PROJECTILE"
+theme_override_constants/separation = 8
 
-[node name="ExtraProjectileResetButton" type="Button" parent="Panel/Content/Scroll/Rows/ProjectileButtons"]
-unique_name_in_owner = true
+[node name="AddLabel" type="Label" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
 layout_mode = 2
-size_flags_horizontal = 3
-text = "DEBUG_EXTRA_PROJECTILE_RESET"
+text = "DEBUG_WEAPONS_ADD"
 
-[node name="WeaponButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="WeaponButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="AddSwordButton" type="Button" parent="Panel/Content/Scroll/Rows/WeaponButtons"]
+[node name="AddSwordButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/WeaponButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_ADD_SWORD"
 
-[node name="AddTorchButton" type="Button" parent="Panel/Content/Scroll/Rows/WeaponButtons"]
+[node name="AddTorchButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/WeaponButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_ADD_TORCH"
 
-[node name="StrikeWeaponButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="StrikeWeaponButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="AddTridentButton" type="Button" parent="Panel/Content/Scroll/Rows/StrikeWeaponButtons"]
+[node name="AddTridentButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/StrikeWeaponButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_ADD_TRIDENT"
 
-[node name="AddBombsButton" type="Button" parent="Panel/Content/Scroll/Rows/StrikeWeaponButtons"]
+[node name="AddBombsButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/StrikeWeaponButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_ADD_BOMBS"
 
-[node name="ClearWeaponsButton" type="Button" parent="Panel/Content/Scroll/Rows/StrikeWeaponButtons"]
+[node name="ClearWeaponsButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
 text = "DEBUG_CLEAR_WEAPONS"
 
-[node name="BonusButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+[node name="BonusLabel" type="Label" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
+layout_mode = 2
+text = "DEBUG_WEAPONS_BONUS"
+
+[node name="ProjectileButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="BonusDurationButton" type="Button" parent="Panel/Content/Scroll/Rows/BonusButtons"]
+[node name="ExtraProjectileButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/ProjectileButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_EXTRA_PROJECTILE"
+
+[node name="ExtraProjectileResetButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/ProjectileButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_EXTRA_PROJECTILE_RESET"
+
+[node name="BonusButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BonusDurationButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/BonusButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_BONUS_DURATION"
 
-[node name="BonusRadiusButton" type="Button" parent="Panel/Content/Scroll/Rows/BonusButtons"]
+[node name="BonusRadiusButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/BonusButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_BONUS_RADIUS"
 
-[node name="BonusTickButton" type="Button" parent="Panel/Content/Scroll/Rows/BonusButtons"]
+[node name="BonusTickButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/BonusButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_BONUS_TICK"
 
-[node name="TestCritButton" type="Button" parent="Panel/Content/Scroll/Rows"]
+[node name="TestCritButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "DEBUG_TEST_CRIT"
 
-[node name="IFrameResetButton" type="Button" parent="Panel/Content/Scroll/Rows"]
+[node name="EnemiesPage" type="VBoxContainer" parent="Panel/Content/Scroll/Pages"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "DEBUG_IFRAME_RESET"
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="HpLabel" type="Label" parent="Panel/Content/Scroll/Pages/EnemiesPage"]
+layout_mode = 2
+text = "DEBUG_ENEMY_HP"
+
+[node name="HpButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/EnemiesPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Hp1Button" type="Button" parent="Panel/Content/Scroll/Pages/EnemiesPage/HpButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_hp")
+text = "DEBUG_HP_X1"
+
+[node name="Hp5Button" type="Button" parent="Panel/Content/Scroll/Pages/EnemiesPage/HpButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_hp")
+text = "DEBUG_HP_X5"
+
+[node name="Hp20Button" type="Button" parent="Panel/Content/Scroll/Pages/EnemiesPage/HpButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_hp")
+text = "DEBUG_HP_X20"
+
+[node name="SpawnLabel" type="Label" parent="Panel/Content/Scroll/Pages/EnemiesPage"]
+layout_mode = 2
+text = "DEBUG_ENEMY_SPAWN"
+
+[node name="SpawnButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/EnemiesPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Add100Button" type="Button" parent="Panel/Content/Scroll/Pages/EnemiesPage/SpawnButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_ADD_100"
+
+[node name="RemoveEnemiesButton" type="Button" parent="Panel/Content/Scroll/Pages/EnemiesPage/SpawnButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_REMOVE_ENEMIES"
+
+[node name="DummyButton" type="Button" parent="Panel/Content/Scroll/Pages/EnemiesPage"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "DEBUG_SPAWN_DUMMY"
+
+[node name="StatusPage" type="VBoxContainer" parent="Panel/Content/Scroll/Pages"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="StatusHint" type="Label" parent="Panel/Content/Scroll/Pages/StatusPage"]
+layout_mode = 2
+text = "DEBUG_STATUS_HINT"
+
+[node name="StatusButtons1" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/StatusPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BurnButton" type="Button" parent="Panel/Content/Scroll/Pages/StatusPage/StatusButtons1"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "STATUS_BURNING"
+
+[node name="PoisonButton" type="Button" parent="Panel/Content/Scroll/Pages/StatusPage/StatusButtons1"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "STATUS_POISONED"
+
+[node name="StatusButtons2" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/StatusPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ShockButton" type="Button" parent="Panel/Content/Scroll/Pages/StatusPage/StatusButtons2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "STATUS_SHOCKED"
+
+[node name="ChillButton" type="Button" parent="Panel/Content/Scroll/Pages/StatusPage/StatusButtons2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "STATUS_CHILLED"
 
 [node name="BackButton" type="Button" parent="Panel/Content"]
 unique_name_in_owner = true

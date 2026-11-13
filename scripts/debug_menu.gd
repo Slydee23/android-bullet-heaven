@@ -2,6 +2,7 @@ class_name DebugMenu
 extends Control
 ## Debug-Menü: kleines Fenster im Run, nur in Test-Builds (aus Godot gestartet) erreichbar.
 ## Testwerte zum Ausprobieren, wächst mit dem Spiel. Das Spiel kann dabei weiterlaufen (siehe Settings.debug_keep_running).
+## Aufgeteilt in Reiter: Allgemein (Kamera, Spiel, I-Frames, Treffer am Helden), Waffen, Gegner, Status.
 
 signal closed
 
@@ -18,6 +19,23 @@ const BOMBS := preload("res://data/weapons/bomb_bag.tres")
 const BONUS_DURATION := 1.0
 const BONUS_RADIUS := 16.0
 const BONUS_TICK := -0.1
+## Gegner-Hilfen: Lebenspunkte-Faktoren, so viele Gegner pro Klick im Ring um den Helden, Übungspuppe
+const HP_FACTORS: Array[float] = [1.0, 5.0, 20.0]
+const SKELETON := preload("res://data/enemies/skeleton.tres")
+const DUMMY := preload("res://data/enemies/training_dummy.tres")
+const BURST_COUNT := 100
+const BURST_MIN_DISTANCE := 220.0
+const BURST_MAX_DISTANCE := 360.0
+const DUMMY_OFFSET := Vector2(70.0, 0.0)
+## Status geben: wirkt auf alle Gegner in diesem Umkreis um den Helden
+const STATUS_RADIUS := 160.0
+const BURNING := preload("res://data/status/burning.tres")
+const POISONED := preload("res://data/status/poisoned.tres")
+const SHOCKED := preload("res://data/status/shocked.tres")
+const CHILLED := preload("res://data/status/chilled.tres")
+
+## Zuletzt geöffneter Reiter (bleibt erhalten, solange das Spiel läuft)
+static var _last_page := 0
 
 ## Held, auf den sich die Testwerte beziehen (setzt die Run-Szene vor dem Öffnen)
 var player: Player
@@ -29,6 +47,16 @@ var enemy_manager: EnemyManager
 var _closing := false
 var _shown_iframes := -1.0
 
+@onready var tab_buttons: Array[Button] = [%TabGeneral, %TabWeapons, %TabEnemies, %TabStatus]
+@onready var pages: Array[Control] = [%GeneralPage, %WeaponsPage, %EnemiesPage, %StatusPage]
+@onready var hp_buttons: Array[Button] = [%Hp1Button, %Hp5Button, %Hp20Button]
+@onready var add_100_button: Button = %Add100Button
+@onready var remove_enemies_button: Button = %RemoveEnemiesButton
+@onready var dummy_button: Button = %DummyButton
+@onready var burn_button: Button = %BurnButton
+@onready var poison_button: Button = %PoisonButton
+@onready var shock_button: Button = %ShockButton
+@onready var chill_button: Button = %ChillButton
 @onready var zoom_near_button: Button = %ZoomNearButton
 @onready var zoom_far_button: Button = %ZoomFarButton
 @onready var zoom_dynamic_button: Button = %ZoomDynamicButton
@@ -99,6 +127,58 @@ func _ready() -> void:
 	bonus_tick_button.pressed.connect(_add_bonus.bind(&"cooldown", BONUS_TICK, &"flame_torch"))
 	iframe_reset_button.pressed.connect(_on_iframe_reset_pressed)
 	back_button.pressed.connect(close)
+
+	for k in tab_buttons.size():
+		tab_buttons[k].pressed.connect(_show_page.bind(k))
+	_show_page(_last_page)
+	tab_buttons[_last_page].button_pressed = true
+
+	for k in hp_buttons.size():
+		hp_buttons[k].pressed.connect(_on_hp_factor_pressed.bind(HP_FACTORS[k]))
+		if enemy_manager and is_equal_approx(enemy_manager.hp_multiplier, HP_FACTORS[k]):
+			hp_buttons[k].button_pressed = true
+	add_100_button.pressed.connect(_on_add_100_pressed)
+	remove_enemies_button.pressed.connect(_on_remove_enemies_pressed)
+	dummy_button.pressed.connect(_on_dummy_pressed)
+	burn_button.pressed.connect(_give_status.bind(BURNING))
+	poison_button.pressed.connect(_give_status.bind(POISONED))
+	shock_button.pressed.connect(_give_status.bind(SHOCKED))
+	chill_button.pressed.connect(_give_status.bind(CHILLED))
+
+
+## Zeigt nur die Seite des gewählten Reiters
+func _show_page(index: int) -> void:
+	_last_page = index
+	for k in pages.size():
+		pages[k].visible = k == index
+
+
+func _on_hp_factor_pressed(factor: float) -> void:
+	if enemy_manager:
+		enemy_manager.set_hp_multiplier(factor)
+
+
+## 100 Skelette sofort im Ring um den Helden (zum Prüfen von Flächenwaffen und FPS)
+func _on_add_100_pressed() -> void:
+	if enemy_manager and player:
+		enemy_manager.spawn_ring(SKELETON, player.global_position, BURST_COUNT, BURST_MIN_DISTANCE, BURST_MAX_DISTANCE)
+
+
+func _on_remove_enemies_pressed() -> void:
+	if enemy_manager:
+		enemy_manager.remove_all()
+
+
+## Übungspuppe neben dem Helden: stirbt nie, bewegt sich nicht, greift nicht an
+func _on_dummy_pressed() -> void:
+	if enemy_manager and player:
+		enemy_manager.spawn(DUMMY, player.global_position + DUMMY_OFFSET)
+
+
+## Status auf alle Gegner (und Puppen) im Umkreis um den Helden
+func _give_status(status: StatusEffectData) -> void:
+	if enemy_manager and player:
+		enemy_manager.apply_status_in_radius(player.global_position, STATUS_RADIUS, status)
 
 
 func _process(_delta: float) -> void:

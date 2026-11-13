@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StatusEffectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/status_effect_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"chilled"
+name_key = "STATUS_CHILLED"
+element = &"cold"
+kind = 1
+duration = 3.0
+tick_interval = 0.5
+power = 0.4
+max_stacks = 1
+chain_targets = 2
+chain_range = 64.0
+tint = 0.45

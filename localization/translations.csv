@@ -112,3 +112,22 @@ DEBUG_ADD_BOMBS,Bomben hinzufügen
 DEBUG_CLEAR_WEAPONS,Run-Waffen entfernen
 STAT_BOLTS,Blitze pro Angriff
 STAT_BOMBS,Bomben pro Angriff
+DEBUG_TAB_GENERAL,Allgemein
+DEBUG_TAB_WEAPONS,Waffen
+DEBUG_TAB_ENEMIES,Gegner
+DEBUG_TAB_STATUS,Status
+DEBUG_WEAPONS_ADD,Waffen hinzufügen (3 Run-Plätze)
+DEBUG_WEAPONS_BONUS,Test-Boni (statt Upgrades)
+DEBUG_ENEMY_HP,Gegner-Lebenspunkte
+DEBUG_HP_X1,×1
+DEBUG_HP_X5,×5
+DEBUG_HP_X20,×20
+DEBUG_ENEMY_SPAWN,Gegner
+DEBUG_ADD_100,+100 Gegner
+DEBUG_REMOVE_ENEMIES,Gegner entfernen
+DEBUG_SPAWN_DUMMY,Übungspuppe aufstellen
+DEBUG_STATUS_HINT,Wirkt auf alle Gegner bis 160 px um den Helden
+STATUS_BURNING,Brennen
+STATUS_POISONED,Gift
+STATUS_SHOCKED,Schock
+STATUS_CHILLED,Frost

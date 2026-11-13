@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/training_dummy.png" id="2_texture"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"training_dummy"
+walk_texture = ExtResource("2_texture")
+frame_width = 32
+animation_fps = 1.0
+speed = 0.0
+max_hp = 1000.0
+contact_damage = 0.0
+radius = 10.0
+immortal = true
+anchored = true

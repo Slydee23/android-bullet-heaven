@@ -172,12 +172,13 @@ func _on_player_died() -> void:
 		_debug_menu.queue_free()
 
 
-## Treffer-Funken und Schadenszahl in der Körpermitte des getroffenen Gegners
-func _on_enemy_damaged(pos: Vector2, amount: float, element: StringName, crit: bool, kill: bool) -> void:
+## Treffer-Funken und Schadenszahl in der Körpermitte des getroffenen Gegners (Schaden über Zeit: nur eine kleine Zahl)
+func _on_enemy_damaged(pos: Vector2, amount: float, element: StringName, crit: bool, kill: bool, dot: bool) -> void:
 	var body := pos - Vector2(0.0, EnemyManager.BODY_HEIGHT)
-	effect_manager.play(HIT_EFFECT, body)
+	if not dot:
+		effect_manager.play(HIT_EFFECT, body)
 	if Settings.show_damage_numbers:
-		damage_numbers.spawn(body, amount, element, crit, kill)
+		damage_numbers.spawn(body, amount, element, crit, kill, dot)
 
 
 ## Tod-Staub an den Füßen des gestorbenen Gegners

@@ -19,3 +19,7 @@ extends Resource
 @export var attack_range := 0.0
 ## Körperradius in Welt-Pixeln um die Füße: Abstand zu anderen Gegnern und zum Helden, Trefferfläche
 @export var radius := 10.0
+## Stirbt nie (Übungspuppe): Lebenspunkte fallen höchstens auf 1 und füllen sich kurz nach dem letzten Treffer wieder auf
+@export var immortal := false
+## Bewegt sich nie und lässt sich nicht von anderen Gegnern wegschieben (Übungspuppe)
+@export var anchored := false

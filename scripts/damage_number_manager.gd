@@ -5,6 +5,7 @@ extends Node2D
 ## So bleiben sie bei jedem Kamera-Zoom gleich groß und lesbar. Die Ziffern sind eigene Pixel-Grafik (damage_digits.png,
 ## Generator tools/gen_damage_digits.gd), ganzzahlig vergrößert: Normal Stufe 3, kritisch oder tödlich 4, beides 5.
 ## Ein kritischer Treffer startet eine Stufe größer und setzt sich dann (Ploppen).
+## Schaden über Zeit (Brennen, Gift) erscheint kleiner (Stufe 2) und kürzer, damit Ticks den Bildschirm nicht fluten.
 
 const DIGITS := preload("res://assets/sprites/effects/damage_digits.png")
 ## Zelle einer Ziffer im Bild (Körper 7×9 plus Rand und Schatten) und Abstand von Ziffer zu Ziffer
@@ -24,6 +25,8 @@ const POP_TIME := 0.1
 const SCALE_NORMAL := 3
 const SCALE_BIG := 4
 const SCALE_HUGE := 5
+const SCALE_SMALL := 2
+const LIFETIME_DOT := 0.5
 
 var count := 0
 
@@ -49,7 +52,7 @@ func _ready() -> void:
 
 
 ## Neue Zahl an der Weltposition pos (Körpermitte). Ist der Pool voll, wird die älteste Zahl überschrieben.
-func spawn(pos: Vector2, amount: float, element: StringName, crit: bool, kill: bool) -> void:
+func spawn(pos: Vector2, amount: float, element: StringName, crit: bool, kill: bool, dot := false) -> void:
 	var slot := count
 	if count >= MAX_NUMBERS:
 		slot = 0
@@ -63,6 +66,9 @@ func spawn(pos: Vector2, amount: float, element: StringName, crit: bool, kill: b
 	_ages[slot] = 0.0
 	_lifetimes[slot] = LIFETIMES[kind]
 	_scales[slot] = [SCALE_NORMAL, SCALE_BIG, SCALE_BIG, SCALE_HUGE][kind]
+	if dot and not crit and not kill:
+		_lifetimes[slot] = LIFETIME_DOT
+		_scales[slot] = SCALE_SMALL
 	_crits[slot] = 1 if crit else 0
 	_colors[slot] = Elements.damage_color(element, crit)
 	_texts[slot] = "%d%s" % [maxi(1, roundi(amount)), "!" if crit else ""]
