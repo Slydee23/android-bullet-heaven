@@ -17,6 +17,10 @@ var target_picker: TargetPicker
 var extra_effects: Array[WeaponEffect] = []
 ## Bisher mit dieser Waffe verursachter Schaden (Statusbildschirm)
 var total_damage := 0.0
+## Dauerwaffen: Ist die Waffe schon bei ihrem Zeichner angemeldet (z. B. die Aura)?
+var units_spawned := false
+## Dauerwaffen mit Wirkdauer (kreisende Klingen): Restzeit, bis sie wieder verschwinden
+var active_left := 0.0
 
 ## Feste Boni je Stat (einfachste Vorstufe der Modifikatoren, ab M6 rechnet das Werte-System)
 var _flat_bonus: Dictionary[StringName, float] = {}
@@ -30,11 +34,17 @@ func _init(weapon_data: WeaponData) -> void:
 		target_picker = NearestDistinctPicker.new()
 
 
-## Fertiger Wert eines Stats. Heute: Grundwert aus der Datendatei plus feste Boni.
-## Ab M6 rechnet hier das Werte-System (Modifikatoren, Spieler-Stats, Artefakte).
+## Fertiger Wert eines Stats. Heute: Grundwert aus der Datendatei plus feste Boni, begrenzt durch data.stat_limits
+## und die Angriffsart (WeaponBehavior.limit_stat). Ab M6 rechnet hier das Werte-System (Modifikatoren, Spieler-Stats, Artefakte).
 func get_stat(stat: StringName) -> float:
 	var base: float = data.base_stats.get(stat, 0.0)
-	return base + _flat_bonus.get(stat, 0.0)
+	var value: float = base + _flat_bonus.get(stat, 0.0)
+	var limits: Variant = data.stat_limits.get(stat)
+	if limits is Vector2:
+		value = clampf(value, limits.x, limits.y)
+	if data.behavior:
+		value = data.behavior.limit_stat(self, stat, value)
+	return value
 
 
 func add_flat(stat: StringName, value: float) -> void:

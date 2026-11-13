@@ -13,10 +13,11 @@ var _context := WeaponContext.new()
 
 
 ## Verweise setzen (die Run-Szene ruft das einmal beim Start auf).
-func setup(player: Player, enemy_manager: EnemyManager, projectiles: ProjectileManager) -> void:
+func setup(player: Player, enemy_manager: EnemyManager, projectiles: ProjectileManager, auras: AuraDrawer) -> void:
 	_context.player = player
 	_context.enemy_manager = enemy_manager
 	_context.projectiles = projectiles
+	_context.auras = auras
 
 
 func add_start_weapon(data: WeaponData) -> WeaponInstance:
@@ -38,6 +39,14 @@ func add_run_weapon(data: WeaponData) -> WeaponInstance:
 
 func can_add_run_weapon() -> bool:
 	return run_weapons.size() < RUN_SLOTS
+
+
+## Alle Waffen (Startplatz zuerst). Erzeugt ein neues Array: für Menüs und Debug, nicht pro Frame.
+func all_weapons() -> Array[WeaponInstance]:
+	var result: Array[WeaponInstance] = []
+	result.append_array(start_weapons)
+	result.append_array(run_weapons)
+	return result
 
 
 func has_weapon(id: StringName) -> bool:

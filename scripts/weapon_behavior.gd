@@ -30,6 +30,28 @@ func card_stats() -> Array[StringName]:
 	return [&"damage", &"cooldown"]
 
 
+## Übersetzungsschlüssel der Bezeichnung eines Stats im Statusbildschirm. Angriffsarten können eigene Namen wählen
+## (z. B. „Klingen“ statt „Projektile pro Angriff“). Standard: default_key.
+func stat_label_key(_stat: StringName, default_key: String) -> String:
+	return default_key
+
+
+## Wird die Abklingzeit als „Angriffe pro Sekunde“ gezeigt (true) oder in Sekunden (false, z. B. der Zyklus des Schwerts)?
+func cooldown_as_rate() -> bool:
+	return true
+
+
+## Ist die Waffe dauerhaft aktiv (z. B. Klingen, deren Wirkdauer den Zyklus erreicht)? Standard: nein.
+func is_permanent(_weapon: WeaponInstance) -> bool:
+	return false
+
+
+## Letzte Grenze eines fertigen Werts, die von anderen Werten abhängt (z. B. Wirkdauer höchstens so lang wie der Zyklus).
+## Feste Grenzen stehen in WeaponData.stat_limits. Standard: unverändert.
+func limit_stat(_weapon: WeaponInstance, _stat: StringName, value: float) -> float:
+	return value
+
+
 ## Hat dieser Stat bei dieser Angriffsart eine Wirkung? Der Level-Up-Pool (M6) bietet nur Upgrades für unterstützte Stats an
 ## (z. B. keine „+1 Projektil“ für eine Aura).
 func supports_stat(stat: StringName) -> bool:

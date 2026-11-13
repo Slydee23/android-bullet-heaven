@@ -214,6 +214,44 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_EXTRA_PROJECTILE_RESET"
 
+[node name="WeaponButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="AddSwordButton" type="Button" parent="Panel/Content/Scroll/Rows/WeaponButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_ADD_SWORD"
+
+[node name="AddTorchButton" type="Button" parent="Panel/Content/Scroll/Rows/WeaponButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_ADD_TORCH"
+
+[node name="BonusButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BonusDurationButton" type="Button" parent="Panel/Content/Scroll/Rows/BonusButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_BONUS_DURATION"
+
+[node name="BonusRadiusButton" type="Button" parent="Panel/Content/Scroll/Rows/BonusButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_BONUS_RADIUS"
+
+[node name="BonusTickButton" type="Button" parent="Panel/Content/Scroll/Rows/BonusButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_BONUS_TICK"
+
 [node name="TestCritButton" type="Button" parent="Panel/Content/Scroll/Rows"]
 unique_name_in_owner = true
 layout_mode = 2

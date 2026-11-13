@@ -12,6 +12,10 @@ signal death_animation_finished
 
 ## Breite eines Animationsframes im Spritesheet (Pixel)
 const FRAME_WIDTH := 32
+## Körpermitte des Helden in Welt-Pixeln über den Füßen: Auren und kreisende Klingen zentrieren sich darauf.
+## Gleich der Position des Sprite2D in scenes/player.tscn (dort y = -15), also der Mitte des 32×32-Bildes.
+## (Gegner und fliegende Geschosse nutzen 14, siehe EnemyManager.BODY_HEIGHT und ProjectileManager.SHOT_HEIGHT.)
+const BODY_CENTER_HEIGHT := 15.0
 const ANIMATION_FPS := 8.0
 ## Wie schnell der Held während der Unverwundbarkeit blinkt (Sekunden pro Phase)
 const BLINK_INTERVAL := 0.08

@@ -19,6 +19,9 @@
 | `assets/sprites/effects/hit.png`, `death.png` | Selbst erstellte Platzhalter (Generator `tools/gen_effect_placeholders.gd`, Farben aus der Palette von Held und Skelett) | Eigene Werke |
 | `assets/sprites/icons/weapon_arcane_wand.png` | Selbst erstellt (Generator `tools/gen_weapon_icons.gd`, Palettenfarben) | Eigenes Werk |
 | `assets/sprites/effects/damage_digits.png` | Selbst erstellt (Generator `tools/gen_damage_digits.gd`, Palettenfarben) | Eigenes Werk |
+| `assets/sprites/icons/weapon_orbit_sword.png`, `weapon_flame_torch.png` | Selbst erstellt (Generator `tools/gen_weapon_icons.gd`, Palettenfarben) | Eigenes Werk |
+| `assets/sprites/weapons/sword_orbit.png` | Selbst erstellt (Generator `tools/gen_weapon_placeholders.gd`, Palettenfarben) | Eigenes Werk |
+| `assets/sprites/effects/aura_flame.png` | Selbst erstellt (Generator `tools/gen_effect_placeholders.gd`, Palettenfarben) | Eigenes Werk |
 
 ## Schriften
 

@@ -272,6 +272,30 @@ func find_hit(pos: Vector2, radius: float) -> int:
 	return -1
 
 
+## Alle lebenden Gegner, deren Körperkreis den Kreis (pos, radius) berührt (kreisende Klingen treffen mehrere auf einmal).
+## Schreibt ihre Plätze nach out (höchstens out.size() Stück, die Größe bleibt unverändert: kein Neuanlegen pro Frame)
+## und liefert die Anzahl. Nutzt das Spatial Grid.
+func find_all_in_radius(pos: Vector2, radius: float, out: PackedInt32Array) -> int:
+	var found := 0
+	var limit := out.size()
+	var reach := radius + CELL_SIZE * 0.5
+	var first := _cell_of(pos - Vector2(reach, reach))
+	var last := _cell_of(pos + Vector2(reach, reach))
+	for cy in range(first.y, last.y + 1):
+		for cx in range(first.x, last.x + 1):
+			var j := _cell_head[cy * _grid_size.x + cx]
+			while j != -1:
+				if _hp[j] > 0.0:
+					var touch := radius + _type_list[_types[j]].radius
+					if pos.distance_squared_to(_positions[j]) <= touch * touch:
+						out[found] = j
+						found += 1
+						if found >= limit:
+							return found
+				j = _cell_next[j]
+	return found
+
+
 ## Entfernt alle gestorbenen Gegner. Rückwärts, weil kill() den letzten Gegner auf den freien Platz setzt.
 func _remove_dead() -> void:
 	for i in range(count - 1, -1, -1):

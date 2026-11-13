@@ -16,13 +16,150 @@ var ORB_DARK := Palette.snap(Color("#376281"))
 var ORB := Palette.snap(Color("#62b8da"))
 var ORB_LIGHT := Palette.snap(Color("#cdfcfa"))
 var WHITE := Palette.snap(Color("#f4f6f0"))
+# Stahl (kühle, leicht bläuliche Grautöne der Palette)
+var STEEL_LIGHT := Palette.snap(Color("#8ecbdc"))
+var STEEL := Palette.snap(Color("#6898b2"))
+var STEEL_DARK := Palette.snap(Color("#404a66"))
+# Leder (Griff) und Stoff (Fackelwicklung)
+var LEATHER := Palette.snap(Color("#784030"))
+var LEATHER_DARK := Palette.snap(Color("#542a4d"))
+var CLOTH_LIGHT := Palette.snap(Color("#7c394d"))
+var CLOTH_DARK := Palette.snap(Color("#542a4d"))
+# Knochen
+var BONE_LIGHT := Palette.snap(Color("#ebe8d4"))
+var BONE := Palette.snap(Color("#ddd4b5"))
+var BONE_SHADE := Palette.snap(Color("#cdbf9b"))
+var BONE_DARK := Palette.snap(Color("#9a8163"))
+# Feuer
+var FIRE_CORE := Palette.snap(Color("#f4f6f0"))
+var FIRE_YELLOW := Palette.snap(Color("#f9c769"))
+var FIRE_ORANGE := Palette.snap(Color("#cb8038"))
+var FIRE_RED := Palette.snap(Color("#c45836"))
+var FIRE_DARK := Palette.snap(Color("#924b35"))
 
 
 func _init() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT))
 	_arcane_wand().save_png(OUT + "weapon_arcane_wand.png")
+	_orbit_sword().save_png(OUT + "weapon_orbit_sword.png")
+	_flame_torch().save_png(OUT + "weapon_flame_torch.png")
 	print("ok")
 	quit()
+
+
+## Füllt eine (sich zur Spitze hin verjüngende) Linie von a nach b mit Licht von oben links:
+## Pixel auf der dem Licht zugewandten Seite bekommen colors[0], die Mitte colors[1], die Schattenseite colors[2].
+## taper = Länge in Pixeln, über die die Breite am Ende b auf 0 ausläuft (0 = keine Spitze).
+func _bar(img: Image, a: Vector2, b: Vector2, half_width: float, colors: Array, taper := 0.0) -> void:
+	var axis := b - a
+	var length := axis.length()
+	var dir := axis / length
+	var normal := Vector2(-dir.y, dir.x)
+	# Die Normale soll zum Licht (oben links) zeigen
+	if normal.dot(Vector2(-1, -1)) < 0.0:
+		normal = -normal
+	for y in SIZE:
+		for x in SIZE:
+			var p := Vector2(x + 0.5, y + 0.5) - a
+			var along := p.dot(dir)
+			if along < -0.5 or along > length + 0.5:
+				continue
+			var width := half_width
+			if taper > 0.0 and along > length - taper:
+				width = half_width * clampf((length - along) / taper, 0.0, 1.0) + 0.35
+			var side := p.dot(normal)
+			if absf(side) > width:
+				continue
+			var color: Color = colors[1]
+			if side > width * 0.35:
+				color = colors[0]
+			elif side < -width * 0.35:
+				color = colors[2]
+			_px(img, x, y, color)
+
+
+func _ball(img: Image, center: Vector2, radius: float, light: Color, mid: Color, dark: Color) -> void:
+	for y in SIZE:
+		for x in SIZE:
+			var p := Vector2(x + 0.5, y + 0.5)
+			if p.distance_to(center) > radius:
+				continue
+			var shade := ((p - center) / radius).dot(Vector2(-1, -1).normalized())
+			_px(img, x, y, light if shade > 0.35 else dark if shade < -0.35 else mid)
+
+
+## Kreisendes Schwert: schlichtes Stahl-Kurzschwert, diagonal (Knauf unten links, Spitze oben rechts),
+## goldene Parierstange, dunkler Ledergriff, Klinge mit dunkler Hohlkehle in der Mitte.
+func _orbit_sword() -> Image:
+	var img := Image.create_empty(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+	var guard := Vector2(11.5, 20.5)
+	var tip := Vector2(28.0, 4.0)
+	var dir := (tip - guard).normalized()
+	var across := Vector2(-dir.y, dir.x)
+	# Griff mit Lederwicklung (heller Streifen alle 2 Pixel)
+	_bar(img, guard, guard - dir * 6.5, 1.2, [LEATHER, LEATHER, LEATHER_DARK])
+	for k: int in [2, 4]:
+		var p := guard - dir * k
+		_px(img, int(p.x), int(p.y), LEATHER_DARK)
+	_ball(img, guard - dir * 7.6, 1.9, GOLD_LIGHT, GOLD, GOLD_DARK)
+	# Klinge
+	_bar(img, guard + dir * 1.0, tip, 1.7, [WHITE, STEEL_LIGHT, STEEL], 5.0)
+	# Hohlkehle: dunkle Linie in der Klingenmitte
+	for k in range(3, 13):
+		var p := guard + dir * k
+		_px(img, int(p.x), int(p.y), STEEL)
+	# Parierstange quer zur Klinge
+	_bar(img, guard + across * 4.2, guard - across * 4.2, 1.1, [GOLD_LIGHT, GOLD, GOLD_DARK])
+	_outline(img)
+	return _centered(img)
+
+
+## Knochenfackel: langer Knochen als Stiel (Gelenkkopf unten links), oben mit dunkelrotem Stoff umwickelt,
+## darüber eine große Flamme, die nach oben (nicht diagonal) brennt.
+func _flame_torch() -> Image:
+	var img := Image.create_empty(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+	var foot := Vector2(6.0, 26.0)
+	var head := Vector2(18.5, 13.5)
+	var dir := (head - foot).normalized()
+	var across := Vector2(-dir.y, dir.x)
+	# Gelenkkopf des Knochens: zwei kleine Kugeln nebeneinander
+	_ball(img, foot + across * 1.6, 2.0, BONE_LIGHT, BONE, BONE_DARK)
+	_ball(img, foot - across * 1.6, 2.0, BONE_LIGHT, BONE, BONE_DARK)
+	# Knochenschaft
+	_bar(img, foot, head, 1.3, [BONE_LIGHT, BONE, BONE_SHADE])
+	# Stoffwicklung am oberen Ende (schräge Streifen)
+	_bar(img, head - dir * 5.0, head + dir * 0.5, 2.3, [CLOTH_LIGHT, CLOTH_LIGHT, CLOTH_DARK])
+	for k: int in [-4, -2, 0]:
+		var p := head + dir * k
+		for s: int in [-1, 0, 1]:
+			var q := p + across * s - dir * (s * 0.5)
+			_px(img, int(q.x), int(q.y), CLOTH_DARK)
+	# Flamme: Tropfenform nach oben, außen rot, dann orange, gelb, weißer Kern
+	_flame(img, Vector2(21.0, 10.5), 4.8, 9.0, FIRE_RED)
+	_flame(img, Vector2(21.2, 11.0), 3.6, 6.5, FIRE_ORANGE)
+	_flame(img, Vector2(21.4, 11.5), 2.4, 4.5, FIRE_YELLOW)
+	_flame(img, Vector2(21.5, 12.0), 1.2, 2.0, FIRE_CORE)
+	# Glut-Funken über der Flamme
+	for p in [Vector2i(25, 2), Vector2i(17, 3)]:
+		_px(img, p.x, p.y, FIRE_YELLOW)
+	_outline(img)
+	return _centered(img)
+
+
+## Tropfenförmige Flamme: unten ein Kreis (Radius r), darüber eine Spitze bis height Pixel über der Kreismitte,
+## leicht nach rechts geneigt.
+func _flame(img: Image, center: Vector2, r: float, height: float, color: Color) -> void:
+	for y in SIZE:
+		for x in SIZE:
+			var p := Vector2(x + 0.5, y + 0.5)
+			var inside := p.distance_to(center) <= r
+			if not inside and p.y < center.y:
+				var up := center.y - p.y
+				if up <= height:
+					var half := r * (1.0 - up / height)
+					inside = absf(p.x - (center.x + up * 0.18)) <= half
+			if inside:
+				_px(img, x, y, color)
 
 
 func _px(img: Image, x: int, y: int, c: Color) -> void:

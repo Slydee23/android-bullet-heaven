@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/behaviors/orbit_behavior.gd" id="2_behavior"]
+[ext_resource type="Texture2D" path="res://assets/sprites/weapons/sword_orbit.png" id="3_blade"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_orbit_sword.png" id="4_icon"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[resource]
+script = ExtResource("1_script")
+id = &"orbit_sword"
+name_key = "WEAPON_ORBIT_SWORD_NAME"
+description_key = "WEAPON_ORBIT_SWORD_DESC"
+icon = ExtResource("4_icon")
+tags = Array[StringName]([&"melee", &"blade"])
+element = &"physical"
+default_unlocked = true
+base_stats = {
+&"amount": 1.0,
+&"cooldown": 5.0,
+&"damage": 6.0,
+&"duration": 3.0,
+&"hit_interval": 0.5,
+&"orbit_speed": 3.0,
+&"projectile_radius": 12.0,
+&"range": 56.0
+}
+stat_limits = {
+&"cooldown": Vector2(2, 99)
+}
+behavior = SubResource("Resource_behavior")
+projectile_texture = ExtResource("3_blade")
+frame_width = 32
+animation_fps = 1.0

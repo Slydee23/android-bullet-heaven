@@ -10,6 +10,12 @@ const PixelUI := preload("res://scripts/pixel_ui.gd")
 const TEST_SMALL_HIT_SHARE := 0.05
 const TEST_HIT_SHARE := 0.2
 const TEST_SELF_DAMAGE_SHARE := 0.1
+## Test-Boni als Ersatz für die späteren Upgrades (M6)
+const SWORD := preload("res://data/weapons/orbit_sword.tres")
+const TORCH := preload("res://data/weapons/flame_torch.tres")
+const BONUS_DURATION := 1.0
+const BONUS_RADIUS := 16.0
+const BONUS_TICK := -0.1
 
 ## Held, auf den sich die Testwerte beziehen (setzt die Run-Szene vor dem Öffnen)
 var player: Player
@@ -39,6 +45,11 @@ var _shown_iframes := -1.0
 @onready var extra_projectile_button: Button = %ExtraProjectileButton
 @onready var extra_projectile_reset_button: Button = %ExtraProjectileResetButton
 @onready var test_crit_button: Button = %TestCritButton
+@onready var add_sword_button: Button = %AddSwordButton
+@onready var add_torch_button: Button = %AddTorchButton
+@onready var bonus_duration_button: Button = %BonusDurationButton
+@onready var bonus_radius_button: Button = %BonusRadiusButton
+@onready var bonus_tick_button: Button = %BonusTickButton
 @onready var iframe_reset_button: Button = %IFrameResetButton
 @onready var back_button: Button = %BackButton
 
@@ -73,6 +84,11 @@ func _ready() -> void:
 	extra_projectile_button.pressed.connect(_on_extra_projectile_pressed)
 	extra_projectile_reset_button.pressed.connect(_on_extra_projectile_reset_pressed)
 	test_crit_button.pressed.connect(_on_test_crit_pressed)
+	add_sword_button.pressed.connect(_on_add_weapon_pressed.bind(SWORD))
+	add_torch_button.pressed.connect(_on_add_weapon_pressed.bind(TORCH))
+	bonus_duration_button.pressed.connect(_add_bonus.bind(&"duration", BONUS_DURATION, &""))
+	bonus_radius_button.pressed.connect(_add_bonus.bind(&"range", BONUS_RADIUS, &"flame_torch"))
+	bonus_tick_button.pressed.connect(_add_bonus.bind(&"cooldown", BONUS_TICK, &"flame_torch"))
 	iframe_reset_button.pressed.connect(_on_iframe_reset_pressed)
 	back_button.pressed.connect(close)
 
@@ -128,15 +144,36 @@ func _on_test_self_damage_pressed() -> void:
 	player.take_self_damage(player.max_hp * TEST_SELF_DAMAGE_SHARE)
 
 
-## Testbonus auf die Startwaffe (später rechnet das Werte-System solche Boni aus Upgrades und Artefakten)
+## Testbonus „+1 Projektil“ auf alle Waffen, die mehrere Einheiten kennen (weitere Geschosse, weitere Klingen).
+## Später rechnet das Werte-System solche Boni aus Upgrades und Artefakten.
 func _on_extra_projectile_pressed() -> void:
-	if weapon_holder and not weapon_holder.start_weapons.is_empty():
-		weapon_holder.start_weapons[0].add_flat(&"amount", 1.0)
+	_add_bonus(&"amount", 1.0, &"")
 
 
+## Nimmt alle Test-Boni aller Waffen zurück
 func _on_extra_projectile_reset_pressed() -> void:
-	if weapon_holder and not weapon_holder.start_weapons.is_empty():
-		weapon_holder.start_weapons[0].reset_bonuses()
+	if not weapon_holder:
+		return
+	for weapon in weapon_holder.all_weapons():
+		weapon.reset_bonuses()
+
+
+## Testbonus auf einen Stat: auf alle Waffen, die ihn verstehen, oder nur auf die Waffe mit der ID only_id.
+## Grenzen der Waffe (stat_limits) greifen dabei wie bei echten Upgrades.
+func _add_bonus(stat: StringName, value: float, only_id: StringName) -> void:
+	if not weapon_holder:
+		return
+	for weapon in weapon_holder.all_weapons():
+		if only_id != &"" and weapon.data.id != only_id:
+			continue
+		if weapon.data.behavior and weapon.data.behavior.supports_stat(stat):
+			weapon.add_flat(stat, value)
+
+
+## Waffe auf einen freien Run-Platz legen (zum Testen neuer Waffen ohne Level-Up)
+func _on_add_weapon_pressed(data: WeaponData) -> void:
+	if weapon_holder:
+		weapon_holder.add_run_weapon(data)
 
 
 ## Kritischer Treffer mit zufälligem Element auf den nächsten Gegner, zum Ansehen der Schadenszahlen (Größen, Farben, Tod)

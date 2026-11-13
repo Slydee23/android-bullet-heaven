@@ -6,6 +6,8 @@ extends RefCounted
 var player: Player
 var enemy_manager: EnemyManager
 var projectiles: ProjectileManager
+## Zeichnet die Auren um den Helden
+var auras: AuraDrawer
 
 
 ## Sichtbarer Bereich der Welt (für Zufallspunkte im Bild).
