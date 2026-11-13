@@ -13,6 +13,8 @@ const TEST_SELF_DAMAGE_SHARE := 0.1
 ## Test-Boni als Ersatz für die späteren Upgrades (M6)
 const SWORD := preload("res://data/weapons/orbit_sword.tres")
 const TORCH := preload("res://data/weapons/flame_torch.tres")
+const TRIDENT := preload("res://data/weapons/trident.tres")
+const BOMBS := preload("res://data/weapons/bomb_bag.tres")
 const BONUS_DURATION := 1.0
 const BONUS_RADIUS := 16.0
 const BONUS_TICK := -0.1
@@ -47,6 +49,9 @@ var _shown_iframes := -1.0
 @onready var test_crit_button: Button = %TestCritButton
 @onready var add_sword_button: Button = %AddSwordButton
 @onready var add_torch_button: Button = %AddTorchButton
+@onready var add_trident_button: Button = %AddTridentButton
+@onready var add_bombs_button: Button = %AddBombsButton
+@onready var clear_weapons_button: Button = %ClearWeaponsButton
 @onready var bonus_duration_button: Button = %BonusDurationButton
 @onready var bonus_radius_button: Button = %BonusRadiusButton
 @onready var bonus_tick_button: Button = %BonusTickButton
@@ -86,6 +91,9 @@ func _ready() -> void:
 	test_crit_button.pressed.connect(_on_test_crit_pressed)
 	add_sword_button.pressed.connect(_on_add_weapon_pressed.bind(SWORD))
 	add_torch_button.pressed.connect(_on_add_weapon_pressed.bind(TORCH))
+	add_trident_button.pressed.connect(_on_add_weapon_pressed.bind(TRIDENT))
+	add_bombs_button.pressed.connect(_on_add_weapon_pressed.bind(BOMBS))
+	clear_weapons_button.pressed.connect(_on_clear_weapons_pressed)
 	bonus_duration_button.pressed.connect(_add_bonus.bind(&"duration", BONUS_DURATION, &""))
 	bonus_radius_button.pressed.connect(_add_bonus.bind(&"range", BONUS_RADIUS, &"flame_torch"))
 	bonus_tick_button.pressed.connect(_add_bonus.bind(&"cooldown", BONUS_TICK, &"flame_torch"))
@@ -168,6 +176,12 @@ func _add_bonus(stat: StringName, value: float, only_id: StringName) -> void:
 			continue
 		if weapon.data.behavior and weapon.data.behavior.supports_stat(stat):
 			weapon.add_flat(stat, value)
+
+
+## Alle Run-Waffen ablegen (nur 3 Run-Plätze: so lassen sich alle Waffen nacheinander testen). Der Zauberstab bleibt.
+func _on_clear_weapons_pressed() -> void:
+	if weapon_holder:
+		weapon_holder.clear_run_weapons()
 
 
 ## Waffe auf einen freien Run-Platz legen (zum Testen neuer Waffen ohne Level-Up)

@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/behaviors/strike_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://scripts/targeting/random_visible_picker.gd" id="3_picker"]
+[ext_resource type="Resource" path="res://data/effects/lightning.tres" id="4_effect"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_trident.png" id="5_icon"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+effect = ExtResource("4_effect")
+flight_time = 0.0
+whole_view = true
+uses_fuse = false
+card_stat_ids = Array[StringName]([&"damage", &"cooldown", &"amount"])
+amount_label_key = "STAT_BOLTS"
+
+[sub_resource type="Resource" id="Resource_picker"]
+script = ExtResource("3_picker")
+
+[resource]
+script = ExtResource("1_script")
+id = &"trident"
+name_key = "WEAPON_TRIDENT_NAME"
+description_key = "WEAPON_TRIDENT_DESC"
+icon = ExtResource("5_icon")
+tags = Array[StringName]([&"lightning", &"magic"])
+element = &"lightning"
+default_unlocked = true
+base_stats = {
+&"amount": 1.0,
+&"area": 20.0,
+&"cooldown": 2.0,
+&"damage": 10.0
+}
+stat_limits = {
+&"area": Vector2(20, 40)
+}
+behavior = SubResource("Resource_behavior")
+target_picker = SubResource("Resource_picker")

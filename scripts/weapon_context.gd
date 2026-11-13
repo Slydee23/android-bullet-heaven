@@ -8,6 +8,8 @@ var enemy_manager: EnemyManager
 var projectiles: ProjectileManager
 ## Zeichnet die Auren um den Helden
 var auras: AuraDrawer
+## Einschläge mit Flug, Zünder und Warnfläche (Blitze, Bomben)
+var strikes: StrikeManager
 
 
 ## Sichtbarer Bereich der Welt (für Zufallspunkte im Bild).

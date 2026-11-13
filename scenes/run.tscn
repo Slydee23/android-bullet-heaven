@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/effect_manager.gd" id="10_effects"]
 [ext_resource type="Script" path="res://scripts/damage_number_manager.gd" id="11_numbers"]
 [ext_resource type="Script" path="res://scripts/aura_drawer.gd" id="12_auras"]
+[ext_resource type="Script" path="res://scripts/strike_manager.gd" id="13_strikes"]
 
 [node name="Run" type="Node2D" unique_id=439059942]
 script = ExtResource("1_script")
@@ -28,6 +29,11 @@ script = ExtResource("1_script")
 texture_filter = 2
 material = ExtResource("7_sharp")
 script = ExtResource("12_auras")
+
+[node name="StrikeManager" type="Node2D" parent="."]
+texture_filter = 2
+material = ExtResource("7_sharp")
+script = ExtResource("13_strikes")
 
 [node name="EnemyManager" type="Node2D" parent="."]
 texture_filter = 2

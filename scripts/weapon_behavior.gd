@@ -24,6 +24,12 @@ func on_stats_changed(_weapon: WeaponInstance, _context: WeaponContext) -> void:
 	pass
 
 
+## Die Waffe wird abgelegt (Debug „Run-Waffen entfernen“, später auch, wenn eine Entwicklung sie ersetzt):
+## Dauerwaffen räumen hier ihre Klingen, Auren oder wartenden Einschläge weg. Standard: nichts.
+func on_removed(_weapon: WeaponInstance, _context: WeaponContext) -> void:
+	pass
+
+
 ## Die wichtigsten Werte dieser Angriffsart für die Waffenkarte im Statusbildschirm (eine kurze Zeile).
 ## Jede Angriffsart wählt eigene, z. B. eine Aura Schaden, Treffer pro Sekunde und Radius.
 func card_stats() -> Array[StringName]:

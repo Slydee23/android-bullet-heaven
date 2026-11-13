@@ -19,6 +19,12 @@ func tick(weapon: WeaponInstance, context: WeaponContext, _delta: float) -> void
 		weapon.units_spawned = true
 
 
+func on_removed(weapon: WeaponInstance, context: WeaponContext) -> void:
+	if context.auras:
+		context.auras.remove(weapon)
+	weapon.units_spawned = false
+
+
 func card_stats() -> Array[StringName]:
 	return [&"damage", &"cooldown", &"range"]
 

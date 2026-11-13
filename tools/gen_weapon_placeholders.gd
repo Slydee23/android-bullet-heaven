@@ -1,6 +1,7 @@
 extends SceneTree
 ## Erzeugt den Platzhalter für das Magiegeschoss (16×16, 4 Frames, Blick nach Osten, Schweif links)
-## und die kreisende Klinge des Schwerts (sword_orbit.png, 32×32, Spitze nach Osten).
+## und die kreisende Klinge des Schwerts (sword_orbit.png, 32×32, Spitze nach Osten)
+## und die Bombe des Bombenbeutels (bomb.png, 16×16, 2 Frames: normal und kurz vor der Explosion aufblitzend).
 ## Aufruf (im Projektordner): Godot --headless --path . -s tools/gen_weapon_placeholders.gd
 ## Die Farben werden auf die gemeinsame Palette der Spielwelt (tools/palette.gd) eingefärbt, damit das Geschoss zum Helden passt
 ## (der Held hält eine blaue Kugel). Die Datei lässt sich jederzeit durch ein Alpha-Asset überschreiben (gleicher Name, beliebig viele 16×16-Frames).
@@ -15,6 +16,8 @@ var GOLD := Palette.snap(Color("#f9c769"))
 
 const SWORD_SIZE := 32
 const SWORD_OUT := "res://assets/sprites/weapons/sword_orbit.png"
+const BOMB_OUT := "res://assets/sprites/weapons/bomb.png"
+const BOMB_FRAME := 16
 var SWORD_OUTLINE := Palette.snap(Color("#0c0d0f"))
 var BLADE_WHITE := Palette.snap(Color("#f4f6f0"))
 var STEEL_LIGHT := Palette.snap(Color("#8ecbdc"))
@@ -34,6 +37,7 @@ func _init() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT).get_base_dir())
 	sheet.save_png(OUT)
 	_sword_orbit().save_png(SWORD_OUT)
+	_bomb().save_png(BOMB_OUT)
 	print("ok")
 	quit()
 
@@ -116,3 +120,47 @@ func _draw_frame(sheet: Image, f: int) -> void:
 			_px(sheet, ox + x, 8 + wobble, OUTER)
 	# Goldene Funken
 	_px(sheet, ox + 3 + (f * 3) % 5, 4 + (f % 2) * 7, GOLD)
+
+
+## Bombe: Rundbombe wie im Beutel-Icon: dunkel-blaugrauer Körper (kein reines Schwarz), heller Lichtbogen oben links mit
+## Glanzpunkt, Messingkappe oben rechts, helle Lunte mit Funken. Frame 0 normal, Frame 1 aufblitzend (Körper glüht rot,
+## großer Funke): Der StrikeManager wechselt kurz vor der Explosion immer schneller zwischen beiden.
+func _bomb() -> Image:
+	var sheet := Image.create_empty(BOMB_FRAME * 2, BOMB_FRAME, false, Image.FORMAT_RGBA8)
+	var center := Vector2(7.5, 9.5)
+	var radius := 4.6
+	var light_dir := Vector2(-1, -1).normalized()
+	for f in 2:
+		var hot := f == 1
+		var body_light := Palette.snap(Color("#6898b2")) if not hot else Palette.snap(Color("#de8d73"))
+		var body := Palette.snap(Color("#404a66")) if not hot else Palette.snap(Color("#c45836"))
+		var body_dark := Palette.snap(Color("#352a4e")) if not hot else Palette.snap(Color("#7c394d"))
+		var frame := Image.create_empty(BOMB_FRAME, BOMB_FRAME, false, Image.FORMAT_RGBA8)
+		for y in BOMB_FRAME:
+			for x in BOMB_FRAME:
+				var q := Vector2(x + 0.5, y + 0.5) - center
+				var d := q.length()
+				if d > radius:
+					continue
+				var n := q / radius
+				var color := body
+				if n.dot(light_dir) > 0.45 and d > radius * 0.45:
+					color = body_light
+				elif n.dot(light_dir) < -0.35 and d > radius * 0.5:
+					color = body_dark
+				_px(frame, x, y, color)
+		_px(frame, 6, 8, BLADE_WHITE)
+		# Messingkappe
+		for p in [Vector2i(9, 5), Vector2i(10, 5)]:
+			_px(frame, p.x, p.y, Palette.snap(Color("#9a8163")))
+		for p in [Vector2i(9, 4), Vector2i(10, 4)]:
+			_px(frame, p.x, p.y, Palette.snap(Color("#ddd4b5")))
+		# Lunte und Funke
+		for p in [Vector2i(11, 3), Vector2i(12, 2)]:
+			_px(frame, p.x, p.y, Palette.snap(Color("#ebe8d4")))
+		var spark := [Vector2i(13, 1)] if not hot else [Vector2i(13, 1), Vector2i(14, 1), Vector2i(12, 1), Vector2i(13, 0), Vector2i(13, 2)]
+		for p: Vector2i in spark:
+			_px(frame, p.x, p.y, BLADE_WHITE if p == Vector2i(13, 1) else GOLD_LIGHT)
+		_outline(frame)
+		sheet.blit_rect(frame, Rect2i(0, 0, BOMB_FRAME, BOMB_FRAME), Vector2i(f * BOMB_FRAME, 0))
+	return sheet

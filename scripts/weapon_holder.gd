@@ -13,11 +13,12 @@ var _context := WeaponContext.new()
 
 
 ## Verweise setzen (die Run-Szene ruft das einmal beim Start auf).
-func setup(player: Player, enemy_manager: EnemyManager, projectiles: ProjectileManager, auras: AuraDrawer) -> void:
+func setup(player: Player, enemy_manager: EnemyManager, projectiles: ProjectileManager, auras: AuraDrawer, strikes: StrikeManager) -> void:
 	_context.player = player
 	_context.enemy_manager = enemy_manager
 	_context.projectiles = projectiles
 	_context.auras = auras
+	_context.strikes = strikes
 
 
 func add_start_weapon(data: WeaponData) -> WeaponInstance:
@@ -35,6 +36,13 @@ func add_run_weapon(data: WeaponData) -> WeaponInstance:
 	var weapon := _register(data)
 	run_weapons.append(weapon)
 	return weapon
+
+
+## Legt alle Run-Waffen ab (Debug). Jede Angriffsart räumt dabei ihre Klingen, Auren und Einschläge weg.
+func clear_run_weapons() -> void:
+	for weapon in run_weapons:
+		weapon.data.behavior.on_removed(weapon, _context)
+	run_weapons.clear()
 
 
 func can_add_run_weapon() -> bool:

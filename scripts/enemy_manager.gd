@@ -211,6 +211,19 @@ func get_enemy_position(i: int) -> Vector2:
 	return _positions[i]
 
 
+## Wo Gegner i nach seconds Sekunden voraussichtlich steht: Er läuft geradeaus auf den Helden zu (wie in _move),
+## höchstens bis an dessen Rand. Für verzögerte Angriffe (Bomben mit Flug und Zünder).
+func predict_position(i: int, seconds: float) -> Vector2:
+	var pos := _positions[i]
+	if not target:
+		return pos
+	var data := _type_list[_types[i]]
+	var to_target := target.global_position - pos
+	var stop_distance := data.radius + target.body_radius + data.attack_range
+	var walk := minf(data.speed * seconds, maxf(to_target.length() - stop_distance, 0.0))
+	return pos + to_target.normalized() * walk
+
+
 ## Nächster lebender Gegner im Umkreis max_range um pos (Füße), oder -1.
 ## Läuft einmal über alle Gegner mit quadrierten Distanzen: Das reicht, weil es nur einmal pro Waffen-Schuss geschieht.
 func find_nearest(pos: Vector2, max_range: float) -> int:
@@ -270,6 +283,33 @@ func find_hit(pos: Vector2, radius: float) -> int:
 						return j
 				j = _cell_next[j]
 	return -1
+
+
+## Bis zu n zufällige, verschiedene lebende Gegner, deren Füße im Rechteck area liegen und (bei max_range > 0) höchstens
+## max_range von origin entfernt sind. Ein Durchlauf mit „Reservoir Sampling“: jeder passende Gegner hat dieselbe Chance,
+## es entstehen keine neuen Arrays. Schreibt die Plätze nach out (Größe wird angepasst) und liefert die Anzahl.
+## Nur bei Waffen-Angriffen aufrufen (läuft über alle Gegner), nicht pro Frame.
+func pick_random(area: Rect2, origin: Vector2, max_range: float, n: int, out: PackedInt32Array) -> int:
+	n = clampi(n, 0, MAX_NEAREST)
+	out.resize(n)
+	var found := 0
+	var seen := 0
+	var range_sq := max_range * max_range
+	for i in count:
+		if _hp[i] <= 0.0 or not area.has_point(_positions[i]):
+			continue
+		if max_range > 0.0 and origin.distance_squared_to(_positions[i]) > range_sq:
+			continue
+		seen += 1
+		if found < n:
+			out[found] = i
+			found += 1
+		else:
+			var j := randi() % seen
+			if j < n:
+				out[j] = i
+	out.resize(found)
+	return found
 
 
 ## Alle lebenden Gegner, deren Körperkreis den Kreis (pos, radius) berührt (kreisende Klingen treffen mehrere auf einmal).

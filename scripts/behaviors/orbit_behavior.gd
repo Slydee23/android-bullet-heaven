@@ -34,6 +34,10 @@ func on_stats_changed(weapon: WeaponInstance, context: WeaponContext) -> void:
 	_spawn_blades(weapon, context, phase)
 
 
+func on_removed(weapon: WeaponInstance, context: WeaponContext) -> void:
+	context.projectiles.remove_weapon(weapon)
+
+
 func _spawn_blades(weapon: WeaponInstance, context: WeaponContext, phase: float) -> void:
 	var amount := maxi(1, roundi(weapon.get_stat(&"amount")))
 	for k in amount:

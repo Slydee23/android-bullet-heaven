@@ -10,6 +10,10 @@ const HIT_FRAMES := 4
 const DEATH_FRAMES := 6
 const FLAME_FRAME := 16
 const FLAME_FRAMES := 4
+const BOLT_SIZE := Vector2i(32, 64)
+const BOLT_FRAMES := 7
+const BLAST_FRAME := 96
+const BLAST_FRAMES := 6
 
 var WHITE := Palette.snap(Color("#f4f6f0"))
 var CYAN_LIGHT := Palette.snap(Color("#cdfcfa"))
@@ -23,6 +27,8 @@ var DUST := Palette.snap(Color("#9a8163"))
 var FIRE_YELLOW := Palette.snap(Color("#f9c769"))
 var FIRE_ORANGE := Palette.snap(Color("#cb8038"))
 var FIRE_RED := Palette.snap(Color("#c45836"))
+var SMOKE := Palette.snap(Color("#514043"))
+var SMOKE_DARK := Palette.snap(Color("#332930"))
 
 
 func _init() -> void:
@@ -30,6 +36,8 @@ func _init() -> void:
 	_make_hit().save_png(OUT + "hit.png")
 	_make_death().save_png(OUT + "death.png")
 	_make_aura_flame().save_png(OUT + "aura_flame.png")
+	_make_lightning().save_png(OUT + "lightning_strike.png")
+	_make_explosion().save_png(OUT + "explosion.png")
 	print("ok")
 	quit()
 
@@ -185,3 +193,129 @@ func _flame_layer(img: Image, ox: int, tongues: Array, scale: float, color: Colo
 				if inside:
 					_px(img, ox + x, y, color)
 					break
+
+
+## Blitz-Einschlag des Dreizacks: 32×64 je Frame, der Fußpunkt (Einschlagstelle) ist unten in der Mitte.
+## Frame 0 dünner Vorblitz, 1–3 voller Blitz mit Lichtfleck (Frame 2 flackert leicht versetzt), 4 Blitz verblasst,
+## 5–6 Restglut und Funken. 7 Frames bei 10 fps ≈ 0,7 s, damit der Blitz im Getümmel nicht untergeht.
+## Gelb-weiß (Elementfarbe Blitz), dunkler Rand wie die Treffer-Funken.
+func _make_lightning() -> Image:
+	var sheet := Image.create_empty(BOLT_SIZE.x * BOLT_FRAMES, BOLT_SIZE.y, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 31
+	# Zickzack-Punkte von oben nach unten (gleich für alle Frames, damit der Blitz nicht springt)
+	var points: Array[Vector2] = []
+	var y := 0.0
+	while y < 60.0:
+		points.append(Vector2(16.0 + rng.randf_range(-4.5, 4.5), y))
+		y += rng.randf_range(6.0, 9.0)
+	points.append(Vector2(16.0, 60.0))
+	# Flacker-Variante: jeder Knick um einen Pixel versetzt
+	var flicker: Array[Vector2] = []
+	for k in points.size():
+		flicker.append(points[k] + Vector2(1.0 if k % 2 == 0 else -1.0, 0.0) * (0.0 if k == points.size() - 1 else 1.0))
+	var thickness: Array[int] = [1, 2, 2, 2, 1, 0, 0]
+	var glow_rx: Array[float] = [0.0, 9.0, 11.0, 10.0, 9.0, 7.0, 0.0]
+	for f in BOLT_FRAMES:
+		var ox := f * BOLT_SIZE.x
+		var frame := Image.create_empty(BOLT_SIZE.x, BOLT_SIZE.y, false, Image.FORMAT_RGBA8)
+		if thickness[f] > 0:
+			var line := flicker if f == 2 else points
+			for k in line.size() - 1:
+				_bolt_line(frame, line[k], line[k + 1], thickness[f], f == 4)
+		# Lichtfleck am Boden
+		if glow_rx[f] > 0.0:
+			var rx := glow_rx[f]
+			var ry := rx * 0.33
+			for yy in range(55, 64):
+				for xx in BOLT_SIZE.x:
+					var q := Vector2((xx + 0.5 - 16.0) / rx, (yy + 0.5 - 60.5) / ry)
+					if q.length() <= 1.0:
+						_px(frame, xx, yy, WHITE if q.length() < 0.45 and f <= 3 else FIRE_YELLOW)
+		# Funken, die nach außen und leicht nach oben fliegen
+		if f >= 4:
+			for k in 6:
+				var a := TAU * k / 6.0 + f
+				var d := 5.0 + (f - 2) * 2.5
+				_px(frame, roundi(16 + cos(a) * d), roundi(59 + sin(a) * d * 0.45 - (f - 4) * 2), FIRE_YELLOW if (k + f) % 2 == 0 else WHITE)
+		_outline_rect(frame)
+		sheet.blit_rect(frame, Rect2i(Vector2i.ZERO, BOLT_SIZE), Vector2i(ox, 0))
+	return sheet
+
+
+func _bolt_line(img: Image, a: Vector2, b: Vector2, thick: int, faded: bool) -> void:
+	var steps := int(maxf(absf(b.x - a.x), absf(b.y - a.y))) + 1
+	for i in steps + 1:
+		var p := a.lerp(b, i / float(steps))
+		var x := roundi(p.x)
+		var yy := roundi(p.y)
+		# thick 1: weißer Kern mit gelbem Rand (3 px), thick 2: breiter weißer Kern mit gelbem Rand (5 px)
+		for dx in range(-thick, thick + 1):
+			var core := absi(dx) < thick and not faded
+			_px(img, x + dx, yy, WHITE if core else FIRE_YELLOW)
+
+
+## Explosion der Bombe: 96×96 je Frame, Mitte = Explosionspunkt. Passt zum Wirkradius 40 (Durchmesser 80).
+## Frame 0 greller Kern, 1–2 Feuerball wächst (weiß/gelb innen, orange, roter Rand), 3 Feuerball mit Rauchflecken,
+## 4–5 dunkler Rauchring zerfällt. Unregelmäßiger Rand über eine Winkel-Welle.
+func _make_explosion() -> Image:
+	var sheet := Image.create_empty(BLAST_FRAME * BLAST_FRAMES, BLAST_FRAME, false, Image.FORMAT_RGBA8)
+	var center := Vector2(48.0, 48.0)
+	var radii: Array[float] = [12.0, 26.0, 37.0, 42.0, 44.0, 45.0]
+	var rng := RandomNumberGenerator.new()
+	for f in BLAST_FRAMES:
+		rng.seed = 400 + f
+		var ox := f * BLAST_FRAME
+		var frame := Image.create_empty(BLAST_FRAME, BLAST_FRAME, false, Image.FORMAT_RGBA8)
+		var r := radii[f]
+		for y in BLAST_FRAME:
+			for x in BLAST_FRAME:
+				var q := Vector2(x + 0.5, y + 0.5) - center
+				var a := q.angle()
+				var edge := r * (1.0 + 0.08 * sin(a * 7.0 + f) + 0.05 * sin(a * 13.0 - f * 2.0))
+				var d := q.length()
+				if d > edge:
+					continue
+				var t := d / edge
+				var c := Color.TRANSPARENT
+				if f <= 3:
+					if t < 0.35 - f * 0.08:
+						c = WHITE
+					elif t < 0.6 - f * 0.05:
+						c = FIRE_YELLOW
+					elif t < 0.85:
+						c = FIRE_ORANGE
+					else:
+						c = FIRE_RED
+					# Ab Frame 3 frisst sich Rauch von außen hinein
+					if f == 3 and t > 0.7 and rng.randf() < 0.45:
+						c = SMOKE
+				else:
+					# Rauchring: innen leer, außen dunkler Rauch, der zerfällt
+					var inner := 0.55 + (f - 4) * 0.2
+					if t < inner or rng.randf() < 0.25 + (f - 4) * 0.35:
+						continue
+					c = SMOKE_DARK if t > 0.85 else SMOKE
+				_px(frame, x, y, c)
+		if f <= 3:
+			_outline_rect(frame)
+		sheet.blit_rect(frame, Rect2i(0, 0, BLAST_FRAME, BLAST_FRAME), Vector2i(ox, 0))
+	return sheet
+
+
+## Dunkler 1-px-Rand um alles Gezeichnete in einem Einzelbild beliebiger Größe
+func _outline_rect(img: Image) -> void:
+	var edge: Array[Vector2i] = []
+	var w := img.get_width()
+	var h := img.get_height()
+	for y in h:
+		for x in w:
+			if img.get_pixel(x, y).a > 0.0:
+				continue
+			for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+				var n := Vector2i(x, y) + d
+				if n.x >= 0 and n.y >= 0 and n.x < w and n.y < h and img.get_pixel(n.x, n.y).a > 0.0:
+					edge.append(Vector2i(x, y))
+					break
+	for e in edge:
+		img.set_pixel(e.x, e.y, OUTLINE)

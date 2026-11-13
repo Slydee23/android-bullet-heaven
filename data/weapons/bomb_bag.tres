@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/behaviors/strike_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://scripts/targeting/random_in_range_picker.gd" id="3_picker"]
+[ext_resource type="Resource" path="res://data/effects/explosion.tres" id="4_effect"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_bomb_bag.png" id="5_icon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/weapons/bomb.png" id="6_bomb"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+effect = ExtResource("4_effect")
+flight_time = 0.5
+whole_view = false
+uses_fuse = true
+card_stat_ids = Array[StringName]([&"damage", &"cooldown", &"area"])
+amount_label_key = "STAT_BOMBS"
+
+[sub_resource type="Resource" id="Resource_picker"]
+script = ExtResource("3_picker")
+
+[resource]
+script = ExtResource("1_script")
+id = &"bomb_bag"
+name_key = "WEAPON_BOMB_BAG_NAME"
+description_key = "WEAPON_BOMB_BAG_DESC"
+icon = ExtResource("5_icon")
+tags = Array[StringName]([&"explosive", &"fire"])
+element = &"fire"
+default_unlocked = true
+base_stats = {
+&"amount": 1.0,
+&"area": 40.0,
+&"cooldown": 2.5,
+&"damage": 15.0,
+&"fuse": 1.0,
+&"range": 160.0
+}
+stat_limits = {
+&"area": Vector2(40, 80),
+&"fuse": Vector2(0.5, 1.0)
+}
+behavior = SubResource("Resource_behavior")
+target_picker = SubResource("Resource_picker")
+projectile_texture = ExtResource("6_bomb")
+frame_width = 16
+animation_fps = 1.0

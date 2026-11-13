@@ -11,6 +11,8 @@ const DETAIL_STATS := [
 	[&"duration", "STAT_DURATION"],
 	[&"amount", "STAT_AMOUNT"],
 	[&"range", "STAT_RANGE"],
+	[&"area", "STAT_AREA"],
+	[&"fuse", "STAT_FUSE"],
 	[&"pierce", "STAT_PIERCE"],
 	[&"projectile_speed", "STAT_PROJECTILE_SPEED"],
 	[&"orbit_speed", "STAT_ORBIT_SPEED"],
@@ -47,6 +49,8 @@ static func value_text(weapon: WeaponInstance, stat: StringName, translate: Call
 			if behavior and not behavior.cooldown_as_rate():
 				return translate.call("STAT_SECONDS") % [_number(value)]
 			return translate.call("STAT_PER_SECOND") % [snappedf(1.0 / maxf(value, 0.01), 0.01)]
+		&"fuse":
+			return translate.call("STAT_SECONDS") % [_number(value)]
 		&"duration":
 			if behavior and behavior.is_permanent(weapon):
 				return translate.call("STAT_PERMANENT")

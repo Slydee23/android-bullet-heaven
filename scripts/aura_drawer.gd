@@ -30,6 +30,16 @@ func add(weapon: WeaponInstance, center: Node2D) -> void:
 	_centers.append(center)
 
 
+## Aura einer Waffe abmelden (die Waffe wird abgelegt)
+func remove(weapon: WeaponInstance) -> void:
+	var index := _weapons.find(weapon)
+	if index == -1:
+		return
+	_weapons.remove_at(index)
+	_centers.remove_at(index)
+	queue_redraw()
+
+
 func _process(delta: float) -> void:
 	if _weapons.is_empty():
 		return

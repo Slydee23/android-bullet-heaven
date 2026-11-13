@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EffectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/effect_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/effects/explosion.png" id="2_texture"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"explosion"
+texture = ExtResource("2_texture")
+frame_width = 96
+fps = 14.0
+anchor = 0
