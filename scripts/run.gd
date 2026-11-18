@@ -81,6 +81,7 @@ var _frame_index := 0
 @onready var damage_numbers: DamageNumberManager = $DamageNumbersLayer/DamageNumbers
 @onready var fps_label: Label = $HUD/HudRoot/FpsLabel
 @onready var hud_root: HudRoot = $HUD/HudRoot
+@onready var pickup_manager: PickupManager = $PickupManager
 
 
 func _ready() -> void:
@@ -104,6 +105,8 @@ func _ready() -> void:
 	enemy_manager.spawn_types = [SKELETON]
 	enemy_manager.enemy_damaged.connect(_on_enemy_damaged)
 	enemy_manager.enemy_killed.connect(_on_enemy_killed)
+	pickup_manager.target = player
+	pickup_manager.collected.connect(run_state.add_xp)
 
 	projectile_manager.enemy_manager = enemy_manager
 	projectile_manager.bounds = player.bounds
@@ -157,7 +160,7 @@ func _update_fps_label() -> void:
 		longest = maxf(longest, t)
 	var average := total / FRAME_SAMPLES
 	fps_label.text = tr("DEBUG_FPS") % [Engine.get_frames_per_second(), average * 1000.0, longest * 1000.0,
-			enemy_manager.count, projectile_manager.count + strike_manager.count, effect_manager.count]
+			enemy_manager.count, projectile_manager.count + strike_manager.count, effect_manager.count, pickup_manager.count]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -208,9 +211,10 @@ func _on_enemy_damaged(pos: Vector2, amount: float, element: StringName, crit: b
 		damage_numbers.spawn(body, amount, element, crit, kill, dot)
 
 
-## Tod-Staub an den Füßen des gestorbenen Gegners
-func _on_enemy_killed(pos: Vector2, _data: EnemyData) -> void:
+## Tod-Staub an den Füßen des gestorbenen Gegners, dazu sein Seelensplitter
+func _on_enemy_killed(pos: Vector2, data: EnemyData) -> void:
 	effect_manager.play(DEATH_EFFECT, pos)
+	pickup_manager.spawn(pos, data.xp_value)
 
 
 func _on_death_animation_finished() -> void:
@@ -242,6 +246,7 @@ func _toggle_debug_menu() -> void:
 	_debug_menu.weapon_holder = weapon_holder
 	_debug_menu.enemy_manager = enemy_manager
 	_debug_menu.run_state = run_state
+	_debug_menu.pickup_manager = pickup_manager
 	_debug_menu.tree_exited.connect(_on_debug_menu_closed)
 	hud.add_child(_debug_menu)
 	_update_pause()

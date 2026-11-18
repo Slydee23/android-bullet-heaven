@@ -13,5 +13,6 @@ speed = 0.0
 max_hp = 1000.0
 contact_damage = 0.0
 radius = 10.0
+xp_value = 0
 immortal = true
 anchored = true

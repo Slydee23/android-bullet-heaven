@@ -39,6 +39,8 @@ const DEATH_TEXTURE := preload("res://assets/sprites/characters/hero_death.png")
 @export var max_hp := 100.0
 ## Körperradius in Welt-Pixeln um die Füße: Bis hierhin kommen Gegner heran
 @export var body_radius := 10.0
+## Sammelradius in Welt-Pixeln um die Füße: Seelensplitter darin fliegen zum Helden (später ein Upgrade- und Rüstungswert)
+@export var pickup_radius := 40.0
 ## Wie lange der Held nach einem Treffer unverwundbar ist
 @export var base_iframe_rule: IFrameRule
 

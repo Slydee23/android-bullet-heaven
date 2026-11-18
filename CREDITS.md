@@ -15,6 +15,7 @@
 | `assets/tiles/forest_*.png` | Selbst erstellt (Generator `tools/gen_forest.gd`) | Eigene Werke |
 | `assets/ui/*.png` (Fenster, Knöpfe, Regler, Hauptmenü-Bild …) | Selbst erstellt (Generator `tools/gen_ui.gd`) | Eigene Werke |
 | `assets/ui/hud_*.png` (Leisten, Herz, Waffenplätze) | Selbst erstellt (Generator `tools/gen_hud.gd`) | Eigene Werke |
+| `assets/sprites/pickups/xp_crystal.png` (Seelensplitter) | Selbst erstellt (Generator `tools/gen_pickups.gd`) | Eigenes Werk |
 | `assets/sprites/weapons/magic_bolt.png` | Selbst erstellter Platzhalter (Generator `tools/gen_weapon_placeholders.gd`) | Eigenes Werk |
 | `assets/sprites/characters/hero_hit.png`, `hero_death.png` | Selbst erstellte Platzhalter (Generator `tools/gen_hero_placeholders.gd`, abgeleitet vom Pixellab-Helden) | Eigene Werke |
 | `assets/sprites/effects/hit.png`, `death.png` | Selbst erstellte Platzhalter (Generator `tools/gen_effect_placeholders.gd`, Farben aus der Palette von Held und Skelett) | Eigene Werke |

@@ -510,6 +510,8 @@ M4h (**umgesetzt, am PC getestet**) Dornenpeitsche (`SweepBehavior`) und Grundla
 
 Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6c** Werte-System (StatBlock, Modifikatoren) · **M6d** Level-Up-Karten und Upgrade-Pools · **M6e** Statusbildschirm.
 
+**M6b (umgesetzt, getestet):** `PickupManager` (Pool in gepackten Arrays, ein `_draw`, unter Aura und Gegnern): Gegner lassen beim Tod `EnemyData.xp_value` als Seelensplitter fallen (Skelett 1, Übungspuppe 0). Größe nach Wert: klein blau (1–2), mittel grün (ab 3), groß violett (ab 10). Im Sammelradius (`Player.pickup_radius`, 40 Welt-Pixel) springt der Splitter kurz zurück und fliegt dann beschleunigend zum Helden. Höchstens 400 liegen gleichzeitig, darüber wandert neue Erfahrung in den am weitesten entfernten Splitter. Grafik `tools/gen_pickups.gd` (`assets/sprites/pickups/xp_crystal.png`, 3 Zeilen × 4 Frames, Funkeln). Debug (Allgemein): „Alle Splitter anziehen“, „+300 Splitter verstreuen“. FPS-Anzeige zählt die Splitter mit.
+
 **M6a (umgesetzt, am Handy bestätigt):** `RunState` (Stufe, XP, Signale `xp_changed`/`leveled_up`, nur im Run), `XpCurve` (`data/progression/xp_curve.tres`: 5 XP für Stufe 2, danach +10 je Stufe, ab Stufe 20 +13, ab 40 +16). HUD in `ui/hud/`: `HudRoot` (verbindet Anzeigen per `bind_hud`; Pause-/Debug-Knopf und FPS-Anzeige hängen mit daran; **keine Safe-Area-Einrückung**: am Redmi wirkte das HUD dadurch schief bzw. zu weit im Bild, die Kamera liegt im Querformat links auf halber Höhe), `XpDisplay`, `HealthDisplay` (Signal `Player.hp_changed`), `WeaponSlots` (Signal `WeaponHolder.weapons_changed`, Startwaffe mit Goldrand). Grafiken `tools/gen_hud.gd`. FPS-Anzeige unter die Waffenplätze gerückt. Debug (Allgemein): „+ halbe Stufe XP“, „Stufe +1“ (Level-Up vorerst ohne Karten).
 
 - **Zuerst das HUD-Grundgerüst** nach „UI-Konzepte → HUD“: HUD-Szene mit Bereichen, feste HP-Leiste, XP-Leiste, Level und Waffen-Icons.
@@ -528,6 +530,7 @@ Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6
 ### M7 – Wellen & Run-Ende
 
 - Wellen-Timer (z. B. 60 s) mit Anzeige, z. B. „Welle 3 / 10“. Die Gegner werden pro Welle stärker und zahlreicher.
+- **Erfahrung wächst mit den Wellen** (Wunsch aus M6b, im Genre üblich): Spätere Wellen bringen stärkere Gegnertypen mit höherem `xp_value`, dazu ein XP-Faktor je Welle in den Wellen-Daten (wie der HP-Faktor). So bleiben grüne und violette Splitter später häufiger und die steigende XP-Kurve wird ausgeglichen. Genaue Werte beim Balancing.
 - **Kamera:** `RunCamera.reset_wave()` beim Wave-Start (zurück auf 3×). Zoomstufen und Grenze von 50 Gegnern bleiben fest (siehe Grundsatzentscheidung 2).
 - **Spawn-Muster:** Neben zufälligen Spawns gibt es Formationen wie Ringe und Einkesselung. Sie werden mathematisch berechnet
   und in den Wellen-Dateien (`Resource`) festgelegt, nicht im Code.

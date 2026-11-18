@@ -33,7 +33,7 @@ PAUSE_COMING_SOON,Wird im Laufe der Entwicklung gefüllt.
 PAUSE_RESUME,Weiter
 PAUSE_ABANDON,Run aufgeben
 PAUSE_ABANDON_CONFIRM,Wirklich aufgeben?
-DEBUG_FPS,%d FPS · Ø %.1f ms · max %.1f ms\n%d Gegner · %d Geschosse · %d Effekte
+DEBUG_FPS,%d FPS · Ø %.1f ms · max %.1f ms\n%d Gegner · %d Geschosse · %d Effekte · %d Splitter
 DEBUG_TITLE,Debug-Menü
 DEBUG_CAMERA_ZOOM,Kamera-Zoom
 DEBUG_ZOOM_NEAR,Nah (3×)
@@ -148,3 +148,5 @@ HUD_LEVEL,Lv %d
 DEBUG_XP,Erfahrung
 DEBUG_XP_HALF,+ halbe Stufe XP
 DEBUG_LEVEL_UP,Stufe +1
+DEBUG_ATTRACT,Alle Splitter anziehen
+DEBUG_SCATTER,+300 Splitter verstreuen

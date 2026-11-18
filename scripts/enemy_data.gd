@@ -23,3 +23,5 @@ extends Resource
 @export var immortal := false
 ## Bewegt sich nie und lässt sich nicht von anderen Gegnern wegschieben (Übungspuppe)
 @export var anchored := false
+## Erfahrung, die der Gegner beim Tod als Seelensplitter fallen lässt (0 = keinen)
+@export var xp_value := 1

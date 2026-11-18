@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://scripts/aura_drawer.gd" id="12_auras"]
 [ext_resource type="Script" path="res://scripts/strike_manager.gd" id="13_strikes"]
 [ext_resource type="Script" path="res://scripts/hud/hud_root.gd" id="14_hud_root"]
+[ext_resource type="Script" path="res://scripts/pickup_manager.gd" id="18_pickups"]
 [ext_resource type="PackedScene" path="res://ui/hud/xp_display.tscn" id="15_xp"]
 [ext_resource type="PackedScene" path="res://ui/hud/health_display.tscn" id="16_health"]
 [ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="17_slots"]
@@ -28,6 +29,9 @@ script = ExtResource("1_script")
 [node name="Canopy" type="TileMapLayer" parent="."]
 
 [node name="ForestEdge" type="Node2D" parent="."]
+
+[node name="PickupManager" type="Node2D" parent="."]
+script = ExtResource("18_pickups")
 
 [node name="AuraDrawer" type="Node2D" parent="."]
 texture_filter = 2

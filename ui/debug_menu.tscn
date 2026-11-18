@@ -199,6 +199,22 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_LEVEL_UP"
 
+[node name="PickupButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="AttractButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/PickupButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_ATTRACT"
+
+[node name="ScatterButton" type="Button" parent="Panel/Content/Scroll/Pages/GeneralPage/PickupButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_SCATTER"
+
 [node name="IFrameMinRow" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 24

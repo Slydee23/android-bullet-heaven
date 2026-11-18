@@ -17,6 +17,8 @@ const TORCH := preload("res://data/weapons/flame_torch.tres")
 const TRIDENT := preload("res://data/weapons/trident.tres")
 const BOMBS := preload("res://data/weapons/bomb_bag.tres")
 const WHIP := preload("res://data/weapons/thorn_whip.tres")
+## So viele Splitter verstreut „Splitter verstreuen“
+const SCATTER_COUNT := 300
 ## Reihenfolge für „Startwaffe wechseln“
 const START_WEAPONS: Array[WeaponData] = [
 	preload("res://data/weapons/arcane_wand.tres"), SWORD, TORCH, TRIDENT, BOMBS, WHIP,
@@ -52,6 +54,8 @@ var weapon_holder: WeaponHolder
 var enemy_manager: EnemyManager
 ## Run-Zustand (Stufe, Erfahrung; setzt die Run-Szene)
 var run_state: RunState
+## Seelensplitter (setzt die Run-Szene)
+var pickup_manager: PickupManager
 
 var _closing := false
 var _shown_iframes := -1.0
@@ -95,6 +99,8 @@ var _shown_iframes := -1.0
 @onready var invincible_button: Button = %InvincibleButton
 @onready var xp_half_button: Button = %XpHalfButton
 @onready var level_up_button: Button = %LevelUpButton
+@onready var attract_button: Button = %AttractButton
+@onready var scatter_button: Button = %ScatterButton
 @onready var ricochet_button: Button = %RicochetButton
 @onready var pierce_button: Button = %PierceButton
 @onready var bonus_duration_button: Button = %BonusDurationButton
@@ -148,6 +154,8 @@ func _ready() -> void:
 	vulnerable_button.pressed.connect(_set_invincible.bind(false))
 	xp_half_button.pressed.connect(_on_xp_half_pressed)
 	level_up_button.pressed.connect(_on_level_up_pressed)
+	attract_button.pressed.connect(_on_attract_pressed)
+	scatter_button.pressed.connect(_on_scatter_pressed)
 	invincible_button.pressed.connect(_set_invincible.bind(true))
 	ricochet_button.pressed.connect(_add_bonus.bind(&"ricochet", 1.0, &"arcane_wand"))
 	pierce_button.pressed.connect(_add_bonus.bind(&"pierce", PIERCE_ENDLESS, &"arcane_wand"))
@@ -185,6 +193,20 @@ func _on_xp_half_pressed() -> void:
 func _on_level_up_pressed() -> void:
 	if run_state:
 		run_state.add_xp(run_state.xp_needed() - run_state.xp)
+
+
+func _on_attract_pressed() -> void:
+	if pickup_manager:
+		pickup_manager.attract_all()
+
+
+## Verstreut Splitter zufällig in der Arena (Stresstest; über der Höchstzahl verschmelzen sie). Gemischte Werte, damit alle drei Größen vorkommen.
+func _on_scatter_pressed() -> void:
+	if not pickup_manager or not player:
+		return
+	for k in SCATTER_COUNT:
+		var pos := Vector2(randf_range(player.bounds.position.x, player.bounds.end.x), randf_range(player.bounds.position.y, player.bounds.end.y))
+		pickup_manager.spawn(pos, [1, 1, 1, 1, 3, 10].pick_random())
 
 
 func _set_invincible(on: bool) -> void:
