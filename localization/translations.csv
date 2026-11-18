@@ -150,3 +150,12 @@ DEBUG_XP_HALF,+ halbe Stufe XP
 DEBUG_LEVEL_UP,Stufe +1
 DEBUG_ATTRACT,Alle Splitter anziehen
 DEBUG_SCATTER,+300 Splitter verstreuen
+DEBUG_GLOBAL_BONUS,Globale Boni (wie Level-Up-Upgrades)
+DEBUG_GLOBAL_DAMAGE,+10 % Schaden (alle)
+DEBUG_GLOBAL_COOLDOWN,−10 % Abklingzeit (alle)
+DEBUG_GLOBAL_AMOUNT,+1 Projektil (alle)
+DEBUG_GLOBAL_SPEED,+20 % Lauftempo
+DEBUG_GLOBAL_HP,+20 Max-HP
+DEBUG_GLOBAL_PICKUP,+20 Sammelradius
+DEBUG_GLOBAL_SUMMARY,Held: Tempo %d · Max-HP %d · Sammelradius %d
+DEBUG_GLOBAL_RESET,Globale Boni zurücksetzen

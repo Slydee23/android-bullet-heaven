@@ -100,6 +100,14 @@ var _shown_iframes := -1.0
 @onready var xp_half_button: Button = %XpHalfButton
 @onready var level_up_button: Button = %LevelUpButton
 @onready var attract_button: Button = %AttractButton
+@onready var global_damage_button: Button = %GlobalDamageButton
+@onready var global_cooldown_button: Button = %GlobalCooldownButton
+@onready var global_amount_button: Button = %GlobalAmountButton
+@onready var global_speed_button: Button = %GlobalSpeedButton
+@onready var global_hp_button: Button = %GlobalHpButton
+@onready var global_pickup_button: Button = %GlobalPickupButton
+@onready var global_summary_label: Label = %GlobalSummaryLabel
+@onready var global_reset_button: Button = %GlobalResetButton
 @onready var scatter_button: Button = %ScatterButton
 @onready var ricochet_button: Button = %RicochetButton
 @onready var pierce_button: Button = %PierceButton
@@ -155,6 +163,14 @@ func _ready() -> void:
 	xp_half_button.pressed.connect(_on_xp_half_pressed)
 	level_up_button.pressed.connect(_on_level_up_pressed)
 	attract_button.pressed.connect(_on_attract_pressed)
+	global_damage_button.pressed.connect(_add_global.bind(&"damage", StatModifier.Kind.PERCENT, 0.1))
+	global_cooldown_button.pressed.connect(_add_global.bind(&"cooldown", StatModifier.Kind.PERCENT, -0.1))
+	global_amount_button.pressed.connect(_add_global.bind(&"amount", StatModifier.Kind.FLAT, 1.0))
+	global_speed_button.pressed.connect(_add_global.bind(Player.HERO_MOVE_SPEED, StatModifier.Kind.PERCENT, 0.2))
+	global_hp_button.pressed.connect(_add_global.bind(Player.HERO_MAX_HP, StatModifier.Kind.FLAT, 20.0))
+	global_pickup_button.pressed.connect(_add_global.bind(Player.HERO_PICKUP_RADIUS, StatModifier.Kind.FLAT, 20.0))
+	global_reset_button.pressed.connect(_on_global_reset_pressed)
+	_show_global_summary()
 	scatter_button.pressed.connect(_on_scatter_pressed)
 	invincible_button.pressed.connect(_set_invincible.bind(true))
 	ricochet_button.pressed.connect(_add_bonus.bind(&"ricochet", 1.0, &"arcane_wand"))
@@ -193,6 +209,24 @@ func _on_xp_half_pressed() -> void:
 func _on_level_up_pressed() -> void:
 	if run_state:
 		run_state.add_xp(run_state.xp_needed() - run_state.xp)
+
+
+## Globaler Bonus wie ein späteres Level-Up-Upgrade: gilt für den Helden bzw. alle Waffen, deren Angriffsart den Stat versteht
+func _add_global(stat: StringName, kind: StatModifier.Kind, value: float) -> void:
+	if run_state:
+		run_state.stats.add(StatModifier.create(stat, kind, value))
+	_show_global_summary()
+
+
+func _on_global_reset_pressed() -> void:
+	if run_state:
+		run_state.stats.clear()
+	_show_global_summary()
+
+
+func _show_global_summary() -> void:
+	if player:
+		global_summary_label.text = tr("DEBUG_GLOBAL_SUMMARY") % [roundi(player.speed), roundi(player.max_hp), roundi(player.pickup_radius)]
 
 
 func _on_attract_pressed() -> void:

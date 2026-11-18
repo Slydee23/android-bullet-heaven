@@ -22,8 +22,12 @@ var units_spawned := false
 ## Dauerwaffen mit Wirkdauer (kreisende Klingen): Restzeit, bis sie wieder verschwinden
 var active_left := 0.0
 
-## Feste Boni je Stat (einfachste Vorstufe der Modifikatoren, ab M6 rechnet das Werte-System)
-var _flat_bonus: Dictionary[StringName, float] = {}
+## Eigene Boni dieser Waffe (Level-Up-Upgrades, Debug-Test-Boni)
+var modifiers := StatBlock.new()
+## Globale Boni des Helden (RunState.stats, setzt der WeaponHolder): gelten für alle Waffen, deren Angriffsart den Stat versteht
+var global_stats: StatBlock
+## Fertige Werte, bis sich ein Bonus ändert (get_stat wird teils pro Frame gelesen, z. B. Radius der Aura)
+var _cache: Dictionary[StringName, float] = {}
 
 
 func _init(weapon_data: WeaponData) -> void:
@@ -32,26 +36,49 @@ func _init(weapon_data: WeaponData) -> void:
 		target_picker = data.target_picker.duplicate() as TargetPicker
 	else:
 		target_picker = NearestDistinctPicker.new()
+	modifiers.changed.connect(_on_modifiers_changed)
 
 
-## Fertiger Wert eines Stats. Heute: Grundwert aus der Datendatei plus feste Boni, begrenzt durch data.stat_limits
-## und die Angriffsart (WeaponBehavior.limit_stat). Ab M6 rechnet hier das Werte-System (Modifikatoren, Spieler-Stats, Artefakte).
+## Verbindet die Waffe mit den globalen Boni des Helden (einmal beim Anlegen)
+func set_global_stats(stats: StatBlock) -> void:
+	if global_stats:
+		global_stats.changed.disconnect(_on_modifiers_changed)
+	global_stats = stats
+	if global_stats:
+		global_stats.changed.connect(_on_modifiers_changed)
+	_on_modifiers_changed()
+
+
+## Fertiger Wert eines Stats: (Grundwert + Σ FLAT) × (1 + Σ PERCENT) × Π MULT aus eigenen und globalen Boni,
+## danach begrenzt durch data.stat_limits und die Angriffsart (WeaponBehavior.limit_stat). Ergebnis bleibt bis zur nächsten Änderung gespeichert.
+## Globale Boni zählen nur für Stats, die die Angriffsart versteht (z. B. kein „+1 Projektil“ für die Aura), und nur bei passenden Tags.
 func get_stat(stat: StringName) -> float:
-	var base: float = data.base_stats.get(stat, 0.0)
-	var value: float = base + _flat_bonus.get(stat, 0.0)
+	if _cache.has(stat):
+		return _cache[stat]
+	var sums := StatBlock.new_sums()
+	modifiers.accumulate(stat, sums, data.tags)
+	if global_stats and data.behavior and data.behavior.supports_stat(stat):
+		global_stats.accumulate(stat, sums, data.tags)
+	var value := StatBlock.apply(data.base_stats.get(stat, 0.0), sums)
 	var limits: Variant = data.stat_limits.get(stat)
 	if limits is Vector2:
 		value = clampf(value, limits.x, limits.y)
 	if data.behavior:
 		value = data.behavior.limit_stat(self, stat, value)
+	_cache[stat] = value
 	return value
 
 
+## Fester Bonus auf einen Stat (Debug-Test-Boni)
 func add_flat(stat: StringName, value: float) -> void:
-	_flat_bonus[stat] = _flat_bonus.get(stat, 0.0) + value
-	stats_changed.emit()
+	modifiers.add(StatModifier.create(stat, StatModifier.Kind.FLAT, value))
 
 
+## Nimmt alle eigenen Boni zurück (Debug)
 func reset_bonuses() -> void:
-	_flat_bonus.clear()
+	modifiers.clear()
+
+
+func _on_modifiers_changed() -> void:
+	_cache.clear()
 	stats_changed.emit()

@@ -433,6 +433,64 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_PIERCE"
 
+[node name="GlobalLabel" type="Label" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
+layout_mode = 2
+text = "DEBUG_GLOBAL_BONUS"
+
+[node name="GlobalWeaponButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="GlobalDamageButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/GlobalWeaponButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_GLOBAL_DAMAGE"
+
+[node name="GlobalCooldownButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/GlobalWeaponButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_GLOBAL_COOLDOWN"
+
+[node name="GlobalAmountButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/GlobalWeaponButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_GLOBAL_AMOUNT"
+
+[node name="GlobalHeroButtons" type="HBoxContainer" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="GlobalSpeedButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/GlobalHeroButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_GLOBAL_SPEED"
+
+[node name="GlobalHpButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/GlobalHeroButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_GLOBAL_HP"
+
+[node name="GlobalPickupButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage/GlobalHeroButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DEBUG_GLOBAL_PICKUP"
+
+[node name="GlobalSummaryLabel" type="Label" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "DEBUG_GLOBAL_SUMMARY"
+
+[node name="GlobalResetButton" type="Button" parent="Panel/Content/Scroll/Pages/WeaponsPage"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "DEBUG_GLOBAL_RESET"
+
 [node name="EnemiesPage" type="VBoxContainer" parent="Panel/Content/Scroll/Pages"]
 unique_name_in_owner = true
 layout_mode = 2

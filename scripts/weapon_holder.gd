@@ -12,6 +12,9 @@ const RUN_SLOTS := 3
 var start_weapons: Array[WeaponInstance] = []
 var run_weapons: Array[WeaponInstance] = []
 
+## Globale Boni des Helden (RunState.stats), gelten für alle Waffen (setzt die Run-Szene vor der ersten Waffe)
+var global_stats: StatBlock
+
 var _context := WeaponContext.new()
 
 
@@ -87,6 +90,7 @@ func has_weapon(id: StringName) -> bool:
 
 func _register(data: WeaponData) -> WeaponInstance:
 	var weapon := WeaponInstance.new(data)
+	weapon.set_global_stats(global_stats)
 	weapon.stats_changed.connect(_on_stats_changed.bind(weapon))
 	return weapon
 

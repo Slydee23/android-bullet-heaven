@@ -12,6 +12,9 @@ var curve: XpCurve
 var level := 1
 ## Gesammelte Erfahrung auf der aktuellen Stufe
 var xp := 0
+## Globale Boni dieses Runs (Level-Up-Upgrades für den Helden und alle Waffen; später auch Artefakte).
+## Rüstung und Dorf-Upgrades kommen aus dem dauerhaften Spielstand und werden beim Run-Start hier eingetragen.
+var stats := StatBlock.new()
 
 
 func _init(xp_curve: XpCurve) -> void:

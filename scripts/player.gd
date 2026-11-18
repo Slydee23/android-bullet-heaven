@@ -28,19 +28,28 @@ const HIT_FLASH_COLOR := Color(1.0, 0.35, 0.35)
 const SELF_DAMAGE_MIN_HP := 1.0
 ## So lange bleibt der Held nach der Tod-Animation noch liegen, bevor Game Over erscheint (Sekunden)
 const DEATH_LINGER := 0.6
+## Stat-IDs der Heldenwerte für StatModifier
+const HERO_MOVE_SPEED := &"move_speed"
+const HERO_MAX_HP := &"max_hp"
+const HERO_PICKUP_RADIUS := &"pickup_radius"
+## Untergrenzen, damit Abzüge den Helden nie lahmlegen
+const MIN_SPEED := 30.0
+const MIN_MAX_HP := 1.0
 
 const IDLE_TEXTURE := preload("res://assets/sprites/characters/hero_idle.png")
 const RUN_TEXTURE := preload("res://assets/sprites/characters/hero_run.png")
 const HIT_TEXTURE := preload("res://assets/sprites/characters/hero_hit.png")
 const DEATH_TEXTURE := preload("res://assets/sprites/characters/hero_death.png")
 
+## Grundwerte des Helden. Die geltenden Werte (speed, max_hp, pickup_radius) rechnet das Werte-System aus diesen Grundwerten
+## und den globalen Boni (stats, Stat-IDs HERO_*), siehe PLAN.md Grundsatz 6.
 ## Laufgeschwindigkeit in Welt-Pixeln pro Sekunde
-@export var speed := 120.0
-@export var max_hp := 100.0
+@export var base_speed := 120.0
+@export var base_max_hp := 100.0
 ## Körperradius in Welt-Pixeln um die Füße: Bis hierhin kommen Gegner heran
 @export var body_radius := 10.0
-## Sammelradius in Welt-Pixeln um die Füße: Seelensplitter darin fliegen zum Helden (später ein Upgrade- und Rüstungswert)
-@export var pickup_radius := 40.0
+## Sammelradius in Welt-Pixeln um die Füße: Seelensplitter darin fliegen zum Helden
+@export var base_pickup_radius := 40.0
 ## Wie lange der Held nach einem Treffer unverwundbar ist
 @export var base_iframe_rule: IFrameRule
 
@@ -48,7 +57,13 @@ const DEATH_TEXTURE := preload("res://assets/sprites/characters/hero_death.png")
 var bounds := Rect2()
 ## Touch-Joystick (setzt die Run-Szene)
 var joystick: TouchJoystick
+## Geltende Werte (Grundwert mit Boni), neu gerechnet bei jeder Änderung der Boni
+var speed := base_speed
+var max_hp := base_max_hp
+var pickup_radius := base_pickup_radius
 var hp := max_hp
+## Globale Boni (RunState.stats, setzt die Run-Szene mit set_stats)
+var stats: StatBlock
 ## Geltende Regel: Kopie von base_iframe_rule, in Test-Builds mit den Werten aus dem Debug-Menü
 var iframe_rule: IFrameRule
 ## Dauer der letzten I-Frames in Sekunden (Anzeige im Debug-Menü)
@@ -71,6 +86,7 @@ var _death_left := 0.0
 
 
 func _ready() -> void:
+	_update_stats()
 	hp = max_hp
 	health_bar.max_value = max_hp
 	health_bar.value = hp
@@ -112,6 +128,31 @@ func take_self_damage(amount: float) -> void:
 	if hp <= 0.0:
 		return
 	_set_hp(maxf(hp - amount, minf(hp, SELF_DAMAGE_MIN_HP)))
+
+
+## Verbindet den Helden mit den globalen Boni (einmal beim Run-Start)
+func set_stats(block: StatBlock) -> void:
+	stats = block
+	stats.changed.connect(_update_stats)
+	_update_stats()
+
+
+## Rechnet die geltenden Werte neu. Steigen die Max-HP, steigen die aktuellen HP um denselben Betrag (wie im Genre üblich),
+## sinken sie, werden die HP höchstens auf das neue Maximum gekürzt.
+func _update_stats() -> void:
+	speed = maxf(_stat(HERO_MOVE_SPEED, base_speed), MIN_SPEED)
+	pickup_radius = maxf(_stat(HERO_PICKUP_RADIUS, base_pickup_radius), 0.0)
+	var old_max := max_hp
+	max_hp = maxf(_stat(HERO_MAX_HP, base_max_hp), MIN_MAX_HP)
+	if not is_node_ready():
+		return
+	health_bar.max_value = max_hp
+	if max_hp != old_max and hp > 0.0:
+		_set_hp(clampf(hp + maxf(max_hp - old_max, 0.0), 0.0, max_hp))
+
+
+func _stat(stat: StringName, base: float) -> float:
+	return stats.calculate(stat, base) if stats else base
 
 
 func _set_hp(value: float) -> void:
