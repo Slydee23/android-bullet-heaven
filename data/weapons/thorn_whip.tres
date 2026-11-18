@@ -4,11 +4,52 @@
 [ext_resource type="Script" path="res://scripts/behaviors/sweep_behavior.gd" id="2_behavior"]
 [ext_resource type="Resource" path="res://data/effects/whip_slash.tres" id="3_effect"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_thorn_whip.png" id="4_icon"]
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
 effect = ExtResource("3_effect")
 start_offset = 8.0
+
+[sub_resource type="Resource" id="Upgrade_whip_damage"]
+script = ExtResource("90_upgrade")
+id = &"whip_damage"
+stat = &"damage"
+kind = 0
+value = 7.0
+
+[sub_resource type="Resource" id="Upgrade_whip_amount"]
+script = ExtResource("90_upgrade")
+id = &"whip_amount"
+stat = &"amount"
+kind = 0
+value = 1.0
+rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
+min_rarity = 1
+weight = 0.8
+
+[sub_resource type="Resource" id="Upgrade_whip_range"]
+script = ExtResource("90_upgrade")
+id = &"whip_range"
+stat = &"range"
+kind = 0
+value = 15.0
+weight = 0.8
+
+[sub_resource type="Resource" id="Upgrade_whip_area"]
+script = ExtResource("90_upgrade")
+id = &"whip_area"
+stat = &"area"
+kind = 0
+value = 2.0
+weight = 0.8
+
+[sub_resource type="Resource" id="Upgrade_whip_cooldown"]
+script = ExtResource("90_upgrade")
+id = &"whip_cooldown"
+stat = &"cooldown"
+kind = 1
+value = -0.08
 
 [resource]
 script = ExtResource("1_script")
@@ -27,8 +68,10 @@ base_stats = {
 &"range": 90.0
 }
 stat_limits = {
+&"cooldown": Vector2(0.5, 1.5),
 &"amount": Vector2(1, 8),
 &"area": Vector2(12, 24),
 &"range": Vector2(90, 180)
 }
 behavior = SubResource("Resource_behavior")
+upgrades = Array[ExtResource("90_upgrade")]([SubResource("Upgrade_whip_damage"), SubResource("Upgrade_whip_amount"), SubResource("Upgrade_whip_range"), SubResource("Upgrade_whip_area"), SubResource("Upgrade_whip_cooldown")])

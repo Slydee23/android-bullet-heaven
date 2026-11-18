@@ -159,3 +159,28 @@ DEBUG_GLOBAL_HP,+20 Max-HP
 DEBUG_GLOBAL_PICKUP,+20 Sammelradius
 DEBUG_GLOBAL_SUMMARY,Held: Tempo %d · Max-HP %d · Sammelradius %d
 DEBUG_GLOBAL_RESET,Globale Boni zurücksetzen
+LEVEL_UP_TITLE,Stufe aufgestiegen!
+LEVEL_UP_SUBTITLE,Stufe %d · Wähle eine Belohnung
+LEVEL_UP_NEW,Neue Waffe
+LEVEL_UP_LEVEL,Lv %d → %d
+LEVEL_UP_HERO,Helden-Bonus
+LEVEL_UP_STAT_CHANGE,%s\n%s → %s
+LEVEL_UP_HEAL_NAME,Heilung
+LEVEL_UP_HEAL_DESC,Stellt %d Lebenspunkte wieder her.
+RARITY_COMMON,Gewöhnlich
+RARITY_RARE,Selten
+RARITY_EPIC,Episch
+UPGRADE_HERO_DAMAGE_NAME,Seelenzorn
+UPGRADE_HERO_DAMAGE_DESC,Schaden aller Waffen %s
+UPGRADE_HERO_COOLDOWN_NAME,Rastloser Geist
+UPGRADE_HERO_COOLDOWN_DESC,Abklingzeit aller Waffen %s
+UPGRADE_HERO_SPEED_NAME,Flinke Sohlen
+UPGRADE_HERO_SPEED_DESC,Lauftempo %s
+UPGRADE_HERO_MAX_HP_NAME,Zähes Blut
+UPGRADE_HERO_MAX_HP_DESC,Maximale Lebenspunkte %s
+UPGRADE_HERO_PICKUP_NAME,Seelensog
+UPGRADE_HERO_PICKUP_DESC,Sammelradius %s
+UPGRADE_HERO_AMOUNT_NAME,Gespaltener Bann
+UPGRADE_HERO_AMOUNT_DESC,Projektile aller Waffen %s
+WEAPON_UPGRADE_TOTAL,%s (%d×)
+STAT_COOLDOWN,Abklingzeit

@@ -28,6 +28,9 @@ const SKELETON := preload("res://data/enemies/skeleton.tres")
 const HIT_EFFECT := preload("res://data/effects/hit.tres")
 const DEATH_EFFECT := preload("res://data/effects/death.tres")
 const XP_CURVE := preload("res://data/progression/xp_curve.tres")
+const LEVEL_UP_MENU := preload("res://ui/level_up_menu.tscn")
+const WEAPON_CATALOG := preload("res://data/weapons/weapon_catalog.tres")
+const HERO_UPGRADES := preload("res://data/upgrades/hero_upgrades.tres")
 ## Startwaffe des Runs (vorerst fest, die Auswahl im Hub kommt mit E10). Datei: data/weapons/<id>.tres
 const START_WEAPON_ID := &"arcane_wand"
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
@@ -51,6 +54,11 @@ const VIBRATION_MAX_AMPLITUDE := -1.0
 
 ## Zustand, der nur in diesem Run gilt (Stufe, Erfahrung), getrennt vom dauerhaften Spielstand
 var run_state := RunState.new(XP_CURVE)
+## Würfelt und verteilt die Level-Up-Karten
+var level_up_pool := LevelUpPool.new()
+var _level_up_menu: LevelUpMenu
+## Stufenaufstiege, deren Fenster noch kommt (mehrere auf einmal erscheinen nacheinander)
+var _pending_level_ups := 0
 var _pause_menu: Control
 var _debug_menu: DebugMenu
 ## Der Held ist gestorben (sperrt die Pause), auch schon während der Tod-Animation
@@ -119,6 +127,12 @@ func _ready() -> void:
 	var start_weapon: WeaponData = load("res://data/weapons/%s.tres" % START_WEAPON_ID)
 	weapon_holder.add_start_weapon(start_weapon)
 	hud_root.bind(player, run_state, weapon_holder)
+	level_up_pool.catalog = WEAPON_CATALOG
+	level_up_pool.hero_pool = HERO_UPGRADES
+	level_up_pool.weapons = weapon_holder
+	level_up_pool.run_state = run_state
+	level_up_pool.player = player
+	run_state.leveled_up.connect(_on_leveled_up)
 
 	# FPS-Anzeige nur in Test-Builds (aus Godot gestartet), nicht in einer späteren Veröffentlichung
 	fps_label.visible = OS.is_debug_build()
@@ -178,8 +192,35 @@ func _notification(what: int) -> void:
 		open_pause_menu()
 
 
+## Stufenaufstieg: Karten erst nach dem laufenden Frame zeigen (add_xp kann mehrere Stufen auf einmal bringen)
+func _on_leveled_up(_level: int) -> void:
+	_pending_level_ups += 1
+	call_deferred("_show_next_level_up")
+
+
+func _show_next_level_up() -> void:
+	if _level_up_menu or _pending_level_ups <= 0 or _game_over or player.hp <= 0.0 or not is_inside_tree():
+		return
+	_pending_level_ups -= 1
+	var menu: LevelUpMenu = LEVEL_UP_MENU.instantiate()
+	menu.offers = level_up_pool.roll()
+	menu.level = run_state.level - _pending_level_ups
+	menu.chosen.connect(_on_level_up_chosen)
+	_level_up_menu = menu
+	hud.add_child(menu)
+	_update_pause()
+
+
+func _on_level_up_chosen(offer: LevelUpOffer) -> void:
+	level_up_pool.apply(offer)
+	_level_up_menu.queue_free()
+	_level_up_menu = null
+	_update_pause()
+	call_deferred("_show_next_level_up")
+
+
 func open_pause_menu() -> void:
-	if _pause_menu or _game_over:
+	if _pause_menu or _game_over or _level_up_menu:
 		return
 	var menu: PauseMenu = PAUSE_MENU.instantiate()
 	menu.player = player
@@ -264,7 +305,8 @@ func _update_pause() -> void:
 	# Beim Verlassen des Runs schließen sich die Menüs mit, dann gibt es hier nichts mehr zu steuern
 	if not is_inside_tree():
 		return
-	get_tree().paused = _game_over_menu != null or _pause_menu != null or (_debug_menu != null and not Settings.debug_keep_running)
+	get_tree().paused = (_game_over_menu != null or _pause_menu != null or _level_up_menu != null
+			or (_debug_menu != null and not Settings.debug_keep_running))
 
 
 func _on_settings_changed() -> void:

@@ -40,13 +40,18 @@ func accumulate(stat: StringName, sums: PackedFloat32Array, tags: Variant = null
 				continue
 		elif not modifier.applies_to(tags):
 			continue
-		match modifier.kind:
-			StatModifier.Kind.FLAT:
-				sums[0] += modifier.value
-			StatModifier.Kind.PERCENT:
-				sums[1] += modifier.value
-			StatModifier.Kind.MULT:
-				sums[2] *= modifier.value
+		add_to_sums(modifier, sums)
+
+
+## Rechnet einen einzelnen Bonus in die Summen ein
+static func add_to_sums(modifier: StatModifier, sums: PackedFloat32Array) -> void:
+	match modifier.kind:
+		StatModifier.Kind.FLAT:
+			sums[0] += modifier.value
+		StatModifier.Kind.PERCENT:
+			sums[1] += modifier.value
+		StatModifier.Kind.MULT:
+			sums[2] *= modifier.value
 
 
 ## Fertiger Wert aus Grundwert und den Summen von accumulate

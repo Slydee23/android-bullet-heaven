@@ -15,10 +15,22 @@ var xp := 0
 ## Globale Boni dieses Runs (Level-Up-Upgrades für den Helden und alle Waffen; später auch Artefakte).
 ## Rüstung und Dorf-Upgrades kommen aus dem dauerhaften Spielstand und werden beim Run-Start hier eingetragen.
 var stats := StatBlock.new()
+## Wie oft jeder Helden-Bonus (UpgradeData.id) gewählt wurde
+var hero_upgrade_counts: Dictionary[StringName, int] = {}
 
 
 func _init(xp_curve: XpCurve) -> void:
 	curve = xp_curve
+
+
+## Nimmt einen Helden-Bonus aus dem Level-Up auf
+func add_hero_upgrade(upgrade: UpgradeData, rarity: int) -> void:
+	hero_upgrade_counts[upgrade.id] = hero_upgrade_counts.get(upgrade.id, 0) + 1
+	stats.add(upgrade.make_modifier(rarity))
+
+
+func hero_upgrade_count(id: StringName) -> int:
+	return hero_upgrade_counts.get(id, 0)
 
 
 ## XP für die nächste Stufe

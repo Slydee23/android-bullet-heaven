@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://scripts/targeting/random_visible_picker.gd" id="3_picker"]
 [ext_resource type="Resource" path="res://data/effects/lightning.tres" id="4_effect"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_trident.png" id="5_icon"]
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -17,6 +18,38 @@ amount_label_key = "STAT_BOLTS"
 
 [sub_resource type="Resource" id="Resource_picker"]
 script = ExtResource("3_picker")
+
+[sub_resource type="Resource" id="Upgrade_trident_damage"]
+script = ExtResource("90_upgrade")
+id = &"trident_damage"
+stat = &"damage"
+kind = 0
+value = 9.0
+
+[sub_resource type="Resource" id="Upgrade_trident_amount"]
+script = ExtResource("90_upgrade")
+id = &"trident_amount"
+stat = &"amount"
+kind = 0
+value = 1.0
+rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
+min_rarity = 1
+weight = 0.8
+
+[sub_resource type="Resource" id="Upgrade_trident_area"]
+script = ExtResource("90_upgrade")
+id = &"trident_area"
+stat = &"area"
+kind = 0
+value = 4.0
+weight = 0.8
+
+[sub_resource type="Resource" id="Upgrade_trident_cooldown"]
+script = ExtResource("90_upgrade")
+id = &"trident_cooldown"
+stat = &"cooldown"
+kind = 1
+value = -0.08
 
 [resource]
 script = ExtResource("1_script")
@@ -34,7 +67,9 @@ base_stats = {
 &"damage": 45.0
 }
 stat_limits = {
+&"cooldown": Vector2(0.6, 2),
 &"area": Vector2(20, 40)
 }
 behavior = SubResource("Resource_behavior")
 target_picker = SubResource("Resource_picker")
+upgrades = Array[ExtResource("90_upgrade")]([SubResource("Upgrade_trident_damage"), SubResource("Upgrade_trident_amount"), SubResource("Upgrade_trident_area"), SubResource("Upgrade_trident_cooldown")])

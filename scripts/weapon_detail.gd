@@ -75,9 +75,30 @@ func _ready() -> void:
 		value_cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		grid.add_child(value_cell)
 
-	# Upgrades und Entwicklung (kommen mit M6 und der Waffen-Entwicklung, bis dahin leer)
+	# Gewählte Upgrades: je Upgrade die Summe aller Wahlen und wie oft („Schaden +25 (2×)“), Reihenfolge wie im Pool der Waffe
 	column.add_child(_label(tr("WEAPON_SECTION_UPGRADES"), PixelUI.FONT_SIZE_SMALL, PixelUI.SELECTED_TEXT_COLOR))
-	column.add_child(_label(tr("WEAPON_NO_UPGRADES"), PixelUI.FONT_SIZE_SMALL, PixelUI.TEXT_COLOR))
+	var upgrade_grid := GridContainer.new()
+	upgrade_grid.columns = 4
+	upgrade_grid.add_theme_constant_override("h_separation", 24)
+	upgrade_grid.add_theme_constant_override("v_separation", 4)
+	for upgrade in weapon.data.upgrades:
+		var count := weapon.upgrade_count(upgrade.id)
+		if count == 0:
+			continue
+		# Abklingzeit-Upgrades heißen hier „Abklingzeit −8 %“ (als „Angriffe pro Sekunde −8 %“ läse es sich wie eine Verschlechterung)
+		var key := "STAT_COOLDOWN" if upgrade.stat == &"cooldown" else WeaponStatDisplay.label_key(weapon, upgrade.stat)
+		var name_cell := _label(tr(key), PixelUI.FONT_SIZE_SMALL, PixelUI.TEXT_COLOR)
+		name_cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		upgrade_grid.add_child(name_cell)
+		var amount := upgrade.format_amount(weapon.upgrade_totals.get(upgrade.id, 0.0))
+		var value_cell := _label(tr("WEAPON_UPGRADE_TOTAL") % [amount, count], PixelUI.FONT_SIZE_SMALL, PixelUI.SELECTED_TEXT_COLOR)
+		value_cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		upgrade_grid.add_child(value_cell)
+	if upgrade_grid.get_child_count() > 0:
+		column.add_child(upgrade_grid)
+	else:
+		upgrade_grid.free()
+		column.add_child(_label(tr("WEAPON_NO_UPGRADES"), PixelUI.FONT_SIZE_SMALL, PixelUI.TEXT_COLOR))
 	column.add_child(_label(tr("WEAPON_SECTION_EVOLUTION"), PixelUI.FONT_SIZE_SMALL, PixelUI.SELECTED_TEXT_COLOR))
 	column.add_child(_label(tr("WEAPON_NO_EVOLUTION"), PixelUI.FONT_SIZE_SMALL, PixelUI.TEXT_COLOR))
 	column.add_child(_label(tr("WEAPON_DAMAGE_DEALT") % roundi(weapon.total_damage), PixelUI.FONT_SIZE_SMALL, PixelUI.TEXT_COLOR))

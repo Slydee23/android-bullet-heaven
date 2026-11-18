@@ -4,9 +4,50 @@
 [ext_resource type="Script" path="res://scripts/behaviors/orbit_behavior.gd" id="2_behavior"]
 [ext_resource type="Texture2D" path="res://assets/sprites/weapons/sword_orbit.png" id="3_blade"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_orbit_sword.png" id="4_icon"]
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
+
+[sub_resource type="Resource" id="Upgrade_sword_damage"]
+script = ExtResource("90_upgrade")
+id = &"sword_damage"
+stat = &"damage"
+kind = 0
+value = 8.0
+
+[sub_resource type="Resource" id="Upgrade_sword_amount"]
+script = ExtResource("90_upgrade")
+id = &"sword_amount"
+stat = &"amount"
+kind = 0
+value = 1.0
+rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
+min_rarity = 1
+weight = 0.8
+
+[sub_resource type="Resource" id="Upgrade_sword_duration"]
+script = ExtResource("90_upgrade")
+id = &"sword_duration"
+stat = &"duration"
+kind = 0
+value = 0.5
+
+[sub_resource type="Resource" id="Upgrade_sword_orbit_speed"]
+script = ExtResource("90_upgrade")
+id = &"sword_orbit_speed"
+stat = &"orbit_speed"
+kind = 1
+value = 0.15
+weight = 0.6
+
+[sub_resource type="Resource" id="Upgrade_sword_cooldown"]
+script = ExtResource("90_upgrade")
+id = &"sword_cooldown"
+stat = &"cooldown"
+kind = 1
+value = -0.1
+weight = 0.8
 
 [resource]
 script = ExtResource("1_script")
@@ -34,3 +75,4 @@ behavior = SubResource("Resource_behavior")
 projectile_texture = ExtResource("3_blade")
 frame_width = 32
 animation_fps = 1.0
+upgrades = Array[ExtResource("90_upgrade")]([SubResource("Upgrade_sword_damage"), SubResource("Upgrade_sword_amount"), SubResource("Upgrade_sword_duration"), SubResource("Upgrade_sword_orbit_speed"), SubResource("Upgrade_sword_cooldown")])

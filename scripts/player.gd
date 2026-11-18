@@ -123,6 +123,13 @@ func _die() -> void:
 	died.emit()
 
 
+## Heilung (Level-Up-Ersatzkarte, später Tränke), höchstens bis Max-HP
+func heal(amount: float) -> void:
+	if hp <= 0.0:
+		return
+	_set_hp(minf(hp + amount, max_hp))
+
+
 ## Selbstschaden (z. B. durch Boni): Wirkt auch während der I-Frames und löst selbst keine aus.
 func take_self_damage(amount: float) -> void:
 	if hp <= 0.0:

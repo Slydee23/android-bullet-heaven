@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/effects/explosion.tres" id="4_effect"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_bomb_bag.png" id="5_icon"]
 [ext_resource type="Texture2D" path="res://assets/sprites/weapons/bomb.png" id="6_bomb"]
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -18,6 +19,46 @@ amount_label_key = "STAT_BOMBS"
 
 [sub_resource type="Resource" id="Resource_picker"]
 script = ExtResource("3_picker")
+
+[sub_resource type="Resource" id="Upgrade_bombs_damage"]
+script = ExtResource("90_upgrade")
+id = &"bombs_damage"
+stat = &"damage"
+kind = 0
+value = 6.0
+
+[sub_resource type="Resource" id="Upgrade_bombs_amount"]
+script = ExtResource("90_upgrade")
+id = &"bombs_amount"
+stat = &"amount"
+kind = 0
+value = 1.0
+rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
+min_rarity = 1
+weight = 0.8
+
+[sub_resource type="Resource" id="Upgrade_bombs_area"]
+script = ExtResource("90_upgrade")
+id = &"bombs_area"
+stat = &"area"
+kind = 0
+value = 8.0
+weight = 0.8
+
+[sub_resource type="Resource" id="Upgrade_bombs_fuse"]
+script = ExtResource("90_upgrade")
+id = &"bombs_fuse"
+stat = &"fuse"
+kind = 0
+value = -0.1
+weight = 0.6
+
+[sub_resource type="Resource" id="Upgrade_bombs_cooldown"]
+script = ExtResource("90_upgrade")
+id = &"bombs_cooldown"
+stat = &"cooldown"
+kind = 1
+value = -0.08
 
 [resource]
 script = ExtResource("1_script")
@@ -37,6 +78,7 @@ base_stats = {
 &"range": 160.0
 }
 stat_limits = {
+&"cooldown": Vector2(0.8, 2.5),
 &"area": Vector2(40, 80),
 &"fuse": Vector2(0.5, 1.0)
 }
@@ -45,3 +87,4 @@ target_picker = SubResource("Resource_picker")
 projectile_texture = ExtResource("6_bomb")
 frame_width = 16
 animation_fps = 1.0
+upgrades = Array[ExtResource("90_upgrade")]([SubResource("Upgrade_bombs_damage"), SubResource("Upgrade_bombs_amount"), SubResource("Upgrade_bombs_area"), SubResource("Upgrade_bombs_fuse"), SubResource("Upgrade_bombs_cooldown")])

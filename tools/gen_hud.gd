@@ -29,6 +29,9 @@ func _init() -> void:
 	_heart().save_png(OUT + "hud_heart.png")
 	_slot(false).save_png(OUT + "hud_slot.png")
 	_slot(true).save_png(OUT + "hud_slot_start.png")
+	_card(["#e8e0f0", "#b8b0c8", "#6a6478"]).save_png(OUT + "card_common.png")
+	_card(["#cdfcfa", "#62b8da", "#376281"]).save_png(OUT + "card_rare.png")
+	_card(["#f6f0ff", "#b49cff", "#4a2f8c"]).save_png(OUT + "card_epic.png")
 	print("ok")
 	quit()
 
@@ -122,3 +125,21 @@ func _slot(start: bool) -> Image:
 	]
 	var img := _frame(10, 10, 2, layers, Color(STONE_DARK, 0.85))
 	return img
+
+
+## 24×24, 9-Slice mit Rand 8: Level-Up-Karte wie die Menü-Fenster (Stein, innen Goldlinie), außen ein Rand in der Seltenheitsfarbe.
+## rarity = [hell, Grund, dunkel]
+func _card(rarity: Array) -> Image:
+	var hi := Color(rarity[0])
+	var mid := Color(rarity[1])
+	var dark := Color(rarity[2])
+	var layers := [
+		[OUTLINE, OUTLINE],
+		[hi, dark],
+		[mid, dark],
+		[OUTLINE, OUTLINE],
+		[STONE_LIGHT, STONE_DARK],
+		[GOLD, GOLD_DARK],
+		[Color("#100c18"), Color("#100c18")],
+	]
+	return _frame(24, 24, 4, layers, Color("#17121f"))

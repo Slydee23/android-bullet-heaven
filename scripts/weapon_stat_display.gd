@@ -43,7 +43,22 @@ static func detail_rows(weapon: WeaponInstance, translate: Callable) -> Array:
 ## Wert eines Stats als Text. Tempo wird als Angriffe pro Sekunde gezeigt (Abklingzeit rückwärts), außer die Angriffsart
 ## zeigt es in Sekunden (Zyklus des Schwerts). Eine Wirkdauer, die den Zyklus erreicht, heißt „Dauerhaft“.
 static func value_text(weapon: WeaponInstance, stat: StringName, translate: Callable) -> String:
-	var value := weapon.get_stat(stat)
+	return format_value(weapon, stat, weapon.get_stat(stat), translate)
+
+
+## Bezeichnung eines Stats für diese Waffe (z. B. „Klingen“ statt „Projektile pro Angriff“ beim Schwert)
+static func label_key(weapon: WeaponInstance, stat: StringName) -> String:
+	var default_key := "STAT_" + String(stat).to_upper()
+	for entry in DETAIL_STATS:
+		if entry[0] == stat:
+			default_key = entry[1]
+	if weapon.data.behavior:
+		return weapon.data.behavior.stat_label_key(stat, default_key)
+	return default_key
+
+
+## Wie value_text, aber für einen beliebigen Wert (Vorschau „alt → neu“ auf der Level-Up-Karte)
+static func format_value(weapon: WeaponInstance, stat: StringName, value: float, translate: Callable) -> String:
 	var behavior := weapon.data.behavior
 	match stat:
 		&"cooldown":
@@ -53,7 +68,8 @@ static func value_text(weapon: WeaponInstance, stat: StringName, translate: Call
 		&"fuse":
 			return translate.call("STAT_SECONDS") % [_number(value)]
 		&"duration":
-			if behavior and behavior.is_permanent(weapon):
+			# Dauerhaft, sobald die Wirkdauer den Zyklus erreicht (nur Waffen mit Zyklus in Sekunden, z. B. das Schwert)
+			if behavior and not behavior.cooldown_as_rate() and value >= weapon.get_stat(&"cooldown") - 0.001:
 				return translate.call("STAT_PERMANENT")
 			return translate.call("STAT_SECONDS") % [_number(value)]
 		&"orbit_speed":
@@ -61,7 +77,8 @@ static func value_text(weapon: WeaponInstance, stat: StringName, translate: Call
 		&"amount", &"pierce", &"ricochet":
 			return "×%d" % roundi(value)
 		&"damage":
-			return _number(value)
+			# Schaden immer ganzzahlig (Prozent-Boni ergeben sonst Kommazahlen wie 70.2)
+			return str(roundi(value))
 	return str(roundi(value))
 
 

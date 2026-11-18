@@ -36,6 +36,8 @@ extends Resource
 @export var target_picker: TargetPicker
 ## Effekte, die bei Ereignissen eingreifen (z. B. Ricochet)
 @export var effects: Array[WeaponEffect] = []
+## Level-Up-Upgrades dieser Waffe (Zufalls-Pool, siehe UpgradeData)
+@export var upgrades: Array[UpgradeData] = []
 ## Bild der Waffe im Spiel als Streifen, Blick nach Osten (Frame-Anzahl = Bildbreite ÷ frame_width):
 ## Geschoss, kreisende Klinge oder die einzelne Flamme einer Aura
 @export var projectile_texture: Texture2D

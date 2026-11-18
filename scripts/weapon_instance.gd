@@ -5,6 +5,9 @@ extends RefCounted
 ## Werte haben sich geändert (Upgrade, Debug-Bonus): Dauerwaffen bauen sich daraufhin neu auf.
 signal stats_changed
 
+## Höchstes Waffenlevel (1 + Anzahl gewählter Upgrades), danach kommt später die Entwicklung
+const MAX_LEVEL := 10
+
 var data: WeaponData
 var level := 1
 ## Erreichte Entwicklungsstufe (0 = noch keine, höchstens data.max_evolution)
@@ -28,6 +31,10 @@ var modifiers := StatBlock.new()
 var global_stats: StatBlock
 ## Fertige Werte, bis sich ein Bonus ändert (get_stat wird teils pro Frame gelesen, z. B. Radius der Aura)
 var _cache: Dictionary[StringName, float] = {}
+## Wie oft jedes Upgrade (UpgradeData.id) gewählt wurde
+var upgrade_counts: Dictionary[StringName, int] = {}
+## Summe der Werte je Upgrade über alle Wahlen (verschiedene Seltenheiten), für das Detailfenster
+var upgrade_totals: Dictionary[StringName, float] = {}
 
 
 func _init(weapon_data: WeaponData) -> void:
@@ -55,8 +62,33 @@ func set_global_stats(stats: StatBlock) -> void:
 func get_stat(stat: StringName) -> float:
 	if _cache.has(stat):
 		return _cache[stat]
+	var value := _compute(stat, null)
+	_cache[stat] = value
+	return value
+
+
+## Wert eines Stats, als ob extra schon gewählt wäre (Vorschau auf der Level-Up-Karte, ändert nichts)
+func preview_stat(stat: StringName, extra: StatModifier) -> float:
+	return _compute(stat, extra)
+
+
+## Nimmt ein Level-Up-Upgrade auf: Bonus dazu, Level +1
+func apply_upgrade(upgrade: UpgradeData, rarity: int) -> void:
+	upgrade_counts[upgrade.id] = upgrade_counts.get(upgrade.id, 0) + 1
+	upgrade_totals[upgrade.id] = upgrade_totals.get(upgrade.id, 0.0) + upgrade.value_for(rarity)
+	level = mini(level + 1, MAX_LEVEL)
+	modifiers.add(upgrade.make_modifier(rarity))
+
+
+func upgrade_count(id: StringName) -> int:
+	return upgrade_counts.get(id, 0)
+
+
+func _compute(stat: StringName, extra: StatModifier) -> float:
 	var sums := StatBlock.new_sums()
 	modifiers.accumulate(stat, sums, data.tags)
+	if extra and extra.stat == stat:
+		StatBlock.add_to_sums(extra, sums)
 	if global_stats and data.behavior and data.behavior.supports_stat(stat):
 		global_stats.accumulate(stat, sums, data.tags)
 	var value := StatBlock.apply(data.base_stats.get(stat, 0.0), sums)
@@ -65,7 +97,6 @@ func get_stat(stat: StringName) -> float:
 		value = clampf(value, limits.x, limits.y)
 	if data.behavior:
 		value = data.behavior.limit_stat(self, stat, value)
-	_cache[stat] = value
 	return value
 
 

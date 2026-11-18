@@ -66,6 +66,12 @@ func clear_run_weapons() -> void:
 	weapons_changed.emit()
 
 
+## Level-Up-Upgrade auf eine Waffe (Level +1, Bonus dazu)
+func upgrade_weapon(weapon: WeaponInstance, upgrade: UpgradeData, rarity: int) -> void:
+	weapon.apply_upgrade(upgrade, rarity)
+	weapons_changed.emit()
+
+
 func can_add_run_weapon() -> bool:
 	return run_weapons.size() < RUN_SLOTS
 

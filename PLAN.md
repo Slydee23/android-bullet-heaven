@@ -352,7 +352,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/sprites/enemies/training_dummy.png` | 32×32, 1 Frame, Übungspuppe für das Debug-Menü (Holzpfahl, Strohsack, Sackleinen-Kopf mit X-Augen), Fußpunkt unten in der Mitte. Vorhanden (Generator `tools/gen_training_dummy.gd`) | 1 | M4g |
 | `assets/sprites/effects/explosion.png` | 96×96 je Frame, Mitte = Explosionspunkt, passt zum Wirkradius 40: greller Kern, Feuerball, Rauchring. Die Warnfläche (dezent rot, füllt sich bis zur Explosion) zeichnet der `StrikeManager` im Code. Vorhanden (Generator `tools/gen_effect_placeholders.gd`) | 6 | M4f |
 | `assets/sprites/effects/whip_slash.png` | Sichelform (lang, gekrümmt wie ein Swoosh), Blick nach Osten und wird für die 4 Himmelsrichtungen gedreht (Vorschlag: 64×32, mit Probebild abstimmen) | 3–4 | M4h |
-| `assets/ui/card_frame.png` | 32×32 (9-Slice) | 1 | M6 |
+| `assets/ui/card_common.png`, `card_rare.png`, `card_epic.png` | 24×24 (9-Slice, Rand 8) | 1 | M6 |
 | `assets/sprites/enemies/bat_fly.png` | 32×32 | 4 | M7 |
 | `assets/sprites/enemies/slime_hop.png` | 32×32 | 4 | M7 |
 | `assets/ui/paperdoll.png` | Silhouette ca. 64×96 | 1 | E7 |
@@ -510,6 +510,17 @@ M4h (**umgesetzt, am PC getestet**) Dornenpeitsche (`SweepBehavior`) und Grundla
 
 Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6c** Werte-System (StatBlock, Modifikatoren) · **M6d** Level-Up-Karten und Upgrade-Pools · **M6e** Statusbildschirm.
 
+**M6d (umgesetzt, getestet):** Nachtrag nach dem Test: Detailfenster der Waffe (Pause) listet die gewählten Upgrades als Summe je Upgrade („Schaden +25 (2×)“). Test-Rückmeldung: Level 1–10 gespielt, die Stärke-Unterschiede der Waffen am Anfang sind deutlich spürbar → beim Balancing nach dem Wellen-System (M7) angehen, dafür besorgt der Nutzer Assets für einen Fernkampf-Gegner und einen Boss.  Level-Up-Karten. Entscheidungen: Pool aus **neuen Waffen, Waffen-Upgrades und Helden-Boni**; **3 Seltenheiten** (Gewöhnlich 70 %, Selten 25 % ×1,5, Episch 5 % ×2; „+1 Projektil“ erst ab Selten, als Episch +2); **Heilung +30 HP als Ersatzkarte**, wenn nichts mehr anzubieten ist; Neu würfeln/Überspringen/Verbannen **später** (begrenzte Ladungen, z. B. über Dorf-Upgrades). Daten: `UpgradeData` (Stat, Art, Wert, optionale Werte je Seltenheit, Mindest-Seltenheit, Gewicht, max. Stapel), Pool je Waffe in `WeaponData.upgrades` (feste Schadensboni ≈ 20 % des Grundschadens, siehe Tabelle unten), Helden-Boni in `data/upgrades/hero_upgrades.tres` (je max. 5×: Schaden +8 %, Abklingzeit −6 %, Lauftempo +8 %, Max-HP +15, Sammelradius +15; „+1 Projektil (alle)“ nur Episch, max. 2×), `WeaponCatalog` (`data/weapons/weapon_catalog.tres`). `LevelUpPool` würfelt (neue Waffe Gewicht 3, nie vorhandene; Upgrades nur bis Waffenlevel 10 und nur, wenn sie den Wert noch ändern, also keine Grenze erreicht ist; Helden-Boni Gewicht ×0,5) und wendet an. Abklingzeit-Untergrenzen ergänzt: Zauberstab 0,25 s, Dreizack 0,6 s, Bomben 0,8 s, Peitsche 0,5 s. `LevelUpMenu`/`LevelUpCard`: Spiel steht, 3 Runenstein-Karten (Rand in Seltenheitsfarbe, Icon, Name, „Neue Waffe“/„Lv 3 → 4“, „Schaden: 50 → 60“), 0,5 s Eingabesperre gegen versehentliches Antippen, mehrere Stufen auf einmal erscheinen nacheinander. Icons der Helden-Boni als Runen-Siegel (`tools/gen_bonus_icons.gd`), Kartenrahmen in `tools/gen_hud.gd`.
+
+| Waffe | Upgrades (Werte „Gewöhnlich“) |
+| --- | --- |
+| Zauberstab | Schaden +10 · Abklingzeit −8 % · +1 Projektil · Durchschlag +1 · Geschosstempo +20 % · Abpraller +1 (ab Selten) |
+| Schwert | Schaden +8 · +1 Klinge · Wirkdauer +0,5 s · Drehtempo +15 % · Abklingzeit −10 % |
+| Fackel | Schaden +3 · Radius +12 · Takt −0,05 s |
+| Dreizack | Schaden +9 · +1 Blitz · Wirkradius +4 · Abklingzeit −8 % |
+| Bombenbeutel | Schaden +6 · +1 Bombe · Wirkradius +8 · Zündzeit −0,1 s · Abklingzeit −8 % |
+| Peitsche | Schaden +7 · +1 Hieb · Länge +15 · Breite +2 · Abklingzeit −8 % |
+
 **M6c (umgesetzt, getestet):** Werte-System in `scripts/stats/`: `StatModifier` (Stat-ID, Art FLAT/PERCENT/MULT, Wert, optional `required_tags`) und `StatBlock` (Sammlung, Signal `changed`, Rechnung `(Grundwert + Σ FLAT) × (1 + Σ PERCENT) × Π MULT`). Jede `WeaponInstance` hat einen eigenen Block (`modifiers`, Upgrades) und liest den globalen Block `RunState.stats` mit, aber nur für Stats, die ihre Angriffsart versteht (`supports_stat`, z. B. kein „+1 Projektil“ für die Aura). Ergebnisse werden pro Waffe zwischengespeichert, bis sich ein Bonus ändert (kein Leistungsverlust bei 800 Gegnern). Grenzen wie bisher über `stat_limits` und `limit_stat`. Held: Grundwerte `base_speed`, `base_max_hp`, `base_pickup_radius`, geltende Werte aus Stat-IDs `move_speed`, `max_hp`, `pickup_radius` (steigen die Max-HP, steigen die HP mit). Debug (Reiter Waffen, „Globale Boni“): +10 % Schaden, −10 % Abklingzeit, +1 Projektil (alle), +20 % Lauftempo, +20 Max-HP, +20 Sammelradius, Zurücksetzen, Anzeige der Heldenwerte. Eigene Stat-Definitionen als Datendateien (Min/Max je Stat, Anzeige-Name) folgen, sobald Spielerwerte wie Rüstung, Krit oder Ausweichen dazukommen; bis dahin reichen `stat_limits` der Waffen und feste Untergrenzen beim Helden.
 
 **M6b (umgesetzt, getestet):** `PickupManager` (Pool in gepackten Arrays, ein `_draw`, unter Aura und Gegnern): Gegner lassen beim Tod `EnemyData.xp_value` als Seelensplitter fallen (Skelett 1, Übungspuppe 0). Größe nach Wert: klein blau (1–2), mittel grün (ab 3), groß violett (ab 10). Im Sammelradius (`Player.pickup_radius`, 40 Welt-Pixel) springt der Splitter kurz zurück und fliegt dann beschleunigend zum Helden. Höchstens 400 liegen gleichzeitig, darüber wandert neue Erfahrung in den am weitesten entfernten Splitter. Grafik `tools/gen_pickups.gd` (`assets/sprites/pickups/xp_crystal.png`, 3 Zeilen × 4 Frames, Funkeln). Debug (Allgemein): „Alle Splitter anziehen“, „+300 Splitter verstreuen“. FPS-Anzeige zählt die Splitter mit.
@@ -569,7 +580,7 @@ Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6
   Der Changelog lässt sich öffnen, scrollen und schließen.
 
 - ⚠ **Erinnerung nach Abschluss von M8:**
-  - README gemeinsam aktualisieren und deine ersten Screenshots einbauen.
+  - README gemeinsam aktualisieren: Screenshots und Abschnitt „Current status“ erneuern (erste Screenshots kamen schon mit Alpha v0.5, `docs/screenshots/`).
 
 ➡ **Nach M8 ist das Grundspiel fertig.**
 

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponCatalog" format=3]
+
+[ext_resource type="Script" path="res://scripts/weapon_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="2_weapon"]
+[ext_resource type="Resource" path="res://data/weapons/arcane_wand.tres" id="w_0"]
+[ext_resource type="Resource" path="res://data/weapons/orbit_sword.tres" id="w_1"]
+[ext_resource type="Resource" path="res://data/weapons/flame_torch.tres" id="w_2"]
+[ext_resource type="Resource" path="res://data/weapons/trident.tres" id="w_3"]
+[ext_resource type="Resource" path="res://data/weapons/bomb_bag.tres" id="w_4"]
+[ext_resource type="Resource" path="res://data/weapons/thorn_whip.tres" id="w_5"]
+
+[resource]
+script = ExtResource("1_catalog")
+weapons = Array[ExtResource("2_weapon")]([ExtResource("w_0"), ExtResource("w_1"), ExtResource("w_2"), ExtResource("w_3"), ExtResource("w_4"), ExtResource("w_5")])

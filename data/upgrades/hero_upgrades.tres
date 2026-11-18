@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="UpgradePool" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_pool.gd" id="1_pool"]
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="2_upgrade"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_damage.png" id="icon_0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_cooldown.png" id="icon_1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_speed.png" id="icon_2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_max_hp.png" id="icon_3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_pickup.png" id="icon_4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_amount.png" id="icon_5"]
+
+[sub_resource type="Resource" id="Upgrade_hero_damage"]
+script = ExtResource("2_upgrade")
+id = &"hero_damage"
+stat = &"damage"
+kind = 1
+value = 0.08
+max_stacks = 5
+name_key = "UPGRADE_HERO_DAMAGE_NAME"
+description_key = "UPGRADE_HERO_DAMAGE_DESC"
+icon = ExtResource("icon_0")
+
+[sub_resource type="Resource" id="Upgrade_hero_cooldown"]
+script = ExtResource("2_upgrade")
+id = &"hero_cooldown"
+stat = &"cooldown"
+kind = 1
+value = -0.06
+max_stacks = 5
+name_key = "UPGRADE_HERO_COOLDOWN_NAME"
+description_key = "UPGRADE_HERO_COOLDOWN_DESC"
+icon = ExtResource("icon_1")
+
+[sub_resource type="Resource" id="Upgrade_hero_speed"]
+script = ExtResource("2_upgrade")
+id = &"hero_speed"
+stat = &"move_speed"
+kind = 1
+value = 0.08
+max_stacks = 5
+name_key = "UPGRADE_HERO_SPEED_NAME"
+description_key = "UPGRADE_HERO_SPEED_DESC"
+icon = ExtResource("icon_2")
+
+[sub_resource type="Resource" id="Upgrade_hero_max_hp"]
+script = ExtResource("2_upgrade")
+id = &"hero_max_hp"
+stat = &"max_hp"
+kind = 0
+value = 15.0
+max_stacks = 5
+name_key = "UPGRADE_HERO_MAX_HP_NAME"
+description_key = "UPGRADE_HERO_MAX_HP_DESC"
+icon = ExtResource("icon_3")
+
+[sub_resource type="Resource" id="Upgrade_hero_pickup"]
+script = ExtResource("2_upgrade")
+id = &"hero_pickup"
+stat = &"pickup_radius"
+kind = 0
+value = 15.0
+max_stacks = 5
+name_key = "UPGRADE_HERO_PICKUP_NAME"
+description_key = "UPGRADE_HERO_PICKUP_DESC"
+icon = ExtResource("icon_4")
+
+[sub_resource type="Resource" id="Upgrade_hero_amount"]
+script = ExtResource("2_upgrade")
+id = &"hero_amount"
+stat = &"amount"
+kind = 0
+value = 1.0
+rarity_values = PackedFloat32Array(0.0, 0.0, 1.0)
+min_rarity = 2
+weight = 0.3
+max_stacks = 2
+name_key = "UPGRADE_HERO_AMOUNT_NAME"
+description_key = "UPGRADE_HERO_AMOUNT_DESC"
+icon = ExtResource("icon_5")
+
+[resource]
+script = ExtResource("1_pool")
+upgrades = Array[ExtResource("2_upgrade")]([SubResource("Upgrade_hero_damage"), SubResource("Upgrade_hero_cooldown"), SubResource("Upgrade_hero_speed"), SubResource("Upgrade_hero_max_hp"), SubResource("Upgrade_hero_pickup"), SubResource("Upgrade_hero_amount")])
