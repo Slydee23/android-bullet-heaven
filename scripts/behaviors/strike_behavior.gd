@@ -8,6 +8,15 @@ extends WeaponBehavior
 
 ## Effekt beim Auslösen (Blitz-Einschlag, Explosion)
 @export var effect: EffectData
+## Optional ein zweiter Effekt, der gleichzeitig startet und mit der Wirkfläche wächst (z. B. Lichtblitz und Schockwelle am Boden,
+## während der Blitz selbst gleich groß bleibt)
+@export var impact_effect: EffectData
+## Wirkradius `area`, für den impact_effect gezeichnet ist. Wächst `area` durch Upgrades, wird impact_effect im selben Verhältnis
+## vergrößert und zeigt so die echte Reichweite. 0 = immer Originalgröße.
+@export var effect_area_reference := 0.0
+## So viele Sekunden vor dem Schaden startet der Effekt (z. B. der Blitz zuckt erst herab und schlägt dann ein:
+## Schaden genau im Einschlag-Bild). 0 = Effekt beim Schaden.
+@export var effect_lead := 0.0
 ## Flugzeit vom Helden zum Ziel in Sekunden (0 = schlägt direkt am Ziel ein, z. B. Blitz)
 @export var flight_time := 0.0
 ## true: Ziele und Ersatzpunkte im ganzen sichtbaren Bild (Reichweite ohne Bedeutung). false: im Umkreis `range`.

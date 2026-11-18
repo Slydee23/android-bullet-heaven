@@ -4,6 +4,16 @@ extends WeaponBehavior
 ## auf alle Gegner im Radius `range`. Der AuraDrawer zeichnet die Fläche (Flammenring).
 ## Radius und Takt sind die Werte, die Upgrades (M6) verbessern, beide mit Grenzen in WeaponData.stat_limits.
 
+## Flammenmantel direkt am Helden (Streifen, Blick egal): Teil hinter dem Helden und Teil davor (Funken).
+## Versatz = obere linke Ecke eines Frames relativ zu den Füßen des Helden (aus dem PixelLab-Export, manifest.json).
+@export var mantle_behind: Texture2D
+@export var mantle_behind_frame := Vector2i(32, 50)
+@export var mantle_behind_offset := Vector2(-16, -43)
+@export var mantle_front: Texture2D
+@export var mantle_front_frame := Vector2i(18, 24)
+@export var mantle_front_offset := Vector2(-9, -23)
+@export var mantle_fps := 10.0
+
 
 func fire(weapon: WeaponInstance, context: WeaponContext) -> bool:
 	var amount := weapon.get_stat(&"damage")

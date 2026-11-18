@@ -542,6 +542,12 @@ Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6
 - **Am Handy testen:** Kristalle werden eingesammelt, das Level-Up-Menü lässt sich gut antippen und die Karten sind lesbar.
   Mit 4 Waffen kommen keine neuen Waffen mehr, sondern nur noch Upgrades.
 
+### Nachtrag nach M6 (2026-11-18): Feueraura und Sturmrufer
+
+- **Feueraura (Flammenfackel) neu:** statt kreisender Einzelflammen ein **Glutkreis am Boden genau im Schadensradius** (pulsierende Hitzefläche, unruhiger Glutsaum mit züngelnden Flammen, aufsteigende Glutfunken; im `AuraDrawer` pixelgenau gezeichnet, wächst mit Radius-Upgrades) und ein **Flammenmantel am Helden** (PixelLab VFX Creator, kostenlos; Teil hinter dem Helden und Funken davor über einen Kind-Node mit z_index 1; Bilder und Versatz in `AuraBehavior.mantle_*`). Die alte Flammen-Grafik `aura_flame.png` wird nicht mehr genutzt.
+- **Dreizack heißt jetzt „Sturmrufer“** (interne ID bleibt `trident`). Neuer Blitz aus dem VFX Creator: dicker, verzweigter, gelb-weißer Blitz (`sturmrufer_bolt.png`, feste Größe) plus Lichtblitz und Schockwellenring am Boden (`sturmrufer_impact.png`), der mit der Wirkfläche wächst (`StrikeBehavior.impact_effect`, `effect_area_reference` = 20). Der Schaden kommt jetzt genau im Einschlag-Bild (`effect_lead` 0,21 s). Die Wirkfläche gab es schon (Radius `area` 20–40), sie war nur nicht zu sehen.
+- PixelLab VFX Creator: Effekte sind kostenlos und im Konto unter „My effects“ gespeichert (Feueraura-Mantel, Sturmrufer Bolt/Impact), dort mit Reglern weiter anpassbar.
+
 ### M7 – Wellen & Run-Ende
 
 - **Vorbereitet (2026-11-18): Feuer-Kultist** als erster Fernkampf-Gegner, erzeugt mit PixelLab (über MCP angebunden, Lizenz siehe CREDITS.md). Grafiken `assets/sprites/enemies/cultist_walk.png`, `cultist_cast.png`, `cultist_death.png` (je 8 Frames à 44×32, Füße unten bündig, Blick schräg nach rechts). Verhalten in M7: Abstand zum Helden halten, Feuerball werfen (Wurf-Moment = Frame 7 der Zauber-Animation), beim Tod in Flammen aufgehen (Tod-Animation statt Staub). Rotglühende Kapuze im Tod ist gewollt (vom Nutzer bestätigt). PixelLab-Figur-ID: 81679b8f-cda8-4761-9631-4d0768925268.

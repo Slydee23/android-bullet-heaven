@@ -100,14 +100,14 @@ DEBUG_ADD_TORCH,Fackel hinzufügen
 DEBUG_BONUS_DURATION,Schwert +1 s Dauer
 DEBUG_BONUS_RADIUS,Fackel +16 Radius
 DEBUG_BONUS_TICK,Fackel −0.1 s Takt
-WEAPON_TRIDENT_NAME,Dreizack
-WEAPON_TRIDENT_DESC,"Ruft Blitze herab, die zufällige Gegner im Bild treffen."
+WEAPON_TRIDENT_NAME,Sturmrufer
+WEAPON_TRIDENT_DESC,"Ruft Blitze herab, die zufällige Gegner im Bild treffen und auch alles rund um den Einschlag erwischen."
 WEAPON_BOMB_BAG_NAME,Bombenbeutel
 WEAPON_BOMB_BAG_DESC,"Wirft Bomben, die nach kurzer Zündzeit in einer Feuerexplosion zerbersten."
 STAT_AREA,Wirkradius
 STAT_FUSE,Zündzeit
 STAT_THROW_RANGE,Wurfweite
-DEBUG_ADD_TRIDENT,Dreizack hinzufügen
+DEBUG_ADD_TRIDENT,Sturmrufer hinzufügen
 DEBUG_ADD_BOMBS,Bomben hinzufügen
 DEBUG_CLEAR_WEAPONS,Run-Waffen entfernen
 STAT_BOLTS,Blitze pro Angriff

@@ -32,6 +32,8 @@ var _age := PackedFloat32Array()
 var _flight := PackedFloat32Array()
 var _fuse := PackedFloat32Array()
 var _weapon_index := PackedInt32Array()
+## 1 = Effekt schon gestartet (StrikeBehavior.effect_lead), beim Auslösen nicht noch einmal abspielen
+var _effect_played := PackedByteArray()
 var _weapons: Array[WeaponInstance] = []
 var _was_drawn := false
 
@@ -43,14 +45,20 @@ func _ready() -> void:
 	_flight.resize(MAX_STRIKES)
 	_fuse.resize(MAX_STRIKES)
 	_weapon_index.resize(MAX_STRIKES)
+	_effect_played.resize(MAX_STRIKES)
 
 
 ## Neuer Einschlag der Waffe: fliegt flight Sekunden von from nach to, liegt dann fuse Sekunden und löst aus.
 ## Ohne Flug und Zünder löst er sofort aus. Ist der Pool voll, entfällt der Einschlag.
 func launch(weapon: WeaponInstance, from: Vector2, to: Vector2, flight: float, fuse: float) -> void:
-	if flight <= 0.0 and fuse <= 0.0:
-		_detonate(weapon, to)
+	var behavior := weapon.data.behavior as StrikeBehavior
+	var lead := behavior.effect_lead if behavior else 0.0
+	if flight <= 0.0 and fuse <= 0.0 and lead <= 0.0:
+		_detonate(weapon, to, true)
 		return
+	# Der Effekt braucht Vorlauf: der Einschlag wartet so lange (ohne Bild, ohne Warnfläche)
+	if flight <= 0.0 and fuse <= 0.0:
+		flight = lead
 	if count >= MAX_STRIKES:
 		return
 	var slot := _weapons.find(weapon)
@@ -63,6 +71,7 @@ func launch(weapon: WeaponInstance, from: Vector2, to: Vector2, flight: float, f
 	_flight[count] = flight
 	_fuse[count] = fuse
 	_weapon_index[count] = slot
+	_effect_played[count] = 0
 	count += 1
 
 
@@ -84,27 +93,48 @@ func _remove(i: int) -> void:
 	_flight[i] = _flight[count]
 	_fuse[i] = _fuse[count]
 	_weapon_index[i] = _weapon_index[count]
+	_effect_played[i] = _effect_played[count]
 
 
 ## Schaden im Wirkradius (Werte zum Zeitpunkt der Explosion), Schadenszähler der Waffe und Effekt
-func _detonate(weapon: WeaponInstance, at: Vector2) -> void:
+func _detonate(weapon: WeaponInstance, at: Vector2, with_effect: bool) -> void:
 	var amount := weapon.get_stat(&"damage")
 	if enemy_manager:
 		weapon.total_damage += enemy_manager.damage_in_radius(at, weapon.get_stat(&"area"), amount, weapon.data.element)
+	if with_effect:
+		_play_effect(weapon, at)
+
+
+## Effekt des Einschlags, bei Bedarf so vergrößert, dass er den aktuellen Wirkradius zeigt (StrikeBehavior.effect_area_reference)
+func _play_effect(weapon: WeaponInstance, at: Vector2) -> void:
 	var behavior := weapon.data.behavior as StrikeBehavior
-	if effect_manager and behavior and behavior.effect:
+	if not effect_manager or not behavior:
+		return
+	if behavior.effect:
 		effect_manager.play(behavior.effect, at)
+	if behavior.impact_effect:
+		var scale := 1.0
+		if behavior.effect_area_reference > 0.0:
+			scale = weapon.get_stat(&"area") / behavior.effect_area_reference
+		effect_manager.play(behavior.impact_effect, at, 0.0, Vector2(scale, scale))
 
 
 func _process(delta: float) -> void:
 	# Rückwärts, weil _remove() den letzten Einschlag auf den freien Platz setzt
 	for i in range(count - 1, -1, -1):
 		_age[i] += delta
-		if _age[i] >= _flight[i] + _fuse[i]:
-			var weapon := _weapons[_weapon_index[i]]
+		var weapon := _weapons[_weapon_index[i]]
+		var behavior := weapon.data.behavior as StrikeBehavior
+		var lead := behavior.effect_lead if behavior else 0.0
+		var total := _flight[i] + _fuse[i]
+		if lead > 0.0 and not _effect_played[i] and _age[i] >= total - lead:
+			_effect_played[i] = 1
+			_play_effect(weapon, _to[i])
+		if _age[i] >= total:
 			var at := _to[i]
+			var played := _effect_played[i] == 1
 			_remove(i)
-			_detonate(weapon, at)
+			_detonate(weapon, at, not played)
 	# Nur neu zeichnen, solange etwas läuft (und einmal danach, um das letzte Bild zu löschen)
 	if count > 0 or _was_drawn:
 		queue_redraw()
