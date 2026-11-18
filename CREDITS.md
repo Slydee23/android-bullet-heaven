@@ -17,6 +17,8 @@
 | `assets/ui/hud_*.png` (Leisten, Herz, Waffenplätze) | Selbst erstellt (Generator `tools/gen_hud.gd`) | Eigene Werke |
 | `assets/sprites/pickups/xp_crystal.png` (Seelensplitter) | Selbst erstellt (Generator `tools/gen_pickups.gd`) | Eigenes Werk |
 | `assets/sprites/icons/bonus_*.png` (Helden-Boni, Heilung) | Selbst erstellt (Generator `tools/gen_bonus_icons.gd`) | Eigene Werke |
+| `assets/sprites/enemies/bone_knight_walk.png`, `bone_knight_attack.png`, `bone_knight_death.png` (Knochenritter, Boss) | Erzeugt mit [PixelLab](https://pixellab.ai) (KI, Figur „Bone Knight“, Ansicht Südost), zugeschnitten auf 92×76-Streifen | Wie beim Feuer-Kultisten (PixelLab-Nutzungsbedingungen, Abschnitte 1.3 und 3.3) |
+| `assets/sprites/enemies/cultist_walk.png`, `cultist_cast.png`, `cultist_death.png` (Feuer-Kultist) | Erzeugt mit [PixelLab](https://pixellab.ai) (KI, Figur „Fire Cultist“, Ansicht Südost), zugeschnitten auf 44×32-Streifen | Laut PixelLab-Nutzungsbedingungen (Stand 2026-10-30, Abschnitte 1.3 und 3.3) gehören die Rechte dem Ersteller, kommerzielle Nutzung ohne Erlaubnis und ohne Namensnennung erlaubt; nicht erlaubt: damit KI-Modelle trainieren |
 | `assets/ui/card_*.png` (Level-Up-Karten) | Selbst erstellt (Generator `tools/gen_hud.gd`) | Eigene Werke |
 | `assets/sprites/weapons/magic_bolt.png` | Selbst erstellter Platzhalter (Generator `tools/gen_weapon_placeholders.gd`) | Eigenes Werk |
 | `assets/sprites/characters/hero_hit.png`, `hero_death.png` | Selbst erstellte Platzhalter (Generator `tools/gen_hero_placeholders.gd`, abgeleitet vom Pixellab-Helden) | Eigene Werke |
