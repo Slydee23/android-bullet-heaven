@@ -184,3 +184,14 @@ UPGRADE_HERO_AMOUNT_NAME,Gespaltener Bann
 UPGRADE_HERO_AMOUNT_DESC,Projektile aller Waffen %s
 WEAPON_UPGRADE_TOTAL,%s (%d×)
 STAT_COOLDOWN,Abklingzeit
+PAUSE_LEVEL,Stufe %d
+PAUSE_XP,%d / %d XP
+PAUSE_SECTION_BOONS,Helden-Boni
+PAUSE_NO_BOONS,Noch keine Helden-Boni.
+PAUSE_BOON_COUNT,%s (%d×)
+STAT_HP,Lebenspunkte
+STAT_MOVE_SPEED,Lauftempo
+STAT_PICKUP_RADIUS,Sammelradius
+STAT_ALL_DAMAGE,Schaden (alle)
+STAT_ALL_COOLDOWN,Abklingzeit (alle)
+STAT_ALL_AMOUNT,Projektile (alle)
