@@ -19,6 +19,10 @@ extends Resource
 @export var tint := Color.WHITE
 ## Optional: besonderes Verhalten (Sprung, Fernzauber, Platzen, Boss), siehe EnemyAbility
 @export var ability: EnemyAbility
+## Schwer: wird von anderen Gegnern nicht weggeschoben, schiebt sie aber selbst weg (Boss)
+@export var heavy := false
+## Boss: eigene Lebensleiste oben im Bild statt der kleinen über dem Kopf
+@export var is_boss := false
 @export var frame_width := 32
 @export var animation_fps := 6.0
 ## Größe eines Bildpixels in Welt-Pixeln (1 = normal, z. B. 2 für einen doppelt so großen Boss)

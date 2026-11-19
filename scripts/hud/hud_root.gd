@@ -15,7 +15,10 @@ func _ready() -> void:
 
 
 ## Verbindet alle Anzeigen mit dem Run (ruft die Run-Szene einmal beim Start auf)
-func bind(player: Player, run_state: RunState, weapons: WeaponHolder) -> void:
+func bind(player: Player, run_state: RunState, weapons: WeaponHolder, enemies: EnemyManager = null) -> void:
 	for node in find_children("*", "Control", true, false):
 		if node.has_method("bind_hud"):
 			node.bind_hud(player, run_state, weapons)
+		# Anzeigen, die Gegner brauchen (z. B. die Boss-Leiste), haben bind_enemies
+		if enemies and node.has_method("bind_enemies"):
+			node.bind_enemies(enemies)

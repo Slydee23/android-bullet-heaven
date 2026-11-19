@@ -25,7 +25,9 @@ const SPAWN_TYPES: Array[EnemyData] = [
 	preload("res://data/enemies/cultist.tres"),
 	preload("res://data/enemies/plaguebringer.tres"),
 ]
+const BOSS := preload("res://data/enemies/bone_knight.tres")
 const TYPE_SPAWN_COUNT := 10
+const BOSS_DISTANCE := 200.0
 ## Reihenfolge für „Startwaffe wechseln“
 const START_WEAPONS: Array[WeaponData] = [
 	preload("res://data/weapons/arcane_wand.tres"), SWORD, TORCH, TRIDENT, BOMBS, WHIP,
@@ -207,6 +209,11 @@ func _ready() -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_on_spawn_type_pressed.bind(data))
 		type_spawn_buttons.add_child(button)
+	var boss_button := Button.new()
+	boss_button.text = tr("DEBUG_SPAWN_BOSS") % tr(BOSS.name_key)
+	boss_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	boss_button.pressed.connect(_on_spawn_boss_pressed)
+	type_spawn_buttons.add_child(boss_button)
 	burn_button.pressed.connect(_give_status.bind(BURNING))
 	poison_button.pressed.connect(_give_status.bind(POISONED))
 	shock_button.pressed.connect(_give_status.bind(SHOCKED))
@@ -302,6 +309,12 @@ func _on_add_100_pressed() -> void:
 func _on_spawn_type_pressed(data: EnemyData) -> void:
 	if enemy_manager and player:
 		enemy_manager.spawn_ring(data, player.global_position, TYPE_SPAWN_COUNT, BURST_MIN_DISTANCE, BURST_MAX_DISTANCE)
+
+
+## Ruft den Boss etwas entfernt vom Helden
+func _on_spawn_boss_pressed() -> void:
+	if enemy_manager and player:
+		enemy_manager.spawn(BOSS, player.global_position + Vector2(BOSS_DISTANCE, 0.0))
 
 
 func _on_remove_enemies_pressed() -> void:

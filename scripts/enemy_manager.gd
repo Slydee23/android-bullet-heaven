@@ -66,6 +66,10 @@ signal enemy_damaged(position: Vector2, amount: float, element: StringName, crit
 ## Ein Gegner ist gestorben (position = Füße). Anschluss für Effekte (M4b) und XP-Kristalle (M6).
 ## Ein Gegner ist gestorben. flipped = er schaute nach links (für die gespiegelte Tod-Animation).
 signal enemy_killed(position: Vector2, data: EnemyData, flipped: bool)
+## Ein Angriff lässt den Bildschirm wackeln (Stärke 0..1), z. B. der Bodenschlag des Bosses
+signal screen_shake(strength: float)
+## Lebenspunkte eines Bosses haben sich geändert (beim Erscheinen, bei Treffern; hp 0 = besiegt), für die Boss-Leiste
+signal boss_health_changed(data: EnemyData, hp: float, max_hp: float)
 
 ## Ziel, auf das alle Gegner zulaufen und das sie angreifen (der Held)
 var target: Player
@@ -85,6 +89,8 @@ var ability_state := PackedByteArray()
 var ability_time := PackedFloat32Array()
 var ability_timer := PackedFloat32Array()
 var ability_vec := PackedVector2Array()
+## Zweite Abklingzeit für Fähigkeiten mit zwei Angriffen (Boss)
+var ability_timer_b := PackedFloat32Array()
 ## Status-Dateien, die schon einmal angewendet wurden: ihr Platz hier ist ihr Bit in der Status-Maske
 var status_types: Array[StatusEffectData] = []
 
@@ -154,6 +160,7 @@ func _ready() -> void:
 	ability_time.resize(MAX_ENEMIES)
 	ability_timer.resize(MAX_ENEMIES)
 	ability_vec.resize(MAX_ENEMIES)
+	ability_timer_b.resize(MAX_ENEMIES)
 	_since_hit.resize(MAX_ENEMIES)
 	_status_mask.resize(MAX_ENEMIES)
 	_st_left.resize(MAX_ENEMIES * MAX_STATUS)
@@ -205,7 +212,10 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 	ability_time[count] = 0.0
 	ability_timer[count] = 0.0
 	ability_vec[count] = Vector2.ZERO
+	ability_timer_b[count] = 0.0
 	count += 1
+	if data.is_boss:
+		boss_health_changed.emit(data, _hp[count - 1], _hp[count - 1])
 
 
 ## Entfernt Gegner i: Der letzte Gegner rückt auf seinen Platz.
@@ -230,6 +240,7 @@ func kill(i: int) -> void:
 	ability_time[i] = ability_time[count]
 	ability_timer[i] = ability_timer[count]
 	ability_vec[i] = ability_vec[count]
+	ability_timer_b[i] = ability_timer_b[count]
 	_since_hit[i] = _since_hit[count]
 	_status_mask[i] = _status_mask[count]
 	for s in MAX_STATUS:
@@ -277,6 +288,8 @@ func _apply_damage(i: int, amount: float, element: StringName, crit: bool, dot: 
 	if _type_list[_types[i]].immortal:
 		_hp[i] = maxf(_hp[i], 1.0)
 	_since_hit[i] = 0.0
+	if _type_list[_types[i]].is_boss:
+		boss_health_changed.emit(_type_list[_types[i]], maxf(_hp[i], 0.0), get_max_hp(i))
 	if not dot:
 		_flash[i] = HIT_FLASH_TIME
 	enemy_damaged.emit(_positions[i], dealt, element, crit, was_alive and _hp[i] <= 0.0, dot)
@@ -377,6 +390,8 @@ func set_hp_multiplier(value: float) -> void:
 ## Entfernt alle Gegner sofort, ohne Tod-Effekte (Debug)
 func remove_all() -> void:
 	count = 0
+	# Eine offene Boss-Leiste schließt sich
+	boss_health_changed.emit(null, 0.0, 0.0)
 	_arc_count = 0
 
 
@@ -663,6 +678,8 @@ func _remove_dead() -> void:
 			var data := _type_list[_types[i]]
 			if data.ability:
 				data.ability.on_death(self, i, data)
+			if data.is_boss:
+				boss_health_changed.emit(data, 0.0, get_max_hp(i))
 			enemy_killed.emit(_positions[i], data, _flipped[i] == 1)
 			kill(i)
 
@@ -739,8 +756,9 @@ func _move(delta: float) -> void:
 			pos += direction * minf(speed * delta, target_distance - stop_distance)
 		_flipped[i] = 1 if direction.x < 0.0 else 0
 
-		# Abstand zu Nachbarn halten, damit sie sich nicht auf einem Punkt stapeln
-		pos += _separation_push(i, pos) * SEPARATION_STRENGTH
+		# Abstand zu Nachbarn halten, damit sie sich nicht auf einem Punkt stapeln (Schwere wie der Boss lassen sich nicht schieben)
+		if not data.heavy:
+			pos += _separation_push(i, pos) * SEPARATION_STRENGTH
 
 		# Nie im Helden stehen: Läuft er in Gegner hinein, weichen sie zur Seite. Ihn selbst bremst das nicht.
 		var away := pos - target_pos
@@ -795,6 +813,12 @@ func _update_attack(i: int, data: EnemyData, in_range: bool, delta: float) -> vo
 ## Zeichnet von oben nach unten: Wer weiter unten steht (näher an der Kamera), verdeckt die dahinter.
 ## Sortiert wird pro Pixelzeile (Bucket-Sort mit verketteten Listen), ohne neue Arrays.
 func _draw() -> void:
+	# Warnflächen von Fähigkeiten liegen am Boden unter allen Gegnern
+	for i in count:
+		var data := _type_list[_types[i]]
+		if data.ability and ability_state[i] != 0:
+			data.ability.draw_ground(self, i, data, self)
+	draw_set_transform(Vector2.ZERO)
 	_row_head.fill(-1)
 	var last_row := _row_head.size() - 1
 	for i in count:
@@ -817,7 +841,7 @@ func _draw() -> void:
 func _draw_health_bar(i: int) -> void:
 	var data := _type_list[_types[i]]
 	var max_hp := get_max_hp(i)
-	if _hp[i] <= 0.0 or _hp[i] >= max_hp:
+	if _hp[i] <= 0.0 or _hp[i] >= max_hp or data.is_boss:
 		return
 	var top := _positions[i] + Vector2(-BAR_FRAME.get_width() * 0.5, 1.0 - (data.walk_texture.get_height() - data.foot_offset) * data.draw_scale - BAR_GAP - BAR_FRAME.get_height())
 	draw_texture(BAR_FRAME, top.round())

@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bone_knight_walk.png" id="2_walk"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bone_knight_attack.png" id="3_attack"]
+[ext_resource type="Resource" path="res://data/effects/bone_knight_death.tres" id="4_death"]
+[ext_resource type="Script" path="res://scripts/enemy_abilities/boss_knight_ability.gd" id="5_boss"]
+
+[sub_resource type="Resource" id="Resource_boss"]
+script = ExtResource("5_boss")
+
+[resource]
+script = ExtResource("1_script")
+id = &"bone_knight"
+name_key = "ENEMY_BONE_KNIGHT"
+walk_texture = ExtResource("2_walk")
+attack_texture = ExtResource("3_attack")
+death_effect = ExtResource("4_death")
+foot_offset = 9.0
+ability = SubResource("Resource_boss")
+heavy = true
+is_boss = true
+frame_width = 92
+animation_fps = 7.0
+speed = 38.0
+max_hp = 4000.0
+contact_damage = 15.0
+attack_interval = 1.2
+radius = 20.0
+xp_value = 50

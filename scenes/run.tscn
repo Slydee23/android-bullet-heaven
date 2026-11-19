@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/hud/hud_root.gd" id="14_hud_root"]
 [ext_resource type="Script" path="res://scripts/pickup_manager.gd" id="18_pickups"]
 [ext_resource type="Script" path="res://scripts/hostile_projectile_manager.gd" id="19_hostile"]
+[ext_resource type="PackedScene" path="res://ui/hud/boss_bar.tscn" id="20_boss"]
 [ext_resource type="PackedScene" path="res://ui/hud/xp_display.tscn" id="15_xp"]
 [ext_resource type="PackedScene" path="res://ui/hud/health_display.tscn" id="16_health"]
 [ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="17_slots"]
@@ -111,6 +112,9 @@ offset_right = 480.0
 offset_bottom = -36.0
 grow_horizontal = 2
 grow_vertical = 0
+
+[node name="BossBar" parent="HUD/HudRoot" instance=ExtResource("20_boss")]
+layout_mode = 1
 
 [node name="TopLeft" type="VBoxContainer" parent="HUD/HudRoot"]
 layout_mode = 0

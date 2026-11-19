@@ -19,6 +19,12 @@ func update(_manager: EnemyManager, _i: int, _data: EnemyData, _target: Player, 
 	return false
 
 
+## Warnflächen am Boden (z. B. Schlagfläche des Bosses). Der EnemyManager ruft das vor dem Zeichnen der Gegner auf,
+## nur für Gegner, deren Fähigkeit gerade nicht im Normalzustand ist.
+func draw_ground(_manager: EnemyManager, _i: int, _data: EnemyData, _canvas: CanvasItem) -> void:
+	pass
+
+
 ## Der Gegner stirbt (vor dem Entfernen). Z. B. Platzen beim Tod.
 func on_death(_manager: EnemyManager, _i: int, _data: EnemyData) -> void:
 	pass

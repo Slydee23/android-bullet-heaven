@@ -40,6 +40,12 @@ const ZOOM_FULL_ENEMIES := 50
 const FPS_UPDATE_INTERVAL := 0.5
 ## So viele letzte Bildzeiten fließen in die Leistungsanzeige ein (bei 60 FPS etwa 2 Sekunden)
 const FRAME_SAMPLES := 120
+## Wucht eines Gegner-Angriffs (z. B. Bodenschlag des Bosses): Bildschirm wackeln, wenn in den Optionen an
+func _on_screen_shake(strength: float) -> void:
+	if Settings.screen_shake:
+		camera.shake(strength)
+
+
 ## Treffer-Feedback: Mindeststärke (kleine Treffer) und wie stark der Trefferanteil an max_hp dazukommt
 ## (5 % Treffer → 0,43 leicht, 20 % Treffer → 0,95 kräftig)
 const HIT_FEEDBACK_MIN := 0.25
@@ -120,6 +126,7 @@ func _ready() -> void:
 	hostile_projectiles.bounds = player.bounds
 	enemy_manager.hostile_projectiles = hostile_projectiles
 	enemy_manager.effect_manager = effect_manager
+	enemy_manager.screen_shake.connect(_on_screen_shake)
 	pickup_manager.collected.connect(run_state.add_xp)
 
 	projectile_manager.enemy_manager = enemy_manager
@@ -132,7 +139,7 @@ func _ready() -> void:
 	weapon_holder.setup(player, enemy_manager, projectile_manager, aura_drawer, strike_manager, effect_manager)
 	var start_weapon: WeaponData = load("res://data/weapons/%s.tres" % START_WEAPON_ID)
 	weapon_holder.add_start_weapon(start_weapon)
-	hud_root.bind(player, run_state, weapon_holder)
+	hud_root.bind(player, run_state, weapon_holder, enemy_manager)
 	level_up_pool.catalog = WEAPON_CATALOG
 	level_up_pool.hero_pool = HERO_UPGRADES
 	level_up_pool.weapons = weapon_holder
