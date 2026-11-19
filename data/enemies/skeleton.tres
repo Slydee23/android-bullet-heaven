@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_script")
 id = &"skeleton"
+name_key = "ENEMY_SKELETON"
 walk_texture = ExtResource("2_walk")
 frame_width = 32
 animation_fps = 5.0

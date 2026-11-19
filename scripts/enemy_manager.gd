@@ -7,6 +7,10 @@ extends Node2D
 ## - Spatial Grid: Jeder Gegner prüft nur Gegner in den Nachbarzellen statt alle anderen.
 
 const MAX_ENEMIES := 2000
+## Posen: welcher Streifen gezeichnet wird (Laufen, Angriff, Sonder-Pose). Fähigkeiten setzen sie mit set_pose().
+const POSE_WALK := 0
+const POSE_ATTACK := 1
+const POSE_SPECIAL := 2
 ## Kantenlänge einer Rasterzelle in Welt-Pixeln. Muss mindestens der größte Gegnerdurchmesser sein (die Abstandsprüfung
 ## sieht nur die 3×3 Nachbarzellen), Suchen rechnen CELL_SIZE / 2 als Gegnerradius auf. Kleiner = weniger Kandidaten pro
 ## Prüfung: 24 statt 32 hat die Gegnerbewegung bei 800 Gegnern deutlich beschleunigt (M5b).
@@ -60,7 +64,8 @@ const BAR_GAP := 3.0
 ## dot = Schaden über Zeit (Brennen, Gift): kleine Zahl, kein Aufleuchten, keine Treffer-Funken.
 signal enemy_damaged(position: Vector2, amount: float, element: StringName, crit: bool, kill: bool, dot: bool)
 ## Ein Gegner ist gestorben (position = Füße). Anschluss für Effekte (M4b) und XP-Kristalle (M6).
-signal enemy_killed(position: Vector2, data: EnemyData)
+## Ein Gegner ist gestorben. flipped = er schaute nach links (für die gespiegelte Tod-Animation).
+signal enemy_killed(position: Vector2, data: EnemyData, flipped: bool)
 
 ## Ziel, auf das alle Gegner zulaufen und das sie angreifen (der Held)
 var target: Player
@@ -70,6 +75,13 @@ var spawn_types: Array[EnemyData] = []
 var count := 0
 ## Faktor auf die Lebenspunkte aller (sterblichen) Gegner, im Debug-Menü einstellbar
 var hp_multiplier := 1.0
+## Faktor auf den Schaden, den Gegner dem Helden zufügen (später aus den Wellen-Daten)
+var damage_multiplier := 1.0
+## Zustand der Gegner-Fähigkeiten (EnemyAbility), je Gegner: Zustand, Zeit im Zustand, Abklingzeit, gemerkte Richtung/Ziel
+var ability_state := PackedByteArray()
+var ability_time := PackedFloat32Array()
+var ability_timer := PackedFloat32Array()
+var ability_vec := PackedVector2Array()
 ## Status-Dateien, die schon einmal angewendet wurden: ihr Platz hier ist ihr Bit in der Status-Maske
 var status_types: Array[StatusEffectData] = []
 
@@ -86,6 +98,9 @@ var _flash := PackedFloat32Array()
 ## Stabile ID jedes Gegners: Beim Tod rückt der letzte Gegner nach und ändert seinen Platz, seine ID bleibt.
 ## Wer sich einen Gegner über mehrere Frames merken muss (Geschosse, Salven, Status-Effekte), merkt sich die ID.
 var _ids := PackedInt32Array()
+## Pose je Gegner (POSE_*) und fester Frame darin (-1 = nach Zeit animiert)
+var _pose_kind := PackedByteArray()
+var _pose_frame := PackedInt32Array()
 var _next_id := 1
 ## Sekunden seit dem letzten Treffer (Heilung der Übungspuppe)
 var _since_hit := PackedFloat32Array()
@@ -125,6 +140,12 @@ func _ready() -> void:
 	_attack_timers.resize(MAX_ENEMIES)
 	_flash.resize(MAX_ENEMIES)
 	_ids.resize(MAX_ENEMIES)
+	_pose_kind.resize(MAX_ENEMIES)
+	_pose_frame.resize(MAX_ENEMIES)
+	ability_state.resize(MAX_ENEMIES)
+	ability_time.resize(MAX_ENEMIES)
+	ability_timer.resize(MAX_ENEMIES)
+	ability_vec.resize(MAX_ENEMIES)
 	_since_hit.resize(MAX_ENEMIES)
 	_status_mask.resize(MAX_ENEMIES)
 	_st_left.resize(MAX_ENEMIES * MAX_STATUS)
@@ -168,6 +189,12 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 	_flash[count] = 0.0
 	_ids[count] = _next_id
 	_next_id += 1
+	_pose_kind[count] = POSE_WALK
+	_pose_frame[count] = -1
+	ability_state[count] = 0
+	ability_time[count] = 0.0
+	ability_timer[count] = 0.0
+	ability_vec[count] = Vector2.ZERO
 	count += 1
 
 
@@ -185,6 +212,12 @@ func kill(i: int) -> void:
 	_attack_timers[i] = _attack_timers[count]
 	_flash[i] = _flash[count]
 	_ids[i] = _ids[count]
+	_pose_kind[i] = _pose_kind[count]
+	_pose_frame[i] = _pose_frame[count]
+	ability_state[i] = ability_state[count]
+	ability_time[i] = ability_time[count]
+	ability_timer[i] = ability_timer[count]
+	ability_vec[i] = ability_vec[count]
 	_since_hit[i] = _since_hit[count]
 	_status_mask[i] = _status_mask[count]
 	for s in MAX_STATUS:
@@ -615,7 +648,10 @@ func find_all_in_radius(pos: Vector2, radius: float, out: PackedInt32Array) -> i
 func _remove_dead() -> void:
 	for i in range(count - 1, -1, -1):
 		if _hp[i] <= 0.0:
-			enemy_killed.emit(_positions[i], _type_list[_types[i]])
+			var data := _type_list[_types[i]]
+			if data.ability:
+				data.ability.on_death(self, i, data)
+			enemy_killed.emit(_positions[i], data, _flipped[i] == 1)
 			kill(i)
 
 
@@ -676,6 +712,9 @@ func _move(delta: float) -> void:
 			_hp[i] = data.max_hp
 		if data.anchored:
 			# Übungspuppe: bleibt stehen, wird nicht geschoben, greift nicht an
+			continue
+		# Besonderes Verhalten (Sprung, Zauber, Platzen …) übernimmt Bewegung und Pose, solange es aktiv ist
+		if data.ability and data.ability.update(self, i, data, target, delta):
 			continue
 		var pos := _positions[i]
 		var direction := pos.direction_to(target_pos)
@@ -768,7 +807,7 @@ func _draw_health_bar(i: int) -> void:
 	var max_hp := get_max_hp(i)
 	if _hp[i] <= 0.0 or _hp[i] >= max_hp:
 		return
-	var top := _positions[i] + Vector2(-BAR_FRAME.get_width() * 0.5, 1.0 - data.walk_texture.get_height() * data.draw_scale - BAR_GAP - BAR_FRAME.get_height())
+	var top := _positions[i] + Vector2(-BAR_FRAME.get_width() * 0.5, 1.0 - (data.walk_texture.get_height() - data.foot_offset) * data.draw_scale - BAR_GAP - BAR_FRAME.get_height())
 	draw_texture(BAR_FRAME, top.round())
 	var width := maxi(1, roundi(BAR_FILL_WIDTH * _hp[i] / max_hp))
 	draw_texture_rect_region(BAR_FILL, Rect2(top.round() + Vector2.ONE, Vector2(width, BAR_FILL.get_height())), Rect2(0, 0, width, BAR_FILL.get_height()))
@@ -776,16 +815,18 @@ func _draw_health_bar(i: int) -> void:
 
 func _draw_enemy(i: int) -> void:
 	var data := _type_list[_types[i]]
-	var texture := data.walk_texture
+	var texture := _pose_texture(data, _pose_kind[i])
 	var frame_size := Vector2(data.frame_width, texture.get_height())
 	var frames := maxi(1, int(texture.get_width() / float(data.frame_width)))
-	var frame := int((_time + _anim_offsets[i]) * data.animation_fps) % frames
+	var frame := _pose_frame[i]
+	if frame < 0 or frame >= frames:
+		frame = int((_time + _anim_offsets[i]) * data.animation_fps) % frames
 	var source := Rect2(Vector2(frame * data.frame_width, 0), frame_size)
 	var flip_scale := Vector2(-1.0 if _flipped[i] else 1.0, 1.0) * data.draw_scale
 	draw_set_transform(_positions[i], 0.0, flip_scale)
 	# Die Position sind die Füße: Das Bild steht unten bündig darauf
-	var frame_rect := Rect2(Vector2(-frame_size.x * 0.5, 1.0 - frame_size.y), frame_size)
-	var modulate_color := Color.WHITE
+	var frame_rect := Rect2(Vector2(-frame_size.x * 0.5, 1.0 - frame_size.y + data.foot_offset), frame_size)
+	var modulate_color := data.tint
 	if _flash[i] > 0.0:
 		modulate_color = HIT_FLASH_COLOR
 	elif _status_mask[i] != 0:
@@ -793,6 +834,45 @@ func _draw_enemy(i: int) -> void:
 	draw_texture_rect_region(texture, frame_rect, source, modulate_color)
 	if _status_mask[i] != 0:
 		_draw_status_particles(i)
+
+
+## Streifen einer Pose (fehlt er, wird gelaufen)
+func _pose_texture(data: EnemyData, kind: int) -> Texture2D:
+	if kind == POSE_ATTACK and data.attack_texture:
+		return data.attack_texture
+	if kind == POSE_SPECIAL and data.special_texture:
+		return data.special_texture
+	return data.walk_texture
+
+
+## --- Hilfen für Gegner-Fähigkeiten (EnemyAbility) ---
+
+## Wechselt den Fähigkeits-Zustand und setzt die Zeit darin zurück
+func set_ability_state(i: int, state: int) -> void:
+	ability_state[i] = state
+	ability_time[i] = 0.0
+
+
+## Pose und fester Frame (-1 = nach Zeit animiert)
+func set_pose(i: int, kind: int, frame: int) -> void:
+	_pose_kind[i] = kind
+	_pose_frame[i] = frame
+
+
+## Anzahl Frames einer Pose dieses Gegnertyps
+func pose_frame_count(data: EnemyData, kind: int) -> int:
+	return maxi(1, int(_pose_texture(data, kind).get_width() / float(data.frame_width)))
+
+
+## Blickrichtung nach direction (nur links/rechts zählt)
+func face(i: int, direction: Vector2) -> void:
+	if direction.x != 0.0:
+		_flipped[i] = 1 if direction.x < 0.0 else 0
+
+
+## Verschiebt Gegner i (z. B. im Sprung), innerhalb der Arena
+func move_enemy(i: int, offset: Vector2) -> void:
+	_positions[i] = (_positions[i] + offset).clamp(_bounds.position, _bounds.end)
 
 
 ## Tönung in der Elementfarbe. Hat ein Gegner mehrere Status, wechselt die Farbe reihum (alle STATUS_CYCLE Sekunden).

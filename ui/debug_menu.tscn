@@ -549,6 +549,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "DEBUG_REMOVE_ENEMIES"
 
+[node name="TypeSpawnButtons" type="HFlowContainer" parent="Panel/Content/Scroll/Pages/EnemiesPage"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 8
+
 [node name="DummyButton" type="Button" parent="Panel/Content/Scroll/Pages/EnemiesPage"]
 unique_name_in_owner = true
 layout_mode = 2

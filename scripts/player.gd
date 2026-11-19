@@ -70,6 +70,8 @@ var iframe_rule: IFrameRule
 var last_iframe_duration := 0.0
 ## Debug „Unverwundbar“: Treffer von Gegnern zählen nicht (für lange Stresstests)
 var debug_invincible := false
+## Aktuelle Laufbewegung (Welt-Pixel pro Sekunde), z. B. damit Gegner vorausschauend zielen können
+var velocity := Vector2.ZERO
 
 var _current_texture: Texture2D
 var _animation_time := 0.0
@@ -190,7 +192,8 @@ func _process(delta: float) -> void:
 		return
 	_update_hit_feedback(delta)
 	var direction := _read_input()
-	position += direction * speed * delta
+	velocity = direction * speed
+	position += velocity * delta
 	if bounds.has_area():
 		position = position.clamp(bounds.position, bounds.end)
 	if direction.x != 0.0:

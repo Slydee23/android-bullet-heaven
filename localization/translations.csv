@@ -195,3 +195,9 @@ STAT_PICKUP_RADIUS,Sammelradius
 STAT_ALL_DAMAGE,Schaden (alle)
 STAT_ALL_COOLDOWN,Abklingzeit (alle)
 STAT_ALL_AMOUNT,Projektile (alle)
+DEBUG_SPAWN_TYPE,+%d %s
+ENEMY_SKELETON,Skelett
+ENEMY_GHOUL,Ghul
+ENEMY_CULTIST,Feuer-Kultist
+ENEMY_PLAGUEBRINGER,Pestbringer
+ENEMY_BONE_KNIGHT,Knochenritter

@@ -256,8 +256,12 @@ func _on_enemy_damaged(pos: Vector2, amount: float, element: StringName, crit: b
 
 
 ## Tod-Staub an den Füßen des gestorbenen Gegners, dazu sein Seelensplitter
-func _on_enemy_killed(pos: Vector2, data: EnemyData) -> void:
-	effect_manager.play(DEATH_EFFECT, pos)
+func _on_enemy_killed(pos: Vector2, data: EnemyData, flipped: bool) -> void:
+	# Eigene Tod-Animation (gespiegelt wie der Gegner) oder der allgemeine Tod-Staub
+	if data.death_effect:
+		effect_manager.play(data.death_effect, pos, 0.0, Vector2(-1.0 if flipped else 1.0, 1.0))
+	else:
+		effect_manager.play(DEATH_EFFECT, pos)
 	pickup_manager.spawn(pos, data.xp_value)
 
 

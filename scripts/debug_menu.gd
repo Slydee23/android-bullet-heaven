@@ -19,6 +19,11 @@ const BOMBS := preload("res://data/weapons/bomb_bag.tres")
 const WHIP := preload("res://data/weapons/thorn_whip.tres")
 ## So viele Splitter verstreut „Splitter verstreuen“
 const SCATTER_COUNT := 300
+## Gegnertypen mit eigenem Knopf „+10 …“ im Reiter Gegner
+const SPAWN_TYPES: Array[EnemyData] = [
+	preload("res://data/enemies/ghoul.tres"),
+]
+const TYPE_SPAWN_COUNT := 10
 ## Reihenfolge für „Startwaffe wechseln“
 const START_WEAPONS: Array[WeaponData] = [
 	preload("res://data/weapons/arcane_wand.tres"), SWORD, TORCH, TRIDENT, BOMBS, WHIP,
@@ -66,6 +71,7 @@ var _shown_iframes := -1.0
 @onready var add_100_button: Button = %Add100Button
 @onready var remove_enemies_button: Button = %RemoveEnemiesButton
 @onready var dummy_button: Button = %DummyButton
+@onready var type_spawn_buttons: HFlowContainer = %TypeSpawnButtons
 @onready var burn_button: Button = %BurnButton
 @onready var poison_button: Button = %PoisonButton
 @onready var shock_button: Button = %ShockButton
@@ -193,6 +199,12 @@ func _ready() -> void:
 	add_100_button.pressed.connect(_on_add_100_pressed)
 	remove_enemies_button.pressed.connect(_on_remove_enemies_pressed)
 	dummy_button.pressed.connect(_on_dummy_pressed)
+	for data in SPAWN_TYPES:
+		var button := Button.new()
+		button.text = tr("DEBUG_SPAWN_TYPE") % [TYPE_SPAWN_COUNT, tr(data.name_key)]
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.pressed.connect(_on_spawn_type_pressed.bind(data))
+		type_spawn_buttons.add_child(button)
 	burn_button.pressed.connect(_give_status.bind(BURNING))
 	poison_button.pressed.connect(_give_status.bind(POISONED))
 	shock_button.pressed.connect(_give_status.bind(SHOCKED))
@@ -282,6 +294,12 @@ func _on_hp_factor_pressed(factor: float) -> void:
 func _on_add_100_pressed() -> void:
 	if enemy_manager and player:
 		enemy_manager.spawn_ring(SKELETON, player.global_position, BURST_COUNT, BURST_MIN_DISTANCE, BURST_MAX_DISTANCE)
+
+
+## Stellt TYPE_SPAWN_COUNT Gegner eines Typs im Ring um den Helden auf (zum Ansehen neuer Gegner)
+func _on_spawn_type_pressed(data: EnemyData) -> void:
+	if enemy_manager and player:
+		enemy_manager.spawn_ring(data, player.global_position, TYPE_SPAWN_COUNT, BURST_MIN_DISTANCE, BURST_MAX_DISTANCE)
 
 
 func _on_remove_enemies_pressed() -> void:

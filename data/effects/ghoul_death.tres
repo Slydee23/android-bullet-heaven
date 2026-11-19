@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EffectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/effect_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/ghoul_death.png" id="2_texture"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"ghoul_death"
+texture = ExtResource("2_texture")
+frame_width = 40
+fps = 12.0
+anchor = 2
+pivot = Vector2(20, 31)
