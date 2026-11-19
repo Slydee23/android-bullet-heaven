@@ -77,6 +77,9 @@ var count := 0
 var hp_multiplier := 1.0
 ## Faktor auf den Schaden, den Gegner dem Helden zufügen (später aus den Wellen-Daten)
 var damage_multiplier := 1.0
+## Für Gegner-Fähigkeiten (setzt die Run-Szene): Geschosse der Gegner und Effekte (z. B. Giftwolke beim Platzen)
+var hostile_projectiles: HostileProjectileManager
+var effect_manager: EffectManager
 ## Zustand der Gegner-Fähigkeiten (EnemyAbility), je Gegner: Zustand, Zeit im Zustand, Abklingzeit, gemerkte Richtung/Ziel
 var ability_state := PackedByteArray()
 var ability_time := PackedFloat32Array()
@@ -101,6 +104,9 @@ var _ids := PackedInt32Array()
 ## Pose je Gegner (POSE_*) und fester Frame darin (-1 = nach Zeit animiert)
 var _pose_kind := PackedByteArray()
 var _pose_frame := PackedInt32Array()
+## Zusätzliche Größe und Färbung einer Pose (z. B. Aufblähen vor dem Platzen)
+var _pose_scale := PackedFloat32Array()
+var _pose_tint := PackedColorArray()
 var _next_id := 1
 ## Sekunden seit dem letzten Treffer (Heilung der Übungspuppe)
 var _since_hit := PackedFloat32Array()
@@ -142,6 +148,8 @@ func _ready() -> void:
 	_ids.resize(MAX_ENEMIES)
 	_pose_kind.resize(MAX_ENEMIES)
 	_pose_frame.resize(MAX_ENEMIES)
+	_pose_scale.resize(MAX_ENEMIES)
+	_pose_tint.resize(MAX_ENEMIES)
 	ability_state.resize(MAX_ENEMIES)
 	ability_time.resize(MAX_ENEMIES)
 	ability_timer.resize(MAX_ENEMIES)
@@ -191,6 +199,8 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 	_next_id += 1
 	_pose_kind[count] = POSE_WALK
 	_pose_frame[count] = -1
+	_pose_scale[count] = 1.0
+	_pose_tint[count] = Color.WHITE
 	ability_state[count] = 0
 	ability_time[count] = 0.0
 	ability_timer[count] = 0.0
@@ -214,6 +224,8 @@ func kill(i: int) -> void:
 	_ids[i] = _ids[count]
 	_pose_kind[i] = _pose_kind[count]
 	_pose_frame[i] = _pose_frame[count]
+	_pose_scale[i] = _pose_scale[count]
+	_pose_tint[i] = _pose_tint[count]
 	ability_state[i] = ability_state[count]
 	ability_time[i] = ability_time[count]
 	ability_timer[i] = ability_timer[count]
@@ -822,11 +834,11 @@ func _draw_enemy(i: int) -> void:
 	if frame < 0 or frame >= frames:
 		frame = int((_time + _anim_offsets[i]) * data.animation_fps) % frames
 	var source := Rect2(Vector2(frame * data.frame_width, 0), frame_size)
-	var flip_scale := Vector2(-1.0 if _flipped[i] else 1.0, 1.0) * data.draw_scale
+	var flip_scale := Vector2(-1.0 if _flipped[i] else 1.0, 1.0) * data.draw_scale * _pose_scale[i]
 	draw_set_transform(_positions[i], 0.0, flip_scale)
 	# Die Position sind die Füße: Das Bild steht unten bündig darauf
 	var frame_rect := Rect2(Vector2(-frame_size.x * 0.5, 1.0 - frame_size.y + data.foot_offset), frame_size)
-	var modulate_color := data.tint
+	var modulate_color := data.tint * _pose_tint[i]
 	if _flash[i] > 0.0:
 		modulate_color = HIT_FLASH_COLOR
 	elif _status_mask[i] != 0:
@@ -851,6 +863,17 @@ func _pose_texture(data: EnemyData, kind: int) -> Texture2D:
 func set_ability_state(i: int, state: int) -> void:
 	ability_state[i] = state
 	ability_time[i] = 0.0
+
+
+## Zusätzliche Größe und Färbung der Pose (1 und Weiß = normal)
+func set_pose_fx(i: int, scale: float, tint: Color) -> void:
+	_pose_scale[i] = scale
+	_pose_tint[i] = tint
+
+
+## Gegner stirbt zu Beginn des nächsten Frames (wie durch Schaden, aber ohne Schadenszahl), z. B. beim Platzen
+func kill_now(i: int) -> void:
+	_hp[i] = 0.0
 
 
 ## Pose und fester Frame (-1 = nach Zeit animiert)

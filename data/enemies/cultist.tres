@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/cultist_walk.png" id="2_walk"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/cultist_cast.png" id="3_cast"]
+[ext_resource type="Resource" path="res://data/effects/cultist_death.tres" id="4_death"]
+[ext_resource type="Script" path="res://scripts/enemy_abilities/ranged_ability.gd" id="5_ranged"]
+[ext_resource type="Texture2D" path="res://assets/sprites/effects/cultist_fireball.png" id="6_shot"]
+[ext_resource type="Resource" path="res://data/effects/fireball_impact.tres" id="7_impact"]
+
+[sub_resource type="Resource" id="Resource_ranged"]
+script = ExtResource("5_ranged")
+shot_texture = ExtResource("6_shot")
+impact_effect = ExtResource("7_impact")
+
+[resource]
+script = ExtResource("1_script")
+id = &"cultist"
+name_key = "ENEMY_CULTIST"
+walk_texture = ExtResource("2_walk")
+attack_texture = ExtResource("3_cast")
+death_effect = ExtResource("4_death")
+ability = SubResource("Resource_ranged")
+frame_width = 44
+animation_fps = 8.0
+speed = 45.0
+max_hp = 70.0
+contact_damage = 3.0
+radius = 10.0
+xp_value = 2

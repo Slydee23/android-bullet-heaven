@@ -90,6 +90,7 @@ var _frame_index := 0
 @onready var fps_label: Label = $HUD/HudRoot/FpsLabel
 @onready var hud_root: HudRoot = $HUD/HudRoot
 @onready var pickup_manager: PickupManager = $PickupManager
+@onready var hostile_projectiles: HostileProjectileManager = $HostileProjectiles
 
 
 func _ready() -> void:
@@ -114,6 +115,11 @@ func _ready() -> void:
 	enemy_manager.enemy_damaged.connect(_on_enemy_damaged)
 	enemy_manager.enemy_killed.connect(_on_enemy_killed)
 	pickup_manager.target = player
+	hostile_projectiles.target = player
+	hostile_projectiles.effect_manager = effect_manager
+	hostile_projectiles.bounds = player.bounds
+	enemy_manager.hostile_projectiles = hostile_projectiles
+	enemy_manager.effect_manager = effect_manager
 	pickup_manager.collected.connect(run_state.add_xp)
 
 	projectile_manager.enemy_manager = enemy_manager
@@ -239,6 +245,7 @@ func _on_player_died() -> void:
 	weapon_holder.process_mode = Node.PROCESS_MODE_DISABLED
 	aura_drawer.process_mode = Node.PROCESS_MODE_DISABLED
 	strike_manager.process_mode = Node.PROCESS_MODE_DISABLED
+	hostile_projectiles.process_mode = Node.PROCESS_MODE_DISABLED
 	joystick.visible = false
 	# Das Pausemenü kann hier nicht offen sein: Bei Pause greift niemand an.
 	# Das Debug-Menü (Spiel läuft weiter) würde dagegen nur stören.

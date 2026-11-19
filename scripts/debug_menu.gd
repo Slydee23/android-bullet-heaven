@@ -22,6 +22,8 @@ const SCATTER_COUNT := 300
 ## Gegnertypen mit eigenem Knopf „+10 …“ im Reiter Gegner
 const SPAWN_TYPES: Array[EnemyData] = [
 	preload("res://data/enemies/ghoul.tres"),
+	preload("res://data/enemies/cultist.tres"),
+	preload("res://data/enemies/plaguebringer.tres"),
 ]
 const TYPE_SPAWN_COUNT := 10
 ## Reihenfolge für „Startwaffe wechseln“

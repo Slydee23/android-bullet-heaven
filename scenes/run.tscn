@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://scripts/strike_manager.gd" id="13_strikes"]
 [ext_resource type="Script" path="res://scripts/hud/hud_root.gd" id="14_hud_root"]
 [ext_resource type="Script" path="res://scripts/pickup_manager.gd" id="18_pickups"]
+[ext_resource type="Script" path="res://scripts/hostile_projectile_manager.gd" id="19_hostile"]
 [ext_resource type="PackedScene" path="res://ui/hud/xp_display.tscn" id="15_xp"]
 [ext_resource type="PackedScene" path="res://ui/hud/health_display.tscn" id="16_health"]
 [ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="17_slots"]
@@ -54,6 +55,9 @@ script = ExtResource("5_enemies")
 texture_filter = 2
 material = ExtResource("7_sharp")
 script = ExtResource("8_projectiles")
+
+[node name="HostileProjectiles" type="Node2D" parent="."]
+script = ExtResource("19_hostile")
 
 [node name="EffectManager" type="Node2D" parent="."]
 texture_filter = 2
