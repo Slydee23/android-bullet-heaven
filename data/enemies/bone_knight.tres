@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/bone_knight_walk.png" id="2_walk"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/bone_knight_attack.png" id="3_attack"]
 [ext_resource type="Resource" path="res://data/effects/bone_knight_death.tres" id="4_death"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bone_knight_charge.png" id="6_charge"]
 [ext_resource type="Script" path="res://scripts/enemy_abilities/boss_knight_ability.gd" id="5_boss"]
 
 [sub_resource type="Resource" id="Resource_boss"]
@@ -15,6 +16,7 @@ id = &"bone_knight"
 name_key = "ENEMY_BONE_KNIGHT"
 walk_texture = ExtResource("2_walk")
 attack_texture = ExtResource("3_attack")
+special_texture = ExtResource("6_charge")
 death_effect = ExtResource("4_death")
 foot_offset = 9.0
 ability = SubResource("Resource_boss")

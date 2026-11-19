@@ -83,13 +83,17 @@ func update(m: EnemyManager, i: int, data: EnemyData, target: Player, delta: flo
 			return true
 		STATE_CHARGE_WINDUP:
 			m.ability_time[i] += delta
-			m.set_pose(i, EnemyManager.POSE_ATTACK, 0)
+			# Anlauf: Er beugt sich Bild für Bild nach vorn (die ersten Frames der Charge-Animation)
+			var lean := clampf(m.ability_time[i] / charge_windup, 0.0, 1.0)
+			m.set_pose(i, EnemyManager.POSE_SPECIAL, mini(int(lean * 3.0), 2))
 			if m.ability_time[i] >= charge_windup:
 				m.set_ability_state(i, STATE_CHARGE)
 			return true
 		STATE_CHARGE:
 			m.ability_time[i] += delta
-			m.set_pose(i, EnemyManager.POSE_WALK, int(m.ability_time[i] * 20.0) % m.pose_frame_count(data, EnemyManager.POSE_WALK))
+			# Charge-Animation im Kreis (ab Frame 3: volle Schritte, Umhang weht)
+			var charge_frames := m.pose_frame_count(data, EnemyManager.POSE_SPECIAL)
+			m.set_pose(i, EnemyManager.POSE_SPECIAL, 3 + int(m.ability_time[i] * 14.0) % maxi(charge_frames - 3, 1))
 			m.move_enemy(i, m.ability_vec[i] * charge_distance / charge_time * delta)
 			var reach := data.radius + target.body_radius
 			if m.get_enemy_position(i).distance_squared_to(hero) <= reach * reach:
@@ -100,6 +104,7 @@ func update(m: EnemyManager, i: int, data: EnemyData, target: Player, delta: flo
 		STATE_RECOVER:
 			m.ability_time[i] += delta
 			m.set_pose(i, EnemyManager.POSE_WALK, 0)
+			m.set_pose_fx(i, 1.0, Color.WHITE)
 			if m.ability_time[i] >= charge_recover:
 				m.ability_timer[i] = charge_cooldown
 				m.set_ability_state(i, STATE_CHASE)
