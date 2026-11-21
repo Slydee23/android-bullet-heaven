@@ -43,3 +43,5 @@ extends Resource
 @export var anchored := false
 ## Erfahrung, die der Gegner beim Tod als Seelensplitter fallen lässt (0 = keinen)
 @export var xp_value := 1
+## Seelen, die ein Kill bringt (Währung für den Rastplatz-Shop). Zählen nur, fallen nicht als Gegenstand.
+@export var soul_value := 1

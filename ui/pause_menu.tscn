@@ -113,6 +113,7 @@ theme_override_font_sizes/font_size = 48
 text = "PAUSE_COLUMN_RUN"
 
 [node name="Placeholder" type="Label" parent="Margin/Layout/Columns/RunColumn/Content"]
+unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.5)
 layout_mode = 2
 text = "PAUSE_COMING_SOON"

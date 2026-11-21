@@ -7,6 +7,9 @@ signal stats_changed
 
 ## Höchstes Waffenlevel (1 + Anzahl gewählter Upgrades), danach kommt später die Entwicklung
 const MAX_LEVEL := 10
+## Stats, deren Obergrenze (stat_limits) feste Helden-Boni überschreiten dürfen: „+1 Projektil“ aus dem Shop gibt
+## auch einer Waffe am Maximum noch ein Projektil mehr
+const LIMIT_BREAK_STATS: Array[StringName] = [&"amount"]
 
 var data: WeaponData
 var level := 1
@@ -58,6 +61,7 @@ func set_global_stats(stats: StatBlock) -> void:
 
 ## Fertiger Wert eines Stats: (Grundwert + Σ FLAT) × (1 + Σ PERCENT) × Π MULT aus eigenen und globalen Boni,
 ## danach begrenzt durch data.stat_limits und die Angriffsart (WeaponBehavior.limit_stat). Ergebnis bleibt bis zur nächsten Änderung gespeichert.
+## Ausnahme LIMIT_BREAK_STATS: feste globale Boni (Helden-Boni aus dem Shop) dürfen die Obergrenze um ihren Betrag überschreiten.
 ## Globale Boni zählen nur für Stats, die die Angriffsart versteht (z. B. kein „+1 Projektil“ für die Aura), und nur bei passenden Tags.
 func get_stat(stat: StringName) -> float:
 	if _cache.has(stat):
@@ -89,12 +93,18 @@ func _compute(stat: StringName, extra: StatModifier) -> float:
 	modifiers.accumulate(stat, sums, data.tags)
 	if extra and extra.stat == stat:
 		StatBlock.add_to_sums(extra, sums)
+	var global_flat := 0.0
 	if global_stats and data.behavior and data.behavior.supports_stat(stat):
+		var flat_before := sums[0]
 		global_stats.accumulate(stat, sums, data.tags)
+		global_flat = sums[0] - flat_before
 	var value := StatBlock.apply(data.base_stats.get(stat, 0.0), sums)
 	var limits: Variant = data.stat_limits.get(stat)
 	if limits is Vector2:
-		value = clampf(value, limits.x, limits.y)
+		var upper: float = limits.y
+		if LIMIT_BREAK_STATS.has(stat):
+			upper += maxf(global_flat, 0.0)
+		value = clampf(value, limits.x, upper)
 	if data.behavior:
 		value = data.behavior.limit_stat(self, stat, value)
 	return value

@@ -202,3 +202,33 @@ ENEMY_CULTIST,Feuer-Kultist
 ENEMY_PLAGUEBRINGER,Pestbringer
 ENEMY_BONE_KNIGHT,Knochenritter
 DEBUG_SPAWN_BOSS,Boss rufen: %s
+HUD_WAVE,Welle %d / %d
+HUD_KILLS,%d Kills
+WAVE_EVENT_RING,Sie kreisen dich ein!
+WAVE_EVENT_RUSH,Ein Rudel stürmt heran!
+WAVE_BOSS,Der Knochenritter erscheint!
+REST_TITLE,Welle %d überstanden
+REST_KILLS,Gegner besiegt
+REST_XP,Erfahrung gesammelt
+REST_TIME,Gesamtzeit
+REST_NEXT,Nächste Welle: %d s
+REST_NEXT_BOSS,Nächste Welle: Der Knochenritter! (%d s)
+REST_CONTINUE,Weiter
+PAUSE_RUN_WAVE,Welle
+PAUSE_RUN_TIME,Kampfzeit
+PAUSE_RUN_KILLS,Besiegte Gegner
+VICTORY_TITLE,Sieg!
+DEBUG_WAVE_END,Welle beenden
+DEBUG_WAVE_NEXT,Nächste Welle
+DEBUG_WAVE_BOSS,Zur Boss-Welle
+DEBUG_WAVE_FREEZE,Wellen-Timer anhalten
+DEBUG_WAVE_FROZEN,Wellen-Timer läuft nicht (antippen)
+REST_SUMMARY,Gegner besiegt %d · Erfahrung %d · Zeit %s
+REST_SOULS,Seelen: %d
+SHOP_REROLL,Neu würfeln (%d Seelen)
+SHOP_BOUGHT,Gekauft
+SHOP_EMPTY,Nichts mehr zu kaufen.
+PAUSE_RUN_SOULS,Seelen
+DEBUG_SOULS,+100 Seelen
+LEVEL_UP_REROLL,Neu würfeln (%d)
+LEVEL_UP_SKIP,Überspringen

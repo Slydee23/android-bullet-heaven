@@ -18,14 +18,15 @@ script = ExtResource("90_upgrade")
 id = &"wand_damage"
 stat = &"damage"
 kind = 0
-value = 10.0
+value = 15.0
+weight = 1.2
 
 [sub_resource type="Resource" id="Upgrade_wand_cooldown"]
 script = ExtResource("90_upgrade")
 id = &"wand_cooldown"
 stat = &"cooldown"
 kind = 1
-value = -0.08
+value = -0.1
 
 [sub_resource type="Resource" id="Upgrade_wand_amount"]
 script = ExtResource("90_upgrade")
@@ -35,7 +36,7 @@ kind = 0
 value = 1.0
 rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
 min_rarity = 1
-weight = 0.8
+weight = 0.6
 
 [sub_resource type="Resource" id="Upgrade_wand_pierce"]
 script = ExtResource("90_upgrade")
@@ -84,6 +85,7 @@ base_stats = {
 &"range": 220.0
 }
 stat_limits = {
+&"amount": Vector2(1, 5),
 &"cooldown": Vector2(0.25, 0.8)
 }
 behavior = SubResource("Resource_behavior")

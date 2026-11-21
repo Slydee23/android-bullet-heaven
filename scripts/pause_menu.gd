@@ -22,6 +22,7 @@ var run_state: RunState
 var _abandon_armed := false
 
 @onready var hp_label: Label = %HpLabel
+@onready var run_placeholder: Label = %Placeholder
 @onready var weapons_column: PanelContainer = %WeaponsColumn
 @onready var weapon_list: VBoxContainer = %WeaponList
 @onready var resume_button: Button = %ResumeButton
@@ -33,6 +34,7 @@ func _ready() -> void:
 	theme = PixelUI.make_theme()
 	get_tree().paused = true
 	_build_character()
+	_build_run_info()
 	_build_weapons()
 	resume_button.pressed.connect(close)
 	options_button.pressed.connect(_on_options_pressed)
@@ -101,6 +103,23 @@ func _build_character() -> void:
 	else:
 		boons.free()
 		content.add_child(_label(tr("PAUSE_NO_BOONS"), PixelUI.TEXT_COLOR))
+
+
+## Spalte „Ausrüstung & Run“: Welle, Kampfzeit und besiegte Gegner (Rüstung, Artefakte und Ausbeute kommen später)
+func _build_run_info() -> void:
+	if not run_state:
+		return
+	var content := run_placeholder.get_parent()
+	run_placeholder.queue_free()
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 24)
+	grid.add_theme_constant_override("v_separation", 4)
+	content.add_child(grid)
+	_stat_row(grid, tr("PAUSE_RUN_WAVE"), "%d / %d" % [run_state.wave, run_state.wave_total])
+	_stat_row(grid, tr("PAUSE_RUN_TIME"), RestMenu._format_time(run_state.time))
+	_stat_row(grid, tr("PAUSE_RUN_KILLS"), str(run_state.kills))
+	_stat_row(grid, tr("PAUSE_RUN_SOULS"), str(run_state.souls))
 
 
 ## Summen der globalen Boni des Helden für einen Stat: [Σ FLAT, Σ PERCENT, Π MULT]

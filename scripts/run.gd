@@ -24,6 +24,7 @@ const FOREST_EDGE_TEXTURE := preload("res://assets/tiles/forest_edge.png")
 const PAUSE_MENU := preload("res://ui/pause_menu.tscn")
 const DEBUG_MENU := preload("res://ui/debug_menu.tscn")
 const GAME_OVER_MENU := preload("res://ui/game_over_menu.tscn")
+const WAVE_SET := preload("res://data/waves/forest_run.tres")
 const SKELETON := preload("res://data/enemies/skeleton.tres")
 const HIT_EFFECT := preload("res://data/effects/hit.tres")
 const DEATH_EFFECT := preload("res://data/effects/death.tres")
@@ -63,6 +64,9 @@ var run_state := RunState.new(XP_CURVE)
 ## Würfelt und verteilt die Level-Up-Karten
 var level_up_pool := LevelUpPool.new()
 var _level_up_menu: LevelUpMenu
+## Der Rastplatz-Bildschirm und ob er schon geöffnet werden soll (er wartet, bis offene Level-Up-Karten gewählt sind)
+var _rest_menu: RestMenu
+var _rest_pending := false
 ## Stufenaufstiege, deren Fenster noch kommt (mehrere auf einmal erscheinen nacheinander)
 var _pending_level_ups := 0
 var _pause_menu: Control
@@ -96,6 +100,7 @@ var _frame_index := 0
 @onready var fps_label: Label = $HUD/HudRoot/FpsLabel
 @onready var hud_root: HudRoot = $HUD/HudRoot
 @onready var pickup_manager: PickupManager = $PickupManager
+@onready var wave_manager: WaveManager = $WaveManager
 @onready var hostile_projectiles: HostileProjectileManager = $HostileProjectiles
 
 
@@ -117,7 +122,8 @@ func _ready() -> void:
 
 	enemy_manager.set_bounds(player.bounds)
 	enemy_manager.target = player
-	enemy_manager.spawn_types = [SKELETON]
+	# Gegner erscheinen über das Wellen-System (WaveManager), nicht mehr über den einfachen Spawn des EnemyManagers
+	enemy_manager.vanish_effect = DEATH_EFFECT
 	enemy_manager.enemy_damaged.connect(_on_enemy_damaged)
 	enemy_manager.enemy_killed.connect(_on_enemy_killed)
 	pickup_manager.target = player
@@ -139,9 +145,19 @@ func _ready() -> void:
 	weapon_holder.setup(player, enemy_manager, projectile_manager, aura_drawer, strike_manager, effect_manager)
 	var start_weapon: WeaponData = load("res://data/weapons/%s.tres" % START_WEAPON_ID)
 	weapon_holder.add_start_weapon(start_weapon)
-	hud_root.bind(player, run_state, weapon_holder, enemy_manager)
+	wave_manager.wave_set = WAVE_SET
+	wave_manager.enemy_manager = enemy_manager
+	wave_manager.pickups = pickup_manager
+	wave_manager.hostile_projectiles = hostile_projectiles
+	wave_manager.player = player
+	wave_manager.run_state = run_state
+	wave_manager.setup()
+	wave_manager.wave_started.connect(_on_wave_started)
+	wave_manager.cleanup_finished.connect(_on_cleanup_finished)
+	wave_manager.run_won.connect(_on_run_won)
+	hud_root.bind(player, run_state, weapon_holder, enemy_manager, wave_manager)
 	level_up_pool.catalog = WEAPON_CATALOG
-	level_up_pool.hero_pool = HERO_UPGRADES
+	# Level-Ups bieten nur Waffen und Waffen-Upgrades. Die Helden-Boni (Stats) gibt es im Rastplatz-Shop für Seelen (hero_pool bleibt leer).
 	level_up_pool.weapons = weapon_holder
 	level_up_pool.run_state = run_state
 	level_up_pool.player = player
@@ -160,6 +176,8 @@ func _ready() -> void:
 	camera.call_deferred("reset_smoothing")
 
 	pause_button.pressed.connect(open_pause_menu)
+	if Settings.debug_waves_enabled:
+		wave_manager.start()
 	# Debug-Menü nur in Test-Builds, nicht in einer späteren Veröffentlichung
 	debug_button.visible = OS.is_debug_build()
 	debug_button.pressed.connect(_toggle_debug_menu)
@@ -212,20 +230,45 @@ func _on_leveled_up(_level: int) -> void:
 
 
 func _show_next_level_up() -> void:
-	if _level_up_menu or _pending_level_ups <= 0 or _game_over or player.hp <= 0.0 or not is_inside_tree():
+	if _level_up_menu or _game_over or player.hp <= 0.0 or not is_inside_tree():
+		return
+	# Keine Karten mehr offen: Ein wartender Rastplatz darf jetzt kommen
+	if _pending_level_ups <= 0:
+		_try_open_rest()
 		return
 	_pending_level_ups -= 1
 	var menu: LevelUpMenu = LEVEL_UP_MENU.instantiate()
 	menu.offers = level_up_pool.roll()
 	menu.level = run_state.level - _pending_level_ups
+	menu.rerolls = run_state.rerolls
 	menu.chosen.connect(_on_level_up_chosen)
+	menu.reroll_requested.connect(_on_level_up_reroll)
+	menu.skipped.connect(_on_level_up_skipped)
 	_level_up_menu = menu
 	hud.add_child(menu)
 	_update_pause()
 
 
+## Neu würfeln: kostet einen Versuch aus dem Vorrat des Runs
+func _on_level_up_reroll() -> void:
+	if not _level_up_menu or run_state.rerolls <= 0:
+		return
+	run_state.rerolls -= 1
+	_level_up_menu.rerolls = run_state.rerolls
+	_level_up_menu.set_offers(level_up_pool.roll())
+
+
+## Überspringen: keine Karte (z. B. um keine ungewollte Waffe in einen Platz zu nehmen)
+func _on_level_up_skipped() -> void:
+	_close_level_up()
+
+
 func _on_level_up_chosen(offer: LevelUpOffer) -> void:
 	level_up_pool.apply(offer)
+	_close_level_up()
+
+
+func _close_level_up() -> void:
 	_level_up_menu.queue_free()
 	_level_up_menu = null
 	_update_pause()
@@ -233,7 +276,7 @@ func _on_level_up_chosen(offer: LevelUpOffer) -> void:
 
 
 func open_pause_menu() -> void:
-	if _pause_menu or _game_over or _level_up_menu:
+	if _pause_menu or _game_over or _level_up_menu or _rest_menu:
 		return
 	var menu: PauseMenu = PAUSE_MENU.instantiate()
 	menu.player = player
@@ -242,6 +285,56 @@ func open_pause_menu() -> void:
 	_pause_menu = menu
 	_pause_menu.tree_exited.connect(_on_pause_menu_closed)
 	hud.add_child(_pause_menu)
+
+
+## Eine neue Welle beginnt: Kamera zurück auf volle Nähe (Zoomstufen siehe RunCamera)
+func _on_wave_started(_number: int, _total: int, _duration: float) -> void:
+	camera.reset_wave()
+
+
+## Wellenende: Der Rastplatz öffnet sich, sobald keine Level-Up-Karten mehr offen sind
+func _on_cleanup_finished(_number: int) -> void:
+	_rest_pending = true
+	_try_open_rest()
+
+
+func _try_open_rest() -> void:
+	if not _rest_pending or _rest_menu or _level_up_menu or _pending_level_ups > 0 or _game_over:
+		return
+	_rest_pending = false
+	_rest_menu = RestMenu.new()
+	_rest_menu.summary = wave_manager.summary()
+	# Seelen-Shop: Stat-Boni für Seelen, die Preise hängen an der überstandenen Welle
+	var shop := RestShop.new()
+	shop.pool = HERO_UPGRADES
+	shop.run_state = run_state
+	shop.wave = wave_manager.number
+	shop.roll()
+	_rest_menu.shop = shop
+	_rest_menu.continued.connect(_on_rest_continued)
+	hud.add_child(_rest_menu)
+	_update_pause()
+
+
+func _on_rest_continued() -> void:
+	_rest_menu.queue_free()
+	_rest_menu = null
+	_update_pause()
+	wave_manager.next_wave()
+
+
+## Die Expedition ist gewonnen (Boss besiegt oder letzte Welle überstanden): Sieg-Bildschirm
+func _on_run_won(boss_defeated: bool) -> void:
+	_game_over = true
+	if _debug_menu:
+		_debug_menu.queue_free()
+	var menu: Control = GAME_OVER_MENU.instantiate()
+	menu.victory = true
+	menu.boss_defeated = boss_defeated
+	menu.summary = wave_manager.summary()
+	_game_over_menu = menu
+	hud.add_child(menu)
+	_update_pause()
 
 
 ## Der Held stirbt: Gegner frieren ein, der Held spielt seine Tod-Animation, und erst danach erscheint Game Over.
@@ -253,6 +346,7 @@ func _on_player_died() -> void:
 	aura_drawer.process_mode = Node.PROCESS_MODE_DISABLED
 	strike_manager.process_mode = Node.PROCESS_MODE_DISABLED
 	hostile_projectiles.process_mode = Node.PROCESS_MODE_DISABLED
+	wave_manager.process_mode = Node.PROCESS_MODE_DISABLED
 	joystick.visible = false
 	# Das Pausemenü kann hier nicht offen sein: Bei Pause greift niemand an.
 	# Das Debug-Menü (Spiel läuft weiter) würde dagegen nur stören.
@@ -271,12 +365,17 @@ func _on_enemy_damaged(pos: Vector2, amount: float, element: StringName, crit: b
 
 ## Tod-Staub an den Füßen des gestorbenen Gegners, dazu sein Seelensplitter
 func _on_enemy_killed(pos: Vector2, data: EnemyData, flipped: bool) -> void:
+	run_state.kills += 1
+	# Seelen: zählen nur (kein Gegenstand), mindestens 1, wenn der Typ welche gibt
+	if data.soul_value > 0:
+		run_state.add_souls(maxi(1, roundi(data.soul_value * wave_manager.soul_factor())))
 	# Eigene Tod-Animation (gespiegelt wie der Gegner) oder der allgemeine Tod-Staub
 	if data.death_effect:
 		effect_manager.play(data.death_effect, pos, 0.0, Vector2(-1.0 if flipped else 1.0, 1.0))
 	else:
 		effect_manager.play(DEATH_EFFECT, pos)
-	pickup_manager.spawn(pos, data.xp_value)
+	# Spätere Wellen geben mehr Erfahrung je Gegner (Faktor aus den Wellen-Daten)
+	pickup_manager.spawn(pos, roundi(data.xp_value * wave_manager.xp_factor()))
 
 
 func _on_death_animation_finished() -> void:
@@ -309,6 +408,7 @@ func _toggle_debug_menu() -> void:
 	_debug_menu.enemy_manager = enemy_manager
 	_debug_menu.run_state = run_state
 	_debug_menu.pickup_manager = pickup_manager
+	_debug_menu.wave_manager = wave_manager
 	_debug_menu.tree_exited.connect(_on_debug_menu_closed)
 	hud.add_child(_debug_menu)
 	_update_pause()
@@ -324,7 +424,7 @@ func _update_pause() -> void:
 	# Beim Verlassen des Runs schließen sich die Menüs mit, dann gibt es hier nichts mehr zu steuern
 	if not is_inside_tree():
 		return
-	get_tree().paused = (_game_over_menu != null or _pause_menu != null or _level_up_menu != null
+	get_tree().paused = (_game_over_menu != null or _pause_menu != null or _level_up_menu != null or _rest_menu != null
 			or (_debug_menu != null and not Settings.debug_keep_running))
 
 

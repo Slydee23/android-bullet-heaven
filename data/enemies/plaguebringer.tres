@@ -26,4 +26,5 @@ max_hp = 120.0
 contact_damage = 0.0
 radius = 11.0
 foot_offset = 1.0
-xp_value = 2
+xp_value = 6
+soul_value = 2

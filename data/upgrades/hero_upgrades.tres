@@ -77,6 +77,7 @@ max_stacks = 2
 name_key = "UPGRADE_HERO_AMOUNT_NAME"
 description_key = "UPGRADE_HERO_AMOUNT_DESC"
 icon = ExtResource("icon_5")
+price_factor = 1.5
 
 [resource]
 script = ExtResource("1_pool")

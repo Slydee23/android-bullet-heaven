@@ -14,6 +14,7 @@ effect = ExtResource("4_effect")
 flight_time = 0.5
 whole_view = false
 uses_fuse = true
+min_spacing = 1.5
 card_stat_ids = Array[StringName]([&"damage", &"cooldown", &"area"])
 amount_label_key = "STAT_BOMBS"
 
@@ -25,7 +26,8 @@ script = ExtResource("90_upgrade")
 id = &"bombs_damage"
 stat = &"damage"
 kind = 0
-value = 6.0
+value = 9.0
+weight = 1.2
 
 [sub_resource type="Resource" id="Upgrade_bombs_amount"]
 script = ExtResource("90_upgrade")
@@ -35,7 +37,7 @@ kind = 0
 value = 1.0
 rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
 min_rarity = 1
-weight = 0.8
+weight = 0.6
 
 [sub_resource type="Resource" id="Upgrade_bombs_area"]
 script = ExtResource("90_upgrade")
@@ -58,7 +60,7 @@ script = ExtResource("90_upgrade")
 id = &"bombs_cooldown"
 stat = &"cooldown"
 kind = 1
-value = -0.08
+value = -0.1
 
 [resource]
 script = ExtResource("1_script")
@@ -78,6 +80,7 @@ base_stats = {
 &"range": 160.0
 }
 stat_limits = {
+&"amount": Vector2(1, 5),
 &"cooldown": Vector2(0.8, 2.5),
 &"area": Vector2(40, 80),
 &"fuse": Vector2(0.5, 1.0)

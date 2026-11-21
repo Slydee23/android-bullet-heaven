@@ -70,6 +70,8 @@ var iframe_rule: IFrameRule
 var last_iframe_duration := 0.0
 ## Debug „Unverwundbar“: Treffer von Gegnern zählen nicht (für lange Stresstests)
 var debug_invincible := false
+## Geschützt: Treffer zählen nicht (am Wellenende, während Gegner zerfallen und Splitter einfliegen)
+var shielded := false
 ## Aktuelle Laufbewegung (Welt-Pixel pro Sekunde), z. B. damit Gegner vorausschauend zielen können
 var velocity := Vector2.ZERO
 
@@ -100,7 +102,7 @@ func _ready() -> void:
 ## Treffer von außen: Zieht Lebenspunkte ab und startet die I-Frames.
 ## Gibt false zurück, wenn der Treffer nicht zählt (unverwundbar oder schon tot).
 func take_damage(amount: float) -> bool:
-	if hp <= 0.0 or _invulnerable_left > 0.0 or debug_invincible:
+	if hp <= 0.0 or _invulnerable_left > 0.0 or debug_invincible or shielded:
 		return false
 	last_iframe_duration = iframe_rule.duration_for(amount, max_hp)
 	_invulnerable_left = last_iframe_duration

@@ -36,6 +36,8 @@ var joystick_transparency: float:
 var camera_zoom_mode := CameraZoomMode.DYNAMIC
 ## Nur Testwert (Debug-Menü): Spiel läuft weiter, während das Debug-Menü offen ist
 var debug_keep_running := false
+## Debug/Tests: Wellen-System aus (kein automatisches Spawnen, kein Wellenablauf)
+var debug_waves_enabled := true
 ## Nur Testwerte (Debug-Menü): I-Frames ausprobieren, ohne die Datendatei zu ändern
 var debug_iframe_min := IFRAME_NOT_SET
 var debug_iframe_max := IFRAME_NOT_SET

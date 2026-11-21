@@ -29,6 +29,7 @@ func _init() -> void:
 	_heart().save_png(OUT + "hud_heart.png")
 	_slot(false).save_png(OUT + "hud_slot.png")
 	_slot(true).save_png(OUT + "hud_slot_start.png")
+	_soul().save_png(OUT + "hud_soul.png")
 	_card(["#e8e0f0", "#b8b0c8", "#6a6478"]).save_png(OUT + "card_common.png")
 	_card(["#cdfcfa", "#62b8da", "#376281"]).save_png(OUT + "card_rare.png")
 	_card(["#f6f0ff", "#b49cff", "#4a2f8c"]).save_png(OUT + "card_epic.png")
@@ -143,3 +144,30 @@ func _card(rarity: Array) -> Image:
 		[Color("#100c18"), Color("#100c18")],
 	]
 	return _frame(24, 24, 4, layers, Color("#17121f"))
+
+
+## 9×11: Seele als blau-weiße Flamme mit zwei dunklen Augen (Währung „Seelen“)
+func _soul() -> Image:
+	var rows := [
+		"....X....",
+		"...XhX...",
+		"..XhhhX..",
+		"..XhhmX..",
+		".XhhmmmX.",
+		".XhmmmmX.",
+		".XmEmEmX.",
+		".XmmmmdX.",
+		".XmmmddX.",
+		"..XmddX..",
+		"...XXX...",
+	]
+	var img := _new(9, 11)
+	for y in rows.size():
+		for x in 9:
+			match rows[y][x]:
+				"X": img.set_pixel(x, y, OUTLINE)
+				"h": img.set_pixel(x, y, SOUL[0])
+				"m": img.set_pixel(x, y, SOUL[1])
+				"d": img.set_pixel(x, y, SOUL[3])
+				"E": img.set_pixel(x, y, SOUL[3])
+	return img

@@ -24,6 +24,9 @@ const MAX_ALIVE := 120
 ## So weit außerhalb des sichtbaren Bereichs erscheinen neue Gegner (Welt-Pixel)
 const SPAWN_MARGIN := 32.0
 const SPAWN_ATTEMPTS := 8
+## Rudel (Wellen-Ereignis): Abstand der Gegner in der Reihe und wie tief sie gestaffelt sind (Welt-Pixel)
+const RUSH_SPACING := 22.0
+const RUSH_DEPTH := 14.0
 ## Spielraum, ab dem ein stehender Gegner den Helden noch erreicht (Welt-Pixel)
 const ATTACK_TOLERANCE := 1.0
 ## So lange leuchtet ein getroffener Gegner hell auf (Sekunden)
@@ -81,6 +84,10 @@ var count := 0
 var hp_multiplier := 1.0
 ## Faktor auf den Schaden, den Gegner dem Helden zufügen (später aus den Wellen-Daten)
 var damage_multiplier := 1.0
+## Lebenspunkte-Faktor der laufenden Welle (neue Gegner; Bosse und die Übungspuppe sind ausgenommen)
+var wave_hp_factor := 1.0
+## Tod-Staub für Gegner, die am Wellenende ohne Erfahrung zerfallen (setzt die Run-Szene)
+var vanish_effect: EffectData
 ## Für Gegner-Fähigkeiten (setzt die Run-Szene): Geschosse der Gegner und Effekte (z. B. Giftwolke beim Platzen)
 var hostile_projectiles: HostileProjectileManager
 var effect_manager: EffectManager
@@ -195,7 +202,7 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 	_types[count] = type_index
 	_positions[count] = pos
 	_radii[count] = data.radius
-	_hp[count] = data.max_hp * (1.0 if data.immortal else hp_multiplier)
+	_hp[count] = data.max_hp * _hp_factor(data)
 	_since_hit[count] = 0.0
 	_status_mask[count] = 0
 	_anim_offsets[count] = randf() * 10.0  # damit nicht alle im Gleichschritt laufen
@@ -375,7 +382,11 @@ func get_enemy_position(i: int) -> Vector2:
 ## Volle Lebenspunkte von Gegner i (Grundwert der Datei mal hp_multiplier, unsterbliche Gegner ohne Faktor)
 func get_max_hp(i: int) -> float:
 	var data := _type_list[_types[i]]
-	return data.max_hp * (1.0 if data.immortal else hp_multiplier)
+	return data.max_hp * _hp_factor(data)
+
+
+func _hp_factor(data: EnemyData) -> float:
+	return 1.0 if data.immortal else hp_multiplier * wave_hp_factor
 
 
 ## Lebenspunkte-Faktor ändern (Debug): Vorhandene Gegner behalten ihren Anteil an Lebenspunkten.
@@ -385,6 +396,50 @@ func set_hp_multiplier(value: float) -> void:
 		if not _type_list[_types[i]].immortal:
 			_hp[i] *= ratio
 	hp_multiplier = value
+
+
+## Sichtbarer Bereich in Weltkoordinaten
+func _view_rect() -> Rect2:
+	return get_viewport().get_canvas_transform().affine_inverse() * get_viewport_rect()
+
+
+## Einkesselung: n Gegner gleichmäßig auf einem Kreis knapp außerhalb des Bildes um center, innerhalb der Arena
+func spawn_around(data: EnemyData, center: Vector2, n: int) -> void:
+	var radius := _view_rect().size.length() * 0.5 + SPAWN_MARGIN
+	var offset := randf() * TAU
+	for k in n:
+		var point := center + Vector2.from_angle(offset + TAU * k / maxi(n, 1)) * radius
+		spawn(data, point.clamp(_bounds.position, _bounds.end))
+
+
+## Rudel: n Gegner in einer Reihe knapp außerhalb des Bildes an einer zufälligen Seite, die zum Helden stürmen
+func spawn_rush(data: EnemyData, center: Vector2, n: int) -> void:
+	var half := _view_rect().size * 0.5 + Vector2.ONE * SPAWN_MARGIN
+	var direction: Vector2 = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN].pick_random()
+	var origin := center + direction * (half.x if direction.x != 0.0 else half.y)
+	var along := direction.orthogonal()
+	for k in n:
+		var point := origin + along * (k - (n - 1) * 0.5) * RUSH_SPACING + direction * randf_range(0.0, RUSH_DEPTH)
+		spawn(data, point.clamp(_bounds.position, _bounds.end))
+
+
+## Lässt bis zu max_count Gegner ohne Erfahrung und Schadenszahl zerfallen (Wellenende, nur Tod-Staub). Liefert, wie viele.
+## Die Übungspuppe bleibt stehen.
+func dissolve(max_count: int) -> int:
+	var removed := 0
+	for i in range(count - 1, -1, -1):
+		if removed >= max_count:
+			break
+		var data := _type_list[_types[i]]
+		if data.immortal:
+			continue
+		if vanish_effect and effect_manager:
+			effect_manager.play(vanish_effect, _positions[i])
+		if data.is_boss:
+			boss_health_changed.emit(null, 0.0, 0.0)
+		kill(i)
+		removed += 1
+	return removed
 
 
 ## Entfernt alle Gegner sofort, ohne Tod-Effekte (Debug)
@@ -700,11 +755,11 @@ func _update_spawning(delta: float) -> void:
 	if _spawn_timer > 0.0 or count >= MAX_ALIVE or spawn_types.is_empty():
 		return
 	_spawn_timer = SPAWN_INTERVAL
-	spawn(spawn_types.pick_random(), _find_spawn_position())
+	spawn(spawn_types.pick_random(), find_spawn_position())
 
 
 ## Zufälliger Punkt knapp außerhalb des sichtbaren Bereichs, aber innerhalb der Arena.
-func _find_spawn_position() -> Vector2:
+func find_spawn_position() -> Vector2:
 	var view := get_viewport().get_canvas_transform().affine_inverse() * get_viewport_rect()
 	var distance := view.size.length() * 0.5 + SPAWN_MARGIN
 	var point := view.get_center()
@@ -805,7 +860,7 @@ func _separation_push(i: int, pos: Vector2) -> Vector2:
 func _update_attack(i: int, data: EnemyData, in_range: bool, delta: float) -> void:
 	if _attack_timers[i] > 0.0:
 		_attack_timers[i] -= delta
-	elif in_range and target and data.contact_damage > 0.0 and target.take_damage(data.contact_damage):
+	elif in_range and target and data.contact_damage > 0.0 and target.take_damage(data.contact_damage * damage_multiplier):
 		# Trifft der Angriff nicht (I-Frames des Helden), bleibt der Gegner bereit und versucht es weiter
 		_attack_timers[i] = data.attack_interval
 

@@ -29,4 +29,5 @@ max_hp = 4000.0
 contact_damage = 15.0
 attack_interval = 1.2
 radius = 20.0
-xp_value = 50
+xp_value = 150
+soul_value = 50

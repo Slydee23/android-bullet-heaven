@@ -27,6 +27,8 @@ const SPAWN_TYPES: Array[EnemyData] = [
 ]
 const BOSS := preload("res://data/enemies/bone_knight.tres")
 const TYPE_SPAWN_COUNT := 10
+## So viele Seelen gibt der Debug-Knopf
+const SOULS_CHEAT := 100
 const BOSS_DISTANCE := 200.0
 ## Reihenfolge für „Startwaffe wechseln“
 const START_WEAPONS: Array[WeaponData] = [
@@ -65,6 +67,8 @@ var enemy_manager: EnemyManager
 var run_state: RunState
 ## Seelensplitter (setzt die Run-Szene)
 var pickup_manager: PickupManager
+## Wellen-Ablauf (setzt die Run-Szene)
+var wave_manager: WaveManager
 
 var _closing := false
 var _shown_iframes := -1.0
@@ -76,6 +80,7 @@ var _shown_iframes := -1.0
 @onready var remove_enemies_button: Button = %RemoveEnemiesButton
 @onready var dummy_button: Button = %DummyButton
 @onready var type_spawn_buttons: HFlowContainer = %TypeSpawnButtons
+@onready var wave_buttons: HFlowContainer = %WaveButtons
 @onready var burn_button: Button = %BurnButton
 @onready var poison_button: Button = %PoisonButton
 @onready var shock_button: Button = %ShockButton
@@ -110,6 +115,7 @@ var _shown_iframes := -1.0
 @onready var xp_half_button: Button = %XpHalfButton
 @onready var level_up_button: Button = %LevelUpButton
 @onready var attract_button: Button = %AttractButton
+@onready var souls_button: Button = %SoulsButton
 @onready var global_damage_button: Button = %GlobalDamageButton
 @onready var global_cooldown_button: Button = %GlobalCooldownButton
 @onready var global_amount_button: Button = %GlobalAmountButton
@@ -173,6 +179,7 @@ func _ready() -> void:
 	xp_half_button.pressed.connect(_on_xp_half_pressed)
 	level_up_button.pressed.connect(_on_level_up_pressed)
 	attract_button.pressed.connect(_on_attract_pressed)
+	souls_button.pressed.connect(_on_souls_pressed)
 	global_damage_button.pressed.connect(_add_global.bind(&"damage", StatModifier.Kind.PERCENT, 0.1))
 	global_cooldown_button.pressed.connect(_add_global.bind(&"cooldown", StatModifier.Kind.PERCENT, -0.1))
 	global_amount_button.pressed.connect(_add_global.bind(&"amount", StatModifier.Kind.FLAT, 1.0))
@@ -209,6 +216,7 @@ func _ready() -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_on_spawn_type_pressed.bind(data))
 		type_spawn_buttons.add_child(button)
+	_add_wave_buttons()
 	var boss_button := Button.new()
 	boss_button.text = tr("DEBUG_SPAWN_BOSS") % tr(BOSS.name_key)
 	boss_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -248,6 +256,12 @@ func _on_global_reset_pressed() -> void:
 func _show_global_summary() -> void:
 	if player:
 		global_summary_label.text = tr("DEBUG_GLOBAL_SUMMARY") % [roundi(player.speed), roundi(player.max_hp), roundi(player.pickup_radius)]
+
+
+## +100 Seelen zum Testen des Rastplatz-Shops
+func _on_souls_pressed() -> void:
+	if run_state:
+		run_state.add_souls(SOULS_CHEAT)
 
 
 func _on_attract_pressed() -> void:
@@ -315,6 +329,47 @@ func _on_spawn_type_pressed(data: EnemyData) -> void:
 func _on_spawn_boss_pressed() -> void:
 	if enemy_manager and player:
 		enemy_manager.spawn(BOSS, player.global_position + Vector2(BOSS_DISTANCE, 0.0))
+
+
+## Knöpfe zum Testen des Wellen-Ablaufs: Welle beenden, Welle weiter, Boss-Welle, Timer anhalten
+func _add_wave_buttons() -> void:
+	var end_button := _wave_button(tr("DEBUG_WAVE_END"))
+	end_button.pressed.connect(_on_wave_end_pressed)
+	var next_button := _wave_button(tr("DEBUG_WAVE_NEXT"))
+	next_button.pressed.connect(_on_wave_next_pressed)
+	var boss_wave_button := _wave_button(tr("DEBUG_WAVE_BOSS"))
+	boss_wave_button.pressed.connect(_on_wave_boss_pressed)
+	var freeze_button := _wave_button(tr("DEBUG_WAVE_FREEZE"))
+	freeze_button.pressed.connect(_on_wave_freeze_pressed.bind(freeze_button))
+
+
+func _wave_button(text: String) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	wave_buttons.add_child(button)
+	return button
+
+
+func _on_wave_end_pressed() -> void:
+	if wave_manager:
+		wave_manager.debug_end_wave()
+
+
+func _on_wave_next_pressed() -> void:
+	if wave_manager:
+		wave_manager.debug_jump_to(wave_manager.number + 1)
+
+
+func _on_wave_boss_pressed() -> void:
+	if wave_manager:
+		wave_manager.debug_jump_to(wave_manager.total())
+
+
+func _on_wave_freeze_pressed(button: Button) -> void:
+	if wave_manager:
+		wave_manager.frozen = not wave_manager.frozen
+		button.text = tr("DEBUG_WAVE_FROZEN") if wave_manager.frozen else tr("DEBUG_WAVE_FREEZE")
 
 
 func _on_remove_enemies_pressed() -> void:

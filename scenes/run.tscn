@@ -17,6 +17,9 @@
 [ext_resource type="Script" path="res://scripts/pickup_manager.gd" id="18_pickups"]
 [ext_resource type="Script" path="res://scripts/hostile_projectile_manager.gd" id="19_hostile"]
 [ext_resource type="PackedScene" path="res://ui/hud/boss_bar.tscn" id="20_boss"]
+[ext_resource type="Script" path="res://scripts/wave_manager.gd" id="21_waves"]
+[ext_resource type="PackedScene" path="res://ui/hud/wave_display.tscn" id="22_wave_display"]
+[ext_resource type="PackedScene" path="res://ui/hud/souls_display.tscn" id="23_souls"]
 [ext_resource type="PackedScene" path="res://ui/hud/xp_display.tscn" id="15_xp"]
 [ext_resource type="PackedScene" path="res://ui/hud/health_display.tscn" id="16_health"]
 [ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="17_slots"]
@@ -56,6 +59,9 @@ script = ExtResource("5_enemies")
 texture_filter = 2
 material = ExtResource("7_sharp")
 script = ExtResource("8_projectiles")
+
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("21_waves")
 
 [node name="HostileProjectiles" type="Node2D" parent="."]
 script = ExtResource("19_hostile")
@@ -113,6 +119,9 @@ offset_bottom = -36.0
 grow_horizontal = 2
 grow_vertical = 0
 
+[node name="WaveDisplay" parent="HUD/HudRoot" instance=ExtResource("22_wave_display")]
+layout_mode = 1
+
 [node name="BossBar" parent="HUD/HudRoot" instance=ExtResource("20_boss")]
 layout_mode = 1
 
@@ -121,7 +130,7 @@ layout_mode = 0
 offset_left = 48.0
 offset_top = 48.0
 offset_right = 568.0
-offset_bottom = 180.0
+offset_bottom = 244.0
 mouse_filter = 2
 theme_override_constants/separation = 12
 
@@ -129,6 +138,9 @@ theme_override_constants/separation = 12
 layout_mode = 2
 
 [node name="WeaponSlots" parent="HUD/HudRoot/TopLeft" instance=ExtResource("17_slots")]
+layout_mode = 2
+
+[node name="SoulsDisplay" parent="HUD/HudRoot/TopLeft" instance=ExtResource("23_souls")]
 layout_mode = 2
 
 [node name="DebugButton" type="TextureButton" parent="HUD/HudRoot" groups=["joystick_blocker"]]
@@ -163,9 +175,9 @@ stretch_mode = 0
 
 [node name="FpsLabel" type="Label" parent="HUD/HudRoot"]
 offset_left = 48.0
-offset_top = 200.0
+offset_top = 262.0
 offset_right = 648.0
-offset_bottom = 250.0
+offset_bottom = 312.0
 theme_override_colors/font_color = Color(0.91, 0.87, 0.78, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.03, 0.08, 1)
 theme_override_constants/outline_size = 8

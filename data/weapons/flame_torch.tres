@@ -18,7 +18,8 @@ script = ExtResource("90_upgrade")
 id = &"torch_damage"
 stat = &"damage"
 kind = 0
-value = 3.0
+value = 5.0
+weight = 1.2
 
 [sub_resource type="Resource" id="Upgrade_torch_range"]
 script = ExtResource("90_upgrade")

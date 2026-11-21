@@ -25,30 +25,63 @@ extends WeaponBehavior
 @export var uses_fuse := false
 ## Werte auf der Waffenkarte
 @export var card_stat_ids: Array[StringName] = [&"damage", &"cooldown", &"amount"]
+## Mindestabstand der Einschläge eines Angriffs als Vielfaches des Wirkradius `area` (0 = egal). Bomben: 1.5, damit sie sich
+## kaum überlappen. Dafür werden mehr Ziel-Gegner gesucht als nötig und zu nahe liegende übersprungen.
+@export var min_spacing := 0.0
 ## Bezeichnung der Anzahl im Detailfenster (z. B. „Blitze pro Angriff“, „Bomben pro Angriff“)
 @export var amount_label_key := "STAT_AMOUNT"
 
-## Arbeitsspeicher für die Zielplätze (gilt nur innerhalb eines fire()-Aufrufs)
+## Mit Mindestabstand: so viele Ziel-Gegner je Einschlag werden gesucht, damit genug weit auseinander liegen
+const SPACING_CANDIDATES := 3
+## Versuche, einen Ersatzpunkt mit Mindestabstand zu finden
+const SPACING_TRIES := 6
+
+## Arbeitsspeicher für die Zielplätze und Einschlagpunkte (gilt nur innerhalb eines fire()-Aufrufs)
 var _targets := PackedInt32Array()
+var _points := PackedVector2Array()
 
 
 func fire(weapon: WeaponInstance, context: WeaponContext) -> bool:
 	var amount := maxi(1, roundi(weapon.get_stat(&"amount")))
 	var origin := context.player.global_position
 	var max_range := weapon.get_stat(&"range")
-	var found := weapon.target_picker.pick(origin, max_range, amount, context, _targets)
+	var spacing := min_spacing * weapon.get_stat(&"area")
+	var spacing_sq := spacing * spacing
+	var wanted := amount * SPACING_CANDIDATES if spacing > 0.0 else amount
+	var found := weapon.target_picker.pick(origin, max_range, wanted, context, _targets)
 	if found == 0:
 		return false
 	var fuse := weapon.get_stat(&"fuse") if uses_fuse else 0.0
 	var delay := flight_time + fuse
-	for k in amount:
-		var point: Vector2
-		if k < found:
-			# Mit Verzögerung (Bombe) dorthin zielen, wo der Gegner beim Auslösen voraussichtlich steht
-			point = context.enemy_manager.predict_position(_targets[k], delay) if delay > 0.0 else context.enemy_manager.get_enemy_position(_targets[k])
-		else:
+	_points.clear()
+	# Zuerst Gegner als Ziele (zu nahe an einem schon gewählten Punkt: überspringen)
+	for k in found:
+		if _points.size() >= amount:
+			break
+		# Mit Verzögerung (Bombe) dorthin zielen, wo der Gegner beim Auslösen voraussichtlich steht
+		var point := context.enemy_manager.predict_position(_targets[k], delay) if delay > 0.0 else context.enemy_manager.get_enemy_position(_targets[k])
+		if _far_enough(point, spacing_sq):
+			_points.append(point)
+	# Übrige Einschläge auf zufällige Punkte, möglichst mit Abstand
+	while _points.size() < amount:
+		var point := _random_point(origin, max_range, context)
+		for attempt in SPACING_TRIES:
+			if _far_enough(point, spacing_sq):
+				break
 			point = _random_point(origin, max_range, context)
+		_points.append(point)
+	for point in _points:
 		context.strikes.launch(weapon, origin, point, flight_time, fuse)
+	return true
+
+
+## Liegt point weit genug von allen schon gewählten Einschlägen dieses Angriffs?
+func _far_enough(point: Vector2, spacing_sq: float) -> bool:
+	if spacing_sq <= 0.0:
+		return true
+	for other in _points:
+		if point.distance_squared_to(other) < spacing_sq:
+			return false
 	return true
 
 

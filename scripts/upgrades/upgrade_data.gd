@@ -14,6 +14,8 @@ extends Resource
 @export var min_rarity := Rarity.COMMON
 ## Gewicht im Zufalls-Pool (höher = häufiger)
 @export var weight := 1.0
+## Nur Seelen-Shop: Preis-Faktor (z. B. 1.5 = 50 % teurer für besonders starke Boni wie „+1 Projektil“)
+@export var price_factor := 1.0
 ## Wie oft man es höchstens wählen kann (0 = unbegrenzt, bei Waffen begrenzt dann das Waffenlevel)
 @export var max_stacks := 0
 ## Helden-Boni: Name und Beschreibung (z. B. „Schaden aller Waffen %s“), Waffen-Upgrades zeigen stattdessen „Wert alt → neu“

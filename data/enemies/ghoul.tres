@@ -23,4 +23,4 @@ speed = 85.0
 max_hp = 50.0
 contact_damage = 4.0
 radius = 9.0
-xp_value = 1
+xp_value = 4
