@@ -49,7 +49,7 @@ from pure need, and return to rebuild a village that the old wars left in ashes.
 - **Save and continue** – leave mid-run and pick up later. No save-scumming: shop offers and level-up choices are
   locked in.
 
-## Current status – Beta v0.1.0
+## Current status – Beta v0.1.1
 
 Banebound is in development. A full expedition is playable from the first wave to the boss; the village and meta progression are next.
 

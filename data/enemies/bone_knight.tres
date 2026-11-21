@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="EnemyData" format=3]
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://bw1o8uocemf65"]
 
-[ext_resource type="Script" path="res://scripts/enemies/enemy_data.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bone_knight_walk.png" id="2_walk"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bone_knight_attack.png" id="3_attack"]
+[ext_resource type="Script" uid="uid://vbmok5byljxj" path="res://scripts/enemies/enemy_data.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://c0cefg2diimxm" path="res://assets/sprites/enemies/bone_knight_walk.png" id="2_walk"]
+[ext_resource type="Texture2D" uid="uid://dpujmq7eiktkj" path="res://assets/sprites/enemies/bone_knight_attack.png" id="3_attack"]
 [ext_resource type="Resource" path="res://data/effects/bone_knight_death.tres" id="4_death"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bone_knight_charge.png" id="6_charge"]
-[ext_resource type="Script" path="res://scripts/enemies/enemy_abilities/boss_knight_ability.gd" id="5_boss"]
+[ext_resource type="Script" uid="uid://bw7oj82wi4r0u" path="res://scripts/enemies/enemy_abilities/boss_knight_ability.gd" id="5_boss"]
+[ext_resource type="Texture2D" uid="uid://k0q8cj5y3p6g" path="res://assets/sprites/enemies/bone_knight_charge.png" id="6_charge"]
 
 [sub_resource type="Resource" id="Resource_boss"]
 script = ExtResource("5_boss")

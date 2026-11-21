@@ -1,12 +1,13 @@
-[gd_resource type="Resource" script_class="WeaponData" format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://g65apeg3je6o"]
 
-[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/weapons/behaviors/strike_behavior.gd" id="2_behavior"]
-[ext_resource type="Script" path="res://scripts/weapons/targeting/random_in_range_picker.gd" id="3_picker"]
+[ext_resource type="Script" uid="uid://dmiahsygd020q" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://feij8vhgeo4e" path="res://scripts/weapons/behaviors/strike_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" uid="uid://ba7wo64j3os1s" path="res://scripts/weapons/weapon_effect.gd" id="3_kyf3x"]
+[ext_resource type="Script" uid="uid://b2dtfit6pctb7" path="res://scripts/weapons/targeting/random_in_range_picker.gd" id="3_picker"]
 [ext_resource type="Resource" path="res://data/effects/explosion.tres" id="4_effect"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_bomb_bag.png" id="5_icon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/weapons/bomb.png" id="6_bomb"]
-[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
+[ext_resource type="Texture2D" uid="uid://kp6liod2cx6l" path="res://assets/sprites/icons/weapon_bomb_bag.png" id="5_icon"]
+[ext_resource type="Texture2D" uid="uid://cgit4y1l6tpao" path="res://assets/sprites/weapons/bomb.png" id="6_bomb"]
+[ext_resource type="Script" uid="uid://bqdhblruomrby" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -14,8 +15,8 @@ effect = ExtResource("4_effect")
 flight_time = 0.5
 whole_view = false
 uses_fuse = true
-min_spacing = 1.5
 card_stat_ids = Array[StringName]([&"damage", &"cooldown", &"area"])
+min_spacing = 1.5
 amount_label_key = "STAT_BOMBS"
 
 [sub_resource type="Resource" id="Resource_picker"]
@@ -25,17 +26,16 @@ script = ExtResource("3_picker")
 script = ExtResource("90_upgrade")
 id = &"bombs_damage"
 stat = &"damage"
-kind = 0
 value = 9.0
+rarity_values = null
 weight = 1.2
 
 [sub_resource type="Resource" id="Upgrade_bombs_amount"]
 script = ExtResource("90_upgrade")
 id = &"bombs_amount"
 stat = &"amount"
-kind = 0
 value = 1.0
-rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
+rarity_values = PackedFloat32Array(0, 1, 2)
 min_rarity = 1
 weight = 0.6
 
@@ -43,16 +43,16 @@ weight = 0.6
 script = ExtResource("90_upgrade")
 id = &"bombs_area"
 stat = &"area"
-kind = 0
 value = 8.0
+rarity_values = null
 weight = 0.8
 
 [sub_resource type="Resource" id="Upgrade_bombs_fuse"]
 script = ExtResource("90_upgrade")
 id = &"bombs_fuse"
 stat = &"fuse"
-kind = 0
 value = -0.1
+rarity_values = null
 weight = 0.6
 
 [sub_resource type="Resource" id="Upgrade_bombs_cooldown"]
@@ -61,6 +61,7 @@ id = &"bombs_cooldown"
 stat = &"cooldown"
 kind = 1
 value = -0.1
+rarity_values = null
 
 [resource]
 script = ExtResource("1_script")
@@ -70,7 +71,6 @@ description_key = "WEAPON_BOMB_BAG_DESC"
 icon = ExtResource("5_icon")
 tags = Array[StringName]([&"explosive", &"fire"])
 element = &"fire"
-default_unlocked = true
 base_stats = {
 &"amount": 1.0,
 &"area": 40.0,
@@ -81,13 +81,12 @@ base_stats = {
 }
 stat_limits = {
 &"amount": Vector2(1, 5),
-&"cooldown": Vector2(0.8, 2.5),
 &"area": Vector2(40, 80),
-&"fuse": Vector2(0.5, 1.0)
+&"cooldown": Vector2(0.8, 2.5),
+&"fuse": Vector2(0.5, 1)
 }
 behavior = SubResource("Resource_behavior")
 target_picker = SubResource("Resource_picker")
-projectile_texture = ExtResource("6_bomb")
-frame_width = 16
-animation_fps = 1.0
 upgrades = Array[ExtResource("90_upgrade")]([SubResource("Upgrade_bombs_damage"), SubResource("Upgrade_bombs_amount"), SubResource("Upgrade_bombs_area"), SubResource("Upgrade_bombs_fuse"), SubResource("Upgrade_bombs_cooldown")])
+projectile_texture = ExtResource("6_bomb")
+animation_fps = 1.0

@@ -1,23 +1,20 @@
-[gd_resource type="Resource" script_class="WeaponData" format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://bjo5v4gc11huv"]
 
-[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/weapons/behaviors/strike_behavior.gd" id="2_behavior"]
-[ext_resource type="Script" path="res://scripts/weapons/targeting/random_visible_picker.gd" id="3_picker"]
+[ext_resource type="Script" uid="uid://dmiahsygd020q" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://feij8vhgeo4e" path="res://scripts/weapons/behaviors/strike_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" uid="uid://bnambm6hwltrc" path="res://scripts/weapons/targeting/random_visible_picker.gd" id="3_picker"]
+[ext_resource type="Script" uid="uid://ba7wo64j3os1s" path="res://scripts/weapons/weapon_effect.gd" id="4_3cm36"]
 [ext_resource type="Resource" path="res://data/effects/lightning.tres" id="4_effect"]
+[ext_resource type="Texture2D" uid="uid://p8gh04wjqhg6" path="res://assets/sprites/icons/weapon_trident.png" id="5_icon"]
 [ext_resource type="Resource" path="res://data/effects/lightning_impact.tres" id="7_impact"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_trident.png" id="5_icon"]
-[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
+[ext_resource type="Script" uid="uid://bqdhblruomrby" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
+effect = ExtResource("4_effect")
 impact_effect = ExtResource("7_impact")
 effect_area_reference = 20.0
 effect_lead = 0.21
-effect = ExtResource("4_effect")
-flight_time = 0.0
-whole_view = true
-uses_fuse = false
-card_stat_ids = Array[StringName]([&"damage", &"cooldown", &"amount"])
 amount_label_key = "STAT_BOLTS"
 
 [sub_resource type="Resource" id="Resource_picker"]
@@ -27,17 +24,16 @@ script = ExtResource("3_picker")
 script = ExtResource("90_upgrade")
 id = &"trident_damage"
 stat = &"damage"
-kind = 0
 value = 14.0
+rarity_values = null
 weight = 1.2
 
 [sub_resource type="Resource" id="Upgrade_trident_amount"]
 script = ExtResource("90_upgrade")
 id = &"trident_amount"
 stat = &"amount"
-kind = 0
 value = 1.0
-rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
+rarity_values = PackedFloat32Array(0, 1, 2)
 min_rarity = 1
 weight = 0.6
 
@@ -45,8 +41,8 @@ weight = 0.6
 script = ExtResource("90_upgrade")
 id = &"trident_area"
 stat = &"area"
-kind = 0
 value = 4.0
+rarity_values = null
 weight = 0.8
 
 [sub_resource type="Resource" id="Upgrade_trident_cooldown"]
@@ -55,6 +51,7 @@ id = &"trident_cooldown"
 stat = &"cooldown"
 kind = 1
 value = -0.1
+rarity_values = null
 
 [resource]
 script = ExtResource("1_script")
@@ -64,7 +61,6 @@ description_key = "WEAPON_TRIDENT_DESC"
 icon = ExtResource("5_icon")
 tags = Array[StringName]([&"lightning", &"magic"])
 element = &"lightning"
-default_unlocked = true
 base_stats = {
 &"amount": 1.0,
 &"area": 20.0,
@@ -73,8 +69,8 @@ base_stats = {
 }
 stat_limits = {
 &"amount": Vector2(1, 7),
-&"cooldown": Vector2(0.6, 2),
-&"area": Vector2(20, 40)
+&"area": Vector2(20, 40),
+&"cooldown": Vector2(0.6, 2)
 }
 behavior = SubResource("Resource_behavior")
 target_picker = SubResource("Resource_picker")

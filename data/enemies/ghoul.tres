@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="EnemyData" format=3]
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://b11igyg472p0i"]
 
-[ext_resource type="Script" path="res://scripts/enemies/enemy_data.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/ghoul_walk.png" id="2_walk"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/ghoul_attack.png" id="3_attack"]
+[ext_resource type="Script" uid="uid://vbmok5byljxj" path="res://scripts/enemies/enemy_data.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://ciy717xbctg6q" path="res://assets/sprites/enemies/ghoul_walk.png" id="2_walk"]
+[ext_resource type="Texture2D" uid="uid://deikrm5thcajh" path="res://assets/sprites/enemies/ghoul_attack.png" id="3_attack"]
 [ext_resource type="Resource" path="res://data/effects/ghoul_death.tres" id="4_death"]
-[ext_resource type="Script" path="res://scripts/enemies/enemy_abilities/leap_ability.gd" id="5_leap"]
+[ext_resource type="Script" uid="uid://b1jkmcfslfaxw" path="res://scripts/enemies/enemy_abilities/leap_ability.gd" id="5_leap"]
 
 [sub_resource type="Resource" id="Resource_leap"]
 script = ExtResource("5_leap")

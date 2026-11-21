@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="EnemyData" format=3]
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://kdkinvrvtdd3"]
 
-[ext_resource type="Script" path="res://scripts/enemies/enemy_data.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/cultist_walk.png" id="2_walk"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/cultist_cast.png" id="3_cast"]
+[ext_resource type="Script" uid="uid://vbmok5byljxj" path="res://scripts/enemies/enemy_data.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cylaa73rbdpd6" path="res://assets/sprites/enemies/cultist_walk.png" id="2_walk"]
+[ext_resource type="Texture2D" uid="uid://d0qxf6sg8bo00" path="res://assets/sprites/enemies/cultist_cast.png" id="3_cast"]
 [ext_resource type="Resource" path="res://data/effects/cultist_death.tres" id="4_death"]
-[ext_resource type="Script" path="res://scripts/enemies/enemy_abilities/ranged_ability.gd" id="5_ranged"]
-[ext_resource type="Texture2D" path="res://assets/sprites/effects/cultist_fireball.png" id="6_shot"]
+[ext_resource type="Script" uid="uid://fk1e32orq1gs" path="res://scripts/enemies/enemy_abilities/ranged_ability.gd" id="5_ranged"]
+[ext_resource type="Texture2D" uid="uid://dciwhk1vbtjjt" path="res://assets/sprites/effects/cultist_fireball.png" id="6_shot"]
 [ext_resource type="Resource" path="res://data/effects/fireball_impact.tres" id="7_impact"]
 
 [sub_resource type="Resource" id="Resource_ranged"]
@@ -26,6 +26,5 @@ animation_fps = 8.0
 speed = 45.0
 max_hp = 70.0
 contact_damage = 3.0
-radius = 10.0
 xp_value = 6
 soul_value = 2

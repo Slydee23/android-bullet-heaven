@@ -1,12 +1,13 @@
-[gd_resource type="Resource" script_class="WeaponData" format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://btre4kyo2ubc8"]
 
-[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/weapons/behaviors/aura_behavior.gd" id="2_behavior"]
-[ext_resource type="Texture2D" path="res://assets/sprites/effects/aura_flame.png" id="3_flame"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_flame_torch.png" id="4_icon"]
-[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
-[ext_resource type="Texture2D" path="res://assets/sprites/effects/fire_aura_behind.png" id="5_behind"]
-[ext_resource type="Texture2D" path="res://assets/sprites/effects/fire_aura_front.png" id="6_front"]
+[ext_resource type="Script" uid="uid://dmiahsygd020q" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bddg5v8je23u5" path="res://scripts/weapons/behaviors/aura_behavior.gd" id="2_behavior"]
+[ext_resource type="Texture2D" uid="uid://dsbrln4fep6qv" path="res://assets/sprites/effects/aura_flame.png" id="3_flame"]
+[ext_resource type="Texture2D" uid="uid://dal3n103rcykp" path="res://assets/sprites/icons/weapon_flame_torch.png" id="4_icon"]
+[ext_resource type="Script" uid="uid://ba7wo64j3os1s" path="res://scripts/weapons/weapon_effect.gd" id="4_pn0ry"]
+[ext_resource type="Texture2D" uid="uid://bo8522p2adeoq" path="res://assets/sprites/effects/fire_aura_behind.png" id="5_behind"]
+[ext_resource type="Texture2D" uid="uid://c6j5ie6423myj" path="res://assets/sprites/effects/fire_aura_front.png" id="6_front"]
+[ext_resource type="Script" uid="uid://bqdhblruomrby" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -17,23 +18,23 @@ mantle_front = ExtResource("6_front")
 script = ExtResource("90_upgrade")
 id = &"torch_damage"
 stat = &"damage"
-kind = 0
 value = 5.0
+rarity_values = null
 weight = 1.2
 
 [sub_resource type="Resource" id="Upgrade_torch_range"]
 script = ExtResource("90_upgrade")
 id = &"torch_range"
 stat = &"range"
-kind = 0
 value = 12.0
+rarity_values = null
 
 [sub_resource type="Resource" id="Upgrade_torch_tick"]
 script = ExtResource("90_upgrade")
 id = &"torch_tick"
 stat = &"cooldown"
-kind = 0
 value = -0.05
+rarity_values = null
 weight = 0.8
 
 [resource]
@@ -44,7 +45,6 @@ description_key = "WEAPON_FLAME_TORCH_DESC"
 icon = ExtResource("4_icon")
 tags = Array[StringName]([&"aura", &"fire"])
 element = &"fire"
-default_unlocked = true
 base_stats = {
 &"cooldown": 0.5,
 &"damage": 15.0,
@@ -55,7 +55,6 @@ stat_limits = {
 &"range": Vector2(64, 160)
 }
 behavior = SubResource("Resource_behavior")
-projectile_texture = ExtResource("3_flame")
-frame_width = 16
-animation_fps = 8.0
 upgrades = Array[ExtResource("90_upgrade")]([SubResource("Upgrade_torch_damage"), SubResource("Upgrade_torch_range"), SubResource("Upgrade_torch_tick")])
+projectile_texture = ExtResource("3_flame")
+animation_fps = 8.0

@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="EnemyData" format=3]
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://de22gq5yum05h"]
 
-[ext_resource type="Script" path="res://scripts/enemies/enemy_data.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/plaguebringer_walk.png" id="2_walk"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/plaguebringer_swell.png" id="3_swell"]
+[ext_resource type="Script" uid="uid://vbmok5byljxj" path="res://scripts/enemies/enemy_data.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cxwiopa0apw2x" path="res://assets/sprites/enemies/plaguebringer_walk.png" id="2_walk"]
+[ext_resource type="Texture2D" uid="uid://dtf2mi0xa50jj" path="res://assets/sprites/enemies/plaguebringer_swell.png" id="3_swell"]
 [ext_resource type="Resource" path="res://data/effects/plaguebringer_death.tres" id="4_death"]
-[ext_resource type="Script" path="res://scripts/enemies/enemy_abilities/bomber_ability.gd" id="5_bomber"]
+[ext_resource type="Script" uid="uid://ev72xtc8b5ng" path="res://scripts/enemies/enemy_abilities/bomber_ability.gd" id="5_bomber"]
 [ext_resource type="Resource" path="res://data/effects/plague_burst.tres" id="6_burst"]
 
 [sub_resource type="Resource" id="Resource_bomber"]
@@ -18,6 +18,7 @@ name_key = "ENEMY_PLAGUEBRINGER"
 walk_texture = ExtResource("2_walk")
 special_texture = ExtResource("3_swell")
 death_effect = ExtResource("4_death")
+foot_offset = 1.0
 ability = SubResource("Resource_bomber")
 frame_width = 44
 animation_fps = 7.0
@@ -25,6 +26,5 @@ speed = 32.0
 max_hp = 120.0
 contact_damage = 0.0
 radius = 11.0
-foot_offset = 1.0
 xp_value = 6
 soul_value = 2

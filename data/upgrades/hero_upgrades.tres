@@ -1,13 +1,13 @@
-[gd_resource type="Resource" script_class="UpgradePool" format=3]
+[gd_resource type="Resource" script_class="UpgradePool" format=3 uid="uid://5leyjhdpdw52"]
 
-[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_pool.gd" id="1_pool"]
-[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="2_upgrade"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_damage.png" id="icon_0"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_cooldown.png" id="icon_1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_speed.png" id="icon_2"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_max_hp.png" id="icon_3"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_pickup.png" id="icon_4"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_amount.png" id="icon_5"]
+[ext_resource type="Script" uid="uid://b3w447xpnim5v" path="res://scripts/weapons/upgrades/upgrade_pool.gd" id="1_pool"]
+[ext_resource type="Script" uid="uid://bqdhblruomrby" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="2_upgrade"]
+[ext_resource type="Texture2D" uid="uid://643lo7s8doil" path="res://assets/sprites/icons/bonus_damage.png" id="icon_0"]
+[ext_resource type="Texture2D" uid="uid://drcjj007qrl5t" path="res://assets/sprites/icons/bonus_cooldown.png" id="icon_1"]
+[ext_resource type="Texture2D" uid="uid://b7nqr5s1kpej2" path="res://assets/sprites/icons/bonus_speed.png" id="icon_2"]
+[ext_resource type="Texture2D" uid="uid://blftkptjm018h" path="res://assets/sprites/icons/bonus_max_hp.png" id="icon_3"]
+[ext_resource type="Texture2D" uid="uid://bfq8mba5nv0sa" path="res://assets/sprites/icons/bonus_pickup.png" id="icon_4"]
+[ext_resource type="Texture2D" uid="uid://dxbelliwnseo1" path="res://assets/sprites/icons/bonus_amount.png" id="icon_5"]
 
 [sub_resource type="Resource" id="Upgrade_hero_damage"]
 script = ExtResource("2_upgrade")
@@ -15,6 +15,7 @@ id = &"hero_damage"
 stat = &"damage"
 kind = 1
 value = 0.08
+rarity_values = null
 max_stacks = 5
 name_key = "UPGRADE_HERO_DAMAGE_NAME"
 description_key = "UPGRADE_HERO_DAMAGE_DESC"
@@ -26,6 +27,7 @@ id = &"hero_cooldown"
 stat = &"cooldown"
 kind = 1
 value = -0.06
+rarity_values = null
 max_stacks = 5
 name_key = "UPGRADE_HERO_COOLDOWN_NAME"
 description_key = "UPGRADE_HERO_COOLDOWN_DESC"
@@ -37,6 +39,7 @@ id = &"hero_speed"
 stat = &"move_speed"
 kind = 1
 value = 0.08
+rarity_values = null
 max_stacks = 5
 name_key = "UPGRADE_HERO_SPEED_NAME"
 description_key = "UPGRADE_HERO_SPEED_DESC"
@@ -46,8 +49,8 @@ icon = ExtResource("icon_2")
 script = ExtResource("2_upgrade")
 id = &"hero_max_hp"
 stat = &"max_hp"
-kind = 0
 value = 15.0
+rarity_values = null
 max_stacks = 5
 name_key = "UPGRADE_HERO_MAX_HP_NAME"
 description_key = "UPGRADE_HERO_MAX_HP_DESC"
@@ -57,8 +60,8 @@ icon = ExtResource("icon_3")
 script = ExtResource("2_upgrade")
 id = &"hero_pickup"
 stat = &"pickup_radius"
-kind = 0
 value = 15.0
+rarity_values = null
 max_stacks = 5
 name_key = "UPGRADE_HERO_PICKUP_NAME"
 description_key = "UPGRADE_HERO_PICKUP_DESC"
@@ -68,16 +71,15 @@ icon = ExtResource("icon_4")
 script = ExtResource("2_upgrade")
 id = &"hero_amount"
 stat = &"amount"
-kind = 0
 value = 1.0
-rarity_values = PackedFloat32Array(0.0, 0.0, 1.0)
+rarity_values = PackedFloat32Array(0, 0, 1)
 min_rarity = 2
 weight = 0.3
+price_factor = 1.5
 max_stacks = 2
 name_key = "UPGRADE_HERO_AMOUNT_NAME"
 description_key = "UPGRADE_HERO_AMOUNT_DESC"
 icon = ExtResource("icon_5")
-price_factor = 1.5
 
 [resource]
 script = ExtResource("1_pool")

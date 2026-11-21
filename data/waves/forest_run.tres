@@ -1,14 +1,14 @@
-[gd_resource type="Resource" script_class="WaveSet" format=3]
+[gd_resource type="Resource" script_class="WaveSet" format=3 uid="uid://d1jrlqe72i1v5"]
 
-[ext_resource type="Script" path="res://scripts/world/waves/wave_set.gd" id="1_set"]
-[ext_resource type="Script" path="res://scripts/world/waves/wave_data.gd" id="2_wave"]
-[ext_resource type="Script" path="res://scripts/world/waves/wave_spawn.gd" id="3_spawn"]
-[ext_resource type="Script" path="res://scripts/world/waves/wave_event.gd" id="4_event"]
+[ext_resource type="Script" uid="uid://b77o3iccdxa7" path="res://scripts/world/waves/wave_set.gd" id="1_set"]
+[ext_resource type="Script" uid="uid://d2c5fah5vh7nx" path="res://scripts/world/waves/wave_data.gd" id="2_wave"]
+[ext_resource type="Script" uid="uid://bmlfici4tm2ye" path="res://scripts/world/waves/wave_spawn.gd" id="3_spawn"]
+[ext_resource type="Script" uid="uid://dy34t5oprncn1" path="res://scripts/world/waves/wave_event.gd" id="4_event"]
+[ext_resource type="Resource" uid="uid://bw1o8uocemf65" path="res://data/enemies/bone_knight.tres" id="boss"]
+[ext_resource type="Resource" uid="uid://kdkinvrvtdd3" path="res://data/enemies/cultist.tres" id="cult"]
+[ext_resource type="Resource" uid="uid://b11igyg472p0i" path="res://data/enemies/ghoul.tres" id="ghoul"]
+[ext_resource type="Resource" uid="uid://de22gq5yum05h" path="res://data/enemies/plaguebringer.tres" id="plag"]
 [ext_resource type="Resource" path="res://data/enemies/skeleton.tres" id="skel"]
-[ext_resource type="Resource" path="res://data/enemies/ghoul.tres" id="ghoul"]
-[ext_resource type="Resource" path="res://data/enemies/cultist.tres" id="cult"]
-[ext_resource type="Resource" path="res://data/enemies/plaguebringer.tres" id="plag"]
-[ext_resource type="Resource" path="res://data/enemies/bone_knight.tres" id="boss"]
 
 [sub_resource type="Resource" id="S1_0"]
 script = ExtResource("3_spawn")
@@ -17,12 +17,8 @@ weight = 10.0
 
 [sub_resource type="Resource" id="W1"]
 script = ExtResource("2_wave")
-duration = 20.0
 max_alive = 10
 spawn_rate = 1.0
-hp_factor = 1.0
-damage_factor = 1.0
-xp_factor = 1.0
 spawns = Array[ExtResource("3_spawn")]([SubResource("S1_0")])
 
 [sub_resource type="Resource" id="S2_0"]
@@ -40,8 +36,6 @@ script = ExtResource("2_wave")
 duration = 25.0
 max_alive = 16
 spawn_rate = 1.72
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 1.1
 spawns = Array[ExtResource("3_spawn")]([SubResource("S2_0"), SubResource("S2_1")])
 
@@ -58,17 +52,20 @@ weight = 2.4
 [sub_resource type="Resource" id="S3_2"]
 script = ExtResource("3_spawn")
 enemy = ExtResource("cult")
-weight = 1.0
 
 [sub_resource type="Resource" id="W3"]
 script = ExtResource("2_wave")
 duration = 30.0
 max_alive = 24
 spawn_rate = 2.44
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 1.2
 spawns = Array[ExtResource("3_spawn")]([SubResource("S3_0"), SubResource("S3_1"), SubResource("S3_2")])
+
+[sub_resource type="Resource" id="E4_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 14
+first_delay = 14.0
 
 [sub_resource type="Resource" id="S4_0"]
 script = ExtResource("3_spawn")
@@ -85,24 +82,20 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("cult")
 weight = 1.25
 
-[sub_resource type="Resource" id="E4_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 14
-first_delay = 14.0
-interval = 30.0
-
 [sub_resource type="Resource" id="W4"]
 script = ExtResource("2_wave")
 duration = 35.0
 max_alive = 33
 spawn_rate = 3.17
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 1.3
 spawns = Array[ExtResource("3_spawn")]([SubResource("S4_0"), SubResource("S4_1"), SubResource("S4_2")])
 events = Array[ExtResource("4_event")]([SubResource("E4_ring")])
+
+[sub_resource type="Resource" id="E5_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 15
+first_delay = 14.0
 
 [sub_resource type="Resource" id="S5_0"]
 script = ExtResource("3_spawn")
@@ -119,24 +112,20 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("cult")
 weight = 1.5
 
-[sub_resource type="Resource" id="E5_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 15
-first_delay = 14.0
-interval = 30.0
-
 [sub_resource type="Resource" id="W5"]
 script = ExtResource("2_wave")
 duration = 40.0
 max_alive = 44
 spawn_rate = 3.89
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 1.4
 spawns = Array[ExtResource("3_spawn")]([SubResource("S5_0"), SubResource("S5_1"), SubResource("S5_2")])
 events = Array[ExtResource("4_event")]([SubResource("E5_ring")])
+
+[sub_resource type="Resource" id="E6_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 16
+first_delay = 14.0
 
 [sub_resource type="Resource" id="S6_0"]
 script = ExtResource("3_spawn")
@@ -158,24 +147,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 0.8
 
-[sub_resource type="Resource" id="E6_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 16
-first_delay = 14.0
-interval = 30.0
-
 [sub_resource type="Resource" id="W6"]
 script = ExtResource("2_wave")
 duration = 45.0
 max_alive = 55
 spawn_rate = 4.61
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 1.5
 spawns = Array[ExtResource("3_spawn")]([SubResource("S6_0"), SubResource("S6_1"), SubResource("S6_2"), SubResource("S6_3")])
 events = Array[ExtResource("4_event")]([SubResource("E6_ring")])
+
+[sub_resource type="Resource" id="E7_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 17
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E7_rush"]
+script = ExtResource("4_event")
+pattern = 1
+enemy = ExtResource("skel")
+count = 11
+first_delay = 26.0
+interval = 40.0
 
 [sub_resource type="Resource" id="S7_0"]
 script = ExtResource("3_spawn")
@@ -197,32 +190,27 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 0.9
 
-[sub_resource type="Resource" id="E7_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 17
-first_delay = 14.0
-interval = 30.0
-
-[sub_resource type="Resource" id="E7_rush"]
-script = ExtResource("4_event")
-pattern = 1
-enemy = ExtResource("skel")
-count = 11
-first_delay = 26.0
-interval = 40.0
-
 [sub_resource type="Resource" id="W7"]
 script = ExtResource("2_wave")
 duration = 50.0
 max_alive = 68
 spawn_rate = 5.33
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 1.6
 spawns = Array[ExtResource("3_spawn")]([SubResource("S7_0"), SubResource("S7_1"), SubResource("S7_2"), SubResource("S7_3")])
 events = Array[ExtResource("4_event")]([SubResource("E7_ring"), SubResource("E7_rush")])
+
+[sub_resource type="Resource" id="E8_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 18
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E8_rush"]
+script = ExtResource("4_event")
+pattern = 1
+enemy = ExtResource("skel")
+first_delay = 26.0
+interval = 40.0
 
 [sub_resource type="Resource" id="S8_0"]
 script = ExtResource("3_spawn")
@@ -242,34 +230,28 @@ weight = 2.25
 [sub_resource type="Resource" id="S8_3"]
 script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
-weight = 1.0
-
-[sub_resource type="Resource" id="E8_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 18
-first_delay = 14.0
-interval = 30.0
-
-[sub_resource type="Resource" id="E8_rush"]
-script = ExtResource("4_event")
-pattern = 1
-enemy = ExtResource("skel")
-count = 12
-first_delay = 26.0
-interval = 40.0
 
 [sub_resource type="Resource" id="W8"]
 script = ExtResource("2_wave")
 duration = 55.0
 max_alive = 80
 spawn_rate = 6.06
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 1.7
 spawns = Array[ExtResource("3_spawn")]([SubResource("S8_0"), SubResource("S8_1"), SubResource("S8_2"), SubResource("S8_3")])
 events = Array[ExtResource("4_event")]([SubResource("E8_ring"), SubResource("E8_rush")])
+
+[sub_resource type="Resource" id="E9_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 19
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E9_rush"]
+script = ExtResource("4_event")
+pattern = 1
+enemy = ExtResource("skel")
+first_delay = 26.0
+interval = 40.0
 
 [sub_resource type="Resource" id="S9_0"]
 script = ExtResource("3_spawn")
@@ -291,32 +273,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.1
 
-[sub_resource type="Resource" id="E9_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 19
-first_delay = 14.0
-interval = 30.0
-
-[sub_resource type="Resource" id="E9_rush"]
-script = ExtResource("4_event")
-pattern = 1
-enemy = ExtResource("skel")
-count = 12
-first_delay = 26.0
-interval = 40.0
-
 [sub_resource type="Resource" id="W9"]
 script = ExtResource("2_wave")
 duration = 60.0
 max_alive = 94
 spawn_rate = 6.78
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 1.8
 spawns = Array[ExtResource("3_spawn")]([SubResource("S9_0"), SubResource("S9_1"), SubResource("S9_2"), SubResource("S9_3")])
 events = Array[ExtResource("4_event")]([SubResource("E9_ring"), SubResource("E9_rush")])
+
+[sub_resource type="Resource" id="E10_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 20
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E10_rush"]
+script = ExtResource("4_event")
+pattern = 1
+enemy = ExtResource("ghoul")
+count = 13
+first_delay = 26.0
+interval = 40.0
 
 [sub_resource type="Resource" id="S10_0"]
 script = ExtResource("3_spawn")
@@ -338,32 +316,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.2
 
-[sub_resource type="Resource" id="E10_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 20
-first_delay = 14.0
-interval = 30.0
+[sub_resource type="Resource" id="W10"]
+script = ExtResource("2_wave")
+duration = 60.0
+max_alive = 107
+spawn_rate = 7.5
+xp_factor = 1.9
+spawns = Array[ExtResource("3_spawn")]([SubResource("S10_0"), SubResource("S10_1"), SubResource("S10_2"), SubResource("S10_3")])
+events = Array[ExtResource("4_event")]([SubResource("E10_ring"), SubResource("E10_rush")])
 
-[sub_resource type="Resource" id="E10_rush"]
+[sub_resource type="Resource" id="E11_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 21
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E11_rush"]
 script = ExtResource("4_event")
 pattern = 1
 enemy = ExtResource("ghoul")
 count = 13
 first_delay = 26.0
 interval = 40.0
-
-[sub_resource type="Resource" id="W10"]
-script = ExtResource("2_wave")
-duration = 60.0
-max_alive = 107
-spawn_rate = 7.5
-hp_factor = 1.0
-damage_factor = 1.0
-xp_factor = 1.9
-spawns = Array[ExtResource("3_spawn")]([SubResource("S10_0"), SubResource("S10_1"), SubResource("S10_2"), SubResource("S10_3")])
-events = Array[ExtResource("4_event")]([SubResource("E10_ring"), SubResource("E10_rush")])
 
 [sub_resource type="Resource" id="S11_0"]
 script = ExtResource("3_spawn")
@@ -385,32 +359,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.3
 
-[sub_resource type="Resource" id="E11_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 21
-first_delay = 14.0
-interval = 30.0
-
-[sub_resource type="Resource" id="E11_rush"]
-script = ExtResource("4_event")
-pattern = 1
-enemy = ExtResource("ghoul")
-count = 13
-first_delay = 26.0
-interval = 40.0
-
 [sub_resource type="Resource" id="W11"]
 script = ExtResource("2_wave")
 duration = 60.0
 max_alive = 122
 spawn_rate = 8.22
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 2.0
 spawns = Array[ExtResource("3_spawn")]([SubResource("S11_0"), SubResource("S11_1"), SubResource("S11_2"), SubResource("S11_3")])
 events = Array[ExtResource("4_event")]([SubResource("E11_ring"), SubResource("E11_rush")])
+
+[sub_resource type="Resource" id="E12_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 22
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E12_rush"]
+script = ExtResource("4_event")
+pattern = 1
+enemy = ExtResource("ghoul")
+count = 14
+first_delay = 26.0
+interval = 40.0
 
 [sub_resource type="Resource" id="S12_0"]
 script = ExtResource("3_spawn")
@@ -432,32 +402,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.4
 
-[sub_resource type="Resource" id="E12_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 22
-first_delay = 14.0
-interval = 30.0
+[sub_resource type="Resource" id="W12"]
+script = ExtResource("2_wave")
+duration = 60.0
+max_alive = 137
+spawn_rate = 8.94
+xp_factor = 2.1
+spawns = Array[ExtResource("3_spawn")]([SubResource("S12_0"), SubResource("S12_1"), SubResource("S12_2"), SubResource("S12_3")])
+events = Array[ExtResource("4_event")]([SubResource("E12_ring"), SubResource("E12_rush")])
 
-[sub_resource type="Resource" id="E12_rush"]
+[sub_resource type="Resource" id="E13_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 23
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E13_rush"]
 script = ExtResource("4_event")
 pattern = 1
 enemy = ExtResource("ghoul")
 count = 14
 first_delay = 26.0
 interval = 40.0
-
-[sub_resource type="Resource" id="W12"]
-script = ExtResource("2_wave")
-duration = 60.0
-max_alive = 137
-spawn_rate = 8.94
-hp_factor = 1.0
-damage_factor = 1.0
-xp_factor = 2.1
-spawns = Array[ExtResource("3_spawn")]([SubResource("S12_0"), SubResource("S12_1"), SubResource("S12_2"), SubResource("S12_3")])
-events = Array[ExtResource("4_event")]([SubResource("E12_ring"), SubResource("E12_rush")])
 
 [sub_resource type="Resource" id="S13_0"]
 script = ExtResource("3_spawn")
@@ -479,32 +445,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.5
 
-[sub_resource type="Resource" id="E13_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 23
-first_delay = 14.0
-interval = 30.0
-
-[sub_resource type="Resource" id="E13_rush"]
-script = ExtResource("4_event")
-pattern = 1
-enemy = ExtResource("ghoul")
-count = 14
-first_delay = 26.0
-interval = 40.0
-
 [sub_resource type="Resource" id="W13"]
 script = ExtResource("2_wave")
 duration = 60.0
 max_alive = 152
 spawn_rate = 9.67
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 2.2
 spawns = Array[ExtResource("3_spawn")]([SubResource("S13_0"), SubResource("S13_1"), SubResource("S13_2"), SubResource("S13_3")])
 events = Array[ExtResource("4_event")]([SubResource("E13_ring"), SubResource("E13_rush")])
+
+[sub_resource type="Resource" id="E14_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 24
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E14_rush"]
+script = ExtResource("4_event")
+pattern = 1
+enemy = ExtResource("ghoul")
+count = 15
+first_delay = 26.0
+interval = 40.0
 
 [sub_resource type="Resource" id="S14_0"]
 script = ExtResource("3_spawn")
@@ -526,32 +488,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.6
 
-[sub_resource type="Resource" id="E14_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 24
-first_delay = 14.0
-interval = 30.0
+[sub_resource type="Resource" id="W14"]
+script = ExtResource("2_wave")
+duration = 60.0
+max_alive = 167
+spawn_rate = 10.39
+xp_factor = 2.3
+spawns = Array[ExtResource("3_spawn")]([SubResource("S14_0"), SubResource("S14_1"), SubResource("S14_2"), SubResource("S14_3")])
+events = Array[ExtResource("4_event")]([SubResource("E14_ring"), SubResource("E14_rush")])
 
-[sub_resource type="Resource" id="E14_rush"]
+[sub_resource type="Resource" id="E15_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 25
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E15_rush"]
 script = ExtResource("4_event")
 pattern = 1
 enemy = ExtResource("ghoul")
 count = 15
 first_delay = 26.0
 interval = 40.0
-
-[sub_resource type="Resource" id="W14"]
-script = ExtResource("2_wave")
-duration = 60.0
-max_alive = 167
-spawn_rate = 10.39
-hp_factor = 1.0
-damage_factor = 1.0
-xp_factor = 2.3
-spawns = Array[ExtResource("3_spawn")]([SubResource("S14_0"), SubResource("S14_1"), SubResource("S14_2"), SubResource("S14_3")])
-events = Array[ExtResource("4_event")]([SubResource("E14_ring"), SubResource("E14_rush")])
 
 [sub_resource type="Resource" id="S15_0"]
 script = ExtResource("3_spawn")
@@ -573,32 +531,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.7
 
-[sub_resource type="Resource" id="E15_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 25
-first_delay = 14.0
-interval = 30.0
-
-[sub_resource type="Resource" id="E15_rush"]
-script = ExtResource("4_event")
-pattern = 1
-enemy = ExtResource("ghoul")
-count = 15
-first_delay = 26.0
-interval = 40.0
-
 [sub_resource type="Resource" id="W15"]
 script = ExtResource("2_wave")
 duration = 60.0
 max_alive = 183
 spawn_rate = 11.11
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 2.4
 spawns = Array[ExtResource("3_spawn")]([SubResource("S15_0"), SubResource("S15_1"), SubResource("S15_2"), SubResource("S15_3")])
 events = Array[ExtResource("4_event")]([SubResource("E15_ring"), SubResource("E15_rush")])
+
+[sub_resource type="Resource" id="E16_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 26
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E16_rush"]
+script = ExtResource("4_event")
+pattern = 1
+enemy = ExtResource("ghoul")
+count = 16
+first_delay = 26.0
+interval = 40.0
 
 [sub_resource type="Resource" id="S16_0"]
 script = ExtResource("3_spawn")
@@ -620,32 +574,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.8
 
-[sub_resource type="Resource" id="E16_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 26
-first_delay = 14.0
-interval = 30.0
+[sub_resource type="Resource" id="W16"]
+script = ExtResource("2_wave")
+duration = 60.0
+max_alive = 199
+spawn_rate = 11.83
+xp_factor = 2.5
+spawns = Array[ExtResource("3_spawn")]([SubResource("S16_0"), SubResource("S16_1"), SubResource("S16_2"), SubResource("S16_3")])
+events = Array[ExtResource("4_event")]([SubResource("E16_ring"), SubResource("E16_rush")])
 
-[sub_resource type="Resource" id="E16_rush"]
+[sub_resource type="Resource" id="E17_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 27
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E17_rush"]
 script = ExtResource("4_event")
 pattern = 1
 enemy = ExtResource("ghoul")
 count = 16
 first_delay = 26.0
 interval = 40.0
-
-[sub_resource type="Resource" id="W16"]
-script = ExtResource("2_wave")
-duration = 60.0
-max_alive = 199
-spawn_rate = 11.83
-hp_factor = 1.0
-damage_factor = 1.0
-xp_factor = 2.5
-spawns = Array[ExtResource("3_spawn")]([SubResource("S16_0"), SubResource("S16_1"), SubResource("S16_2"), SubResource("S16_3")])
-events = Array[ExtResource("4_event")]([SubResource("E16_ring"), SubResource("E16_rush")])
 
 [sub_resource type="Resource" id="S17_0"]
 script = ExtResource("3_spawn")
@@ -667,32 +617,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 1.9
 
-[sub_resource type="Resource" id="E17_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 27
-first_delay = 14.0
-interval = 30.0
-
-[sub_resource type="Resource" id="E17_rush"]
-script = ExtResource("4_event")
-pattern = 1
-enemy = ExtResource("ghoul")
-count = 16
-first_delay = 26.0
-interval = 40.0
-
 [sub_resource type="Resource" id="W17"]
 script = ExtResource("2_wave")
 duration = 60.0
 max_alive = 216
 spawn_rate = 12.56
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 2.6
 spawns = Array[ExtResource("3_spawn")]([SubResource("S17_0"), SubResource("S17_1"), SubResource("S17_2"), SubResource("S17_3")])
 events = Array[ExtResource("4_event")]([SubResource("E17_ring"), SubResource("E17_rush")])
+
+[sub_resource type="Resource" id="E18_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 28
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E18_rush"]
+script = ExtResource("4_event")
+pattern = 1
+enemy = ExtResource("ghoul")
+count = 17
+first_delay = 26.0
+interval = 40.0
 
 [sub_resource type="Resource" id="S18_0"]
 script = ExtResource("3_spawn")
@@ -714,32 +660,28 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 2.0
 
-[sub_resource type="Resource" id="E18_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 28
-first_delay = 14.0
-interval = 30.0
+[sub_resource type="Resource" id="W18"]
+script = ExtResource("2_wave")
+duration = 60.0
+max_alive = 233
+spawn_rate = 13.28
+xp_factor = 2.7
+spawns = Array[ExtResource("3_spawn")]([SubResource("S18_0"), SubResource("S18_1"), SubResource("S18_2"), SubResource("S18_3")])
+events = Array[ExtResource("4_event")]([SubResource("E18_ring"), SubResource("E18_rush")])
 
-[sub_resource type="Resource" id="E18_rush"]
+[sub_resource type="Resource" id="E19_ring"]
+script = ExtResource("4_event")
+enemy = ExtResource("skel")
+count = 29
+first_delay = 14.0
+
+[sub_resource type="Resource" id="E19_rush"]
 script = ExtResource("4_event")
 pattern = 1
 enemy = ExtResource("ghoul")
 count = 17
 first_delay = 26.0
 interval = 40.0
-
-[sub_resource type="Resource" id="W18"]
-script = ExtResource("2_wave")
-duration = 60.0
-max_alive = 233
-spawn_rate = 13.28
-hp_factor = 1.0
-damage_factor = 1.0
-xp_factor = 2.7
-spawns = Array[ExtResource("3_spawn")]([SubResource("S18_0"), SubResource("S18_1"), SubResource("S18_2"), SubResource("S18_3")])
-events = Array[ExtResource("4_event")]([SubResource("E18_ring"), SubResource("E18_rush")])
 
 [sub_resource type="Resource" id="S19_0"]
 script = ExtResource("3_spawn")
@@ -761,29 +703,11 @@ script = ExtResource("3_spawn")
 enemy = ExtResource("plag")
 weight = 2.1
 
-[sub_resource type="Resource" id="E19_ring"]
-script = ExtResource("4_event")
-pattern = 0
-enemy = ExtResource("skel")
-count = 29
-first_delay = 14.0
-interval = 30.0
-
-[sub_resource type="Resource" id="E19_rush"]
-script = ExtResource("4_event")
-pattern = 1
-enemy = ExtResource("ghoul")
-count = 17
-first_delay = 26.0
-interval = 40.0
-
 [sub_resource type="Resource" id="W19"]
 script = ExtResource("2_wave")
 duration = 60.0
 max_alive = 250
 spawn_rate = 14.0
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 2.8
 spawns = Array[ExtResource("3_spawn")]([SubResource("S19_0"), SubResource("S19_1"), SubResource("S19_2"), SubResource("S19_3")])
 events = Array[ExtResource("4_event")]([SubResource("E19_ring"), SubResource("E19_rush")])
@@ -808,13 +732,11 @@ script = ExtResource("2_wave")
 duration = 90.0
 max_alive = 60
 spawn_rate = 1.0
-hp_factor = 1.0
-damage_factor = 1.0
 xp_factor = 2.9
 spawns = Array[ExtResource("3_spawn")]([SubResource("S20_0"), SubResource("S20_1"), SubResource("S20_2")])
 boss = ExtResource("boss")
 
 [resource]
 script = ExtResource("1_set")
-enemy_damage_scale = 0.6
 waves = Array[ExtResource("2_wave")]([SubResource("W1"), SubResource("W2"), SubResource("W3"), SubResource("W4"), SubResource("W5"), SubResource("W6"), SubResource("W7"), SubResource("W8"), SubResource("W9"), SubResource("W10"), SubResource("W11"), SubResource("W12"), SubResource("W13"), SubResource("W14"), SubResource("W15"), SubResource("W16"), SubResource("W17"), SubResource("W18"), SubResource("W19"), SubResource("W20")])
+enemy_damage_scale = 0.6

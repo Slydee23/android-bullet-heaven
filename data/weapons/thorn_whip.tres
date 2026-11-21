@@ -1,31 +1,30 @@
-[gd_resource type="Resource" script_class="WeaponData" format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://crkxd4s4csdfh"]
 
-[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/weapons/behaviors/sweep_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" uid="uid://dmiahsygd020q" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dvooljmwpgxwq" path="res://scripts/weapons/behaviors/sweep_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" uid="uid://ba7wo64j3os1s" path="res://scripts/weapons/weapon_effect.gd" id="3_anixe"]
 [ext_resource type="Resource" path="res://data/effects/whip_slash.tres" id="3_effect"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_thorn_whip.png" id="4_icon"]
-[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
+[ext_resource type="Texture2D" uid="uid://b60n40hayoamg" path="res://assets/sprites/icons/weapon_thorn_whip.png" id="4_icon"]
+[ext_resource type="Script" uid="uid://bqdhblruomrby" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
 effect = ExtResource("3_effect")
-start_offset = 8.0
 
 [sub_resource type="Resource" id="Upgrade_whip_damage"]
 script = ExtResource("90_upgrade")
 id = &"whip_damage"
 stat = &"damage"
-kind = 0
 value = 11.0
+rarity_values = null
 weight = 1.2
 
 [sub_resource type="Resource" id="Upgrade_whip_amount"]
 script = ExtResource("90_upgrade")
 id = &"whip_amount"
 stat = &"amount"
-kind = 0
 value = 1.0
-rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
+rarity_values = PackedFloat32Array(0, 1, 2)
 min_rarity = 1
 weight = 0.6
 
@@ -33,16 +32,16 @@ weight = 0.6
 script = ExtResource("90_upgrade")
 id = &"whip_range"
 stat = &"range"
-kind = 0
 value = 15.0
+rarity_values = null
 weight = 0.8
 
 [sub_resource type="Resource" id="Upgrade_whip_area"]
 script = ExtResource("90_upgrade")
 id = &"whip_area"
 stat = &"area"
-kind = 0
 value = 2.0
+rarity_values = null
 weight = 0.8
 
 [sub_resource type="Resource" id="Upgrade_whip_cooldown"]
@@ -51,6 +50,7 @@ id = &"whip_cooldown"
 stat = &"cooldown"
 kind = 1
 value = -0.1
+rarity_values = null
 
 [resource]
 script = ExtResource("1_script")
@@ -59,8 +59,6 @@ name_key = "WEAPON_THORN_WHIP_NAME"
 description_key = "WEAPON_THORN_WHIP_DESC"
 icon = ExtResource("4_icon")
 tags = Array[StringName]([&"melee", &"whip"])
-element = &"physical"
-default_unlocked = true
 base_stats = {
 &"amount": 1.0,
 &"area": 12.0,
@@ -69,9 +67,9 @@ base_stats = {
 &"range": 90.0
 }
 stat_limits = {
-&"cooldown": Vector2(0.5, 1.5),
 &"amount": Vector2(1, 6),
 &"area": Vector2(12, 24),
+&"cooldown": Vector2(0.5, 1.5),
 &"range": Vector2(90, 180)
 }
 behavior = SubResource("Resource_behavior")

@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="WeaponData" format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://bfivhq780cyay"]
 
-[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/weapons/behaviors/orbit_behavior.gd" id="2_behavior"]
-[ext_resource type="Texture2D" path="res://assets/sprites/weapons/sword_orbit.png" id="3_blade"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_orbit_sword.png" id="4_icon"]
-[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
+[ext_resource type="Script" uid="uid://dmiahsygd020q" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://c623b44by2nyb" path="res://scripts/weapons/behaviors/orbit_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" uid="uid://ba7wo64j3os1s" path="res://scripts/weapons/weapon_effect.gd" id="2_shsxi"]
+[ext_resource type="Texture2D" uid="uid://bkap61wrpcam7" path="res://assets/sprites/weapons/sword_orbit.png" id="3_blade"]
+[ext_resource type="Texture2D" uid="uid://x7qip7ruhtec" path="res://assets/sprites/icons/weapon_orbit_sword.png" id="4_icon"]
+[ext_resource type="Script" uid="uid://bqdhblruomrby" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -13,17 +14,16 @@ script = ExtResource("2_behavior")
 script = ExtResource("90_upgrade")
 id = &"sword_damage"
 stat = &"damage"
-kind = 0
 value = 12.0
+rarity_values = null
 weight = 1.2
 
 [sub_resource type="Resource" id="Upgrade_sword_amount"]
 script = ExtResource("90_upgrade")
 id = &"sword_amount"
 stat = &"amount"
-kind = 0
 value = 1.0
-rarity_values = PackedFloat32Array(0.0, 1.0, 2.0)
+rarity_values = PackedFloat32Array(0, 1, 2)
 min_rarity = 1
 weight = 0.6
 
@@ -31,8 +31,8 @@ weight = 0.6
 script = ExtResource("90_upgrade")
 id = &"sword_duration"
 stat = &"duration"
-kind = 0
 value = 0.5
+rarity_values = null
 
 [sub_resource type="Resource" id="Upgrade_sword_orbit_speed"]
 script = ExtResource("90_upgrade")
@@ -40,6 +40,7 @@ id = &"sword_orbit_speed"
 stat = &"orbit_speed"
 kind = 1
 value = 0.15
+rarity_values = null
 weight = 0.6
 
 [sub_resource type="Resource" id="Upgrade_sword_cooldown"]
@@ -48,6 +49,7 @@ id = &"sword_cooldown"
 stat = &"cooldown"
 kind = 1
 value = -0.1
+rarity_values = null
 weight = 0.8
 
 [resource]
@@ -57,8 +59,6 @@ name_key = "WEAPON_ORBIT_SWORD_NAME"
 description_key = "WEAPON_ORBIT_SWORD_DESC"
 icon = ExtResource("4_icon")
 tags = Array[StringName]([&"melee", &"blade"])
-element = &"physical"
-default_unlocked = true
 base_stats = {
 &"amount": 1.0,
 &"cooldown": 5.0,
@@ -74,7 +74,7 @@ stat_limits = {
 &"cooldown": Vector2(2, 99)
 }
 behavior = SubResource("Resource_behavior")
+upgrades = Array[ExtResource("90_upgrade")]([SubResource("Upgrade_sword_damage"), SubResource("Upgrade_sword_amount"), SubResource("Upgrade_sword_duration"), SubResource("Upgrade_sword_orbit_speed"), SubResource("Upgrade_sword_cooldown")])
 projectile_texture = ExtResource("3_blade")
 frame_width = 32
 animation_fps = 1.0
-upgrades = Array[ExtResource("90_upgrade")]([SubResource("Upgrade_sword_damage"), SubResource("Upgrade_sword_amount"), SubResource("Upgrade_sword_duration"), SubResource("Upgrade_sword_orbit_speed"), SubResource("Upgrade_sword_cooldown")])

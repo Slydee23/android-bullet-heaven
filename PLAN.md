@@ -302,7 +302,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
   Licht von oben links, gleiche Pixeldichte wie Held und Skelett, Effekte kurz (4–6 Bilder).
 - **Status der Dateien:** **Final** = bleibt, **Final-Kandidat** = gefällt, Feinschliff möglich, **Platzhalter** = wird ersetzt.
   Pixellab-Grafiken und abgenommene UI-Texturen gelten als Final, die übrigen Generator-Grafiken als Final-Kandidat. Ausnahmen:
-  `hero_hit.png`, `hero_death.png` und `forest_props.png` sind Platzhalter.
+  `hero_hit.png` und `hero_death.png` sind Platzhalter.
 - **Neue Grafiken müssen zum Stil der vorhandenen passen und dürfen nicht wie Fremdkörper wirken.** Vorzugsgröße **32×32**, andere Größen nur,
   wenn sie sinnvoller sind. Wichtiger als die Auflösung ist die **gleiche Pixeldichte**: Ein 16×16-Geschoss ist im Spiel genauso grob gepixelt wie der 32×32-Held.
   Einheitlicher Pixel-Art-Stil, gleiche Lichtrichtung und Umrandung wie bei Held und Skelett.
@@ -325,7 +325,6 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/tiles/forest_ground_details.png` | Reihe transparenter 32×32-Details (Steine, Laub, Pilze, Blumen …), zufällig auf ca. 10 % der Kacheln | beliebig viele | M3 |
 | `assets/tiles/forest_canopy.png` | Nahtloses, dichtes Kronendach aus 32×32-Kacheln (jetzt 128×128), füllt alles außerhalb der begehbaren Fläche | 1 Muster | M3 |
 | `assets/tiles/forest_edge.png` | Reihe transparenter 32×32-Waldrand-Stücke, Fußpunkt unten Mitte. Feste Reihenfolge: 0–3 Kronen, 4–5 Büsche, 6–7 Bäume mit Stamm (oberer Rand), 8 Schattenverlauf | 9 | M3 |
-| `assets/tiles/forest_props.png` | Reihe aus 64×64-Zellen (Bäume, Felsen, Büsche; unten bündig). **Derzeit ungenutzt**, für Deko nach M7 | beliebig viele | M1 |
 | `assets/ui/joystick_ring.png` | 32×32 | 1 | M2 |
 | `assets/ui/joystick_knob.png` | 16×16 | 1 | M2 |
 | `assets/ui/pause_button.png` | 16×16 | 1 | M2 |
@@ -601,8 +600,7 @@ Nachtrag: eigene **Charge-Animation** (PixelLab, 2 Generierungen, `bone_knight_c
 - Statusbildschirm zeigt Welle, Zeit und Kills.
 - **Am Handy testen:** Ein kompletter Run lässt sich durchspielen, gewinnen und verlieren. Ist die Länge von 10–15 Minuten angenehm?
   Stimmen die Zahlen in der Zusammenfassung?
-- ⚠ **Erinnerung nach Abschluss von M7:** Die neue Map-Abgrenzung (dichter Wald) ist seit M3 eingebaut. Offen bleibt:
-  Wofür die Props-Texturen (`forest_props.png`: Bäume, Felsen, Büsche) stattdessen verwendet werden, z. B. als Deko oder Hindernisse in der Map.
+- **Entscheidung nach M7 (2026-11-21):** Die alten Props-Texturen (`forest_props.png`) sind gelöscht, die Asset-Pläne haben sich seitdem geändert. Gewünscht sind stattdessen **Hindernisse passend zur jeweiligen Map** (im Wald z. B. Bäume, Felsen, umgestürzte Stämme), siehe „E0 – Map-Hindernisse“.
 
 ### M8 – Run speichern & fortsetzen
 
@@ -751,6 +749,7 @@ Die Stadt, die man nach und nach wieder aufbaut, ist ein **begehbarer Ort** und 
 
 Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Beginn.
 
+0. **E0 – Map-Hindernisse (Vorschlag: direkt nach M8, Zeitpunkt vom Nutzer noch zu bestätigen):** Hindernisse passend zur Map (Wald: Bäume, Felsen, Stämme), die Held und Gegner umlaufen müssen. Früh, weil sie fast alles berühren, was sich bewegt: Gegner-Laufen und Abstoßen (ohne Physik: Kreis-Hindernisse im Spatial Grid, einfaches Ausweichen statt Pfadsuche), Ghul-Sprung, Boss-Ansturm, Feuerbälle und eigene Geschosse, Spawn-Punkte, Kristalle. Je mehr Gegner, Bosse und Fähigkeiten (E3, E12) es gibt, desto mehr müsste man später nachrüsten. Gleichzeitig wird die Map zu einer Datendatei (Boden, Rand, Hindernisse), die E12 (weitere Maps/Biome) direkt weiterverwendet. Neue Grafiken (Stil vorher absprechen); Leistung am Testhandy prüfen.
 1. **E1 – Rastplätze mit Händlern:** zufällige Händler (Tränke, Artefakte), Währung „Magie-Schrott“. Braucht Wellen (M7) und Speichern (M8).
 2. **E2 – Audio:** Musik und Soundeffekte, Lautstärke-Optionen.
 3. **E3 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm. Eine erste Fähigkeit als Datendatei
