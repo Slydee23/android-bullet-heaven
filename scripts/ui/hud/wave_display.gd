@@ -42,6 +42,7 @@ func _on_time_changed(seconds_left: int) -> void:
 		alert_label.visible = false
 		set_process(false)
 	var kills := _run_state.kills if _run_state else 0
+	@warning_ignore("integer_division")  # gewollt: ganze Minuten
 	time_label.text = "%d:%02d · %s" % [seconds_left / 60, seconds_left % 60, tr("HUD_KILLS") % kills]
 
 

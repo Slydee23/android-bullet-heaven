@@ -70,6 +70,7 @@ signal enemy_damaged(position: Vector2, amount: float, element: StringName, crit
 ## Ein Gegner ist gestorben. flipped = er schaute nach links (für die gespiegelte Tod-Animation).
 signal enemy_killed(position: Vector2, data: EnemyData, flipped: bool)
 ## Ein Angriff lässt den Bildschirm wackeln (Stärke 0..1), z. B. der Bodenschlag des Bosses
+@warning_ignore("unused_signal")  # wird von den Gegner-Fähigkeiten ausgelöst (z. B. BossKnightAbility)
 signal screen_shake(strength: float)
 ## Lebenspunkte eines Bosses haben sich geändert (beim Erscheinen, bei Treffern; hp 0 = besiegt), für die Boss-Leiste
 signal boss_health_changed(data: EnemyData, hp: float, max_hp: float)
@@ -945,8 +946,8 @@ func set_ability_state(i: int, state: int) -> void:
 
 
 ## Zusätzliche Größe und Färbung der Pose (1 und Weiß = normal)
-func set_pose_fx(i: int, scale: float, tint: Color) -> void:
-	_pose_scale[i] = scale
+func set_pose_fx(i: int, size_factor: float, tint: Color) -> void:
+	_pose_scale[i] = size_factor
 	_pose_tint[i] = tint
 
 
@@ -1019,6 +1020,7 @@ func _draw_status_particles(i: int) -> void:
 				Elements.COLD:
 					if phase > 0.5:
 						continue
+					@warning_ignore("integer_division")  # gewollt: Pseudo-Zufall aus ganzen Zahlen
 					y = -6.0 - float((seed_value / 13) % 18)
 				_:
 					# Blitz: alle 0,1 s an einer anderen Stelle aufzucken

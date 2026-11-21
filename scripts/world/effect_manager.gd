@@ -28,9 +28,9 @@ func _ready() -> void:
 
 
 ## Spielt den Effekt einmal an der Weltposition pos ab (Fußpunkt-Ebene, wie alle Positionen im Spiel).
-## Ist der Pool voll, entfällt der Effekt einfach (er ist nur Optik). rotation dreht das Bild um seinen Ankerpunkt,
-## scale streckt es (negatives y spiegelt es, z. B. damit der Peitschenhaken auch links nach oben zeigt).
-func play(effect: EffectData, pos: Vector2, rotation := 0.0, scale := Vector2.ONE) -> void:
+## Ist der Pool voll, entfällt der Effekt einfach (er ist nur Optik). angle dreht das Bild um seinen Ankerpunkt,
+## stretch streckt es (negatives y spiegelt es, z. B. damit der Peitschenhaken auch links nach oben zeigt).
+func play(effect: EffectData, pos: Vector2, angle := 0.0, stretch := Vector2.ONE) -> void:
 	if count >= MAX_EFFECTS or not effect or not effect.texture:
 		return
 	var slot := _effects.find(effect)
@@ -40,8 +40,8 @@ func play(effect: EffectData, pos: Vector2, rotation := 0.0, scale := Vector2.ON
 	_positions[count] = pos
 	_ages[count] = 0.0
 	_slots[count] = slot
-	_rotations[count] = rotation
-	_scales[count] = scale
+	_rotations[count] = angle
+	_scales[count] = stretch
 	count += 1
 
 

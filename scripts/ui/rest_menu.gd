@@ -144,6 +144,7 @@ func _refresh() -> void:
 ## Sekunden als „m:ss“
 static func _format_time(seconds: float) -> String:
 	var total := int(seconds)
+	@warning_ignore("integer_division")  # gewollt: ganze Minuten
 	return "%d:%02d" % [total / 60, total % 60]
 
 

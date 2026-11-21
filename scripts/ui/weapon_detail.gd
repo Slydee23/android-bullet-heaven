@@ -122,11 +122,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		close()
 
 
-func _label(text: String, font_size: int, color: Color, wrap := false) -> Label:
+func _label(text: String, font_size: int, color: Color, wrap_text := false) -> Label:
 	var label := Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", font_size)
 	label.add_theme_color_override("font_color", color)
-	if wrap:
+	if wrap_text:
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label

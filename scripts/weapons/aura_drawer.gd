@@ -89,6 +89,7 @@ func _draw_front() -> void:
 
 
 func _draw_strip(texture: Texture2D, frame: Vector2i, top_left: Vector2, fps: float, canvas: CanvasItem) -> void:
+	@warning_ignore("integer_division")  # gewollt: Zahl ganzer Frames im Streifen
 	var frames := maxi(1, texture.get_width() / frame.x)
 	var index := int(_time * fps) % frames
 	var size := Vector2(frame)
@@ -124,6 +125,7 @@ func _draw_ground(center: Vector2, radius: float) -> void:
 		var seed_value := e * 7919 + 17
 		var phase := fposmod(_time / EMBER_LIFE + (seed_value % 97) / 97.0, 1.0)
 		var angle := (seed_value % 360) * TAU / 360.0
+		@warning_ignore("integer_division")  # gewollt: Pseudo-Zufall aus ganzen Zahlen
 		var distance := radius * sqrt(((seed_value / 7) % 100) / 100.0)
 		var point := center + Vector2.from_angle(angle) * distance + Vector2(0.0, -phase * EMBER_RISE)
 		var color := EMBER_HOT.lerp(EMBER_COOL, phase)

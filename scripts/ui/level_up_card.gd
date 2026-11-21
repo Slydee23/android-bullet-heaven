@@ -96,12 +96,12 @@ func _apply_style(rarity: int) -> void:
 	var normal := PixelUI.nine_slice(CARD_TEXTURES[rarity], CARD_MARGIN)
 	var hover := normal.duplicate() as StyleBoxTexture
 	hover.modulate_color = Color(1.18, 1.14, 1.28)
-	var pressed := normal.duplicate() as StyleBoxTexture
-	pressed.modulate_color = Color(0.8, 0.78, 0.85)
+	var pressed_style := normal.duplicate() as StyleBoxTexture
+	pressed_style.modulate_color = Color(0.8, 0.78, 0.85)
 	add_theme_stylebox_override("normal", normal)
 	add_theme_stylebox_override("hover", hover)
-	add_theme_stylebox_override("pressed", pressed)
-	add_theme_stylebox_override("hover_pressed", pressed)
+	add_theme_stylebox_override("pressed", pressed_style)
+	add_theme_stylebox_override("hover_pressed", pressed_style)
 	# Während der kurzen Eingabesperre sieht die Karte normal aus (nur nicht antippbar)
 	add_theme_stylebox_override("disabled", normal)
 	add_theme_stylebox_override("focus", StyleBoxEmpty.new())

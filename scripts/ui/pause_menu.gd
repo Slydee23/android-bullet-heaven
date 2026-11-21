@@ -143,13 +143,13 @@ func _stat_row(grid: GridContainer, title: String, value: String) -> void:
 	grid.add_child(_label(value, PixelUI.SELECTED_TEXT_COLOR, false))
 
 
-## Beschriftung im Pixel-Stil. wrap = false für Werte in Tabellen: Sonst würde die Wertspalte auf null Breite schrumpfen
+## Beschriftung im Pixel-Stil. wrap_text = false für Werte in Tabellen: Sonst würde die Wertspalte auf null Breite schrumpfen
 ## und jeden Buchstaben einzeln umbrechen.
-func _label(text: String, color: Color, wrap := true) -> Label:
+func _label(text: String, color: Color, wrap_text := true) -> Label:
 	var label := Label.new()
 	label.text = text
 	label.add_theme_color_override("font_color", color)
-	if wrap:
+	if wrap_text:
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label
 

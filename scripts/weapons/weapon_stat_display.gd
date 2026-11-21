@@ -92,10 +92,10 @@ static func _card_value_text(weapon: WeaponInstance, stat: StringName, translate
 
 ## Zahl ohne überflüssige Nachkommastellen („3“, „2.5“)
 static func _number(value: float) -> String:
-	var snapped := snappedf(value, 0.1)
-	if is_equal_approx(snapped, roundf(snapped)):
-		return str(roundi(snapped))
-	return str(snapped)
+	var rounded := snappedf(value, 0.1)
+	if is_equal_approx(rounded, roundf(rounded)):
+		return str(roundi(rounded))
+	return str(rounded)
 
 
 static func _supported(weapon: WeaponInstance, stat: StringName) -> bool:

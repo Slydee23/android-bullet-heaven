@@ -113,10 +113,10 @@ func _play_effect(weapon: WeaponInstance, at: Vector2) -> void:
 	if behavior.effect:
 		effect_manager.play(behavior.effect, at)
 	if behavior.impact_effect:
-		var scale := 1.0
+		var impact_scale := 1.0
 		if behavior.effect_area_reference > 0.0:
-			scale = weapon.get_stat(&"area") / behavior.effect_area_reference
-		effect_manager.play(behavior.impact_effect, at, 0.0, Vector2(scale, scale))
+			impact_scale = weapon.get_stat(&"area") / behavior.effect_area_reference
+		effect_manager.play(behavior.impact_effect, at, 0.0, Vector2(impact_scale, impact_scale))
 
 
 func _process(delta: float) -> void:
