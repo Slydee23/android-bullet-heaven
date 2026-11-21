@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WeaponData" format=3]
 
-[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/behaviors/aura_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/weapons/behaviors/aura_behavior.gd" id="2_behavior"]
 [ext_resource type="Texture2D" path="res://assets/sprites/effects/aura_flame.png" id="3_flame"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_flame_torch.png" id="4_icon"]
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="90_upgrade"]
+[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 [ext_resource type="Texture2D" path="res://assets/sprites/effects/fire_aura_behind.png" id="5_behind"]
 [ext_resource type="Texture2D" path="res://assets/sprites/effects/fire_aura_front.png" id="6_front"]
 

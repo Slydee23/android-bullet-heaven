@@ -29,8 +29,9 @@ Der aktuelle Plan steht in PLAN.md, halte ihn aktuell.
 - **Prozedurale Wellen-Systeme**: Der zentrale `EnemyManager` und das *Spatial Grid* sind so gebaut, dass dynamische Skalierung, Schwarm-Formationen (Ringe, Einkesselung) und mathematisch berechnete Spawns flüssig laufen. Wellen-Zusammensetzungen werden über leichtgewichtige Datenstrukturen oder `Resource`-Dateien definiert.
 - **Leichtgewichtige 2D-Asset-Pipelines**:
   - Spritesheets (Streifen mit `hframes` bzw. Frame-Breite) statt Einzelbilder, um Draw-Calls auf der mobilen GPU (Adreno 610) minimal zu halten.
-  - `Sprite2D`/`AnimatedSprite2D` nur für Einzelobjekte (Held, Props, UI). **Massenobjekte** (Gegner, Projektile, Pickups) zeichnet ein zentraler Manager in einem `_draw` bzw. später per `MultiMeshInstance2D`, so wie `scripts/enemy_manager.gd`.
+  - `Sprite2D`/`AnimatedSprite2D` nur für Einzelobjekte (Held, Props, UI). **Massenobjekte** (Gegner, Projektile, Pickups) zeichnet ein zentraler Manager in einem `_draw` bzw. später per `MultiMeshInstance2D`, so wie `scripts/enemies/enemy_manager.gd`.
   - UI- und Gameplay-Assets sind getrennt: eigene Ordner (`assets/ui/` vs. `assets/sprites/`, `assets/tiles/`), und die Run-Szene lädt keine Menü-Texturen vorab.
+- **Ordnerstruktur `scripts/`**: `core/` (Autoloads, Run, Held, Kamera, Stats), `enemies/` (+ `enemy_abilities/`), `weapons/` (+ `behaviors/`, `targeting/`, `effects/`, `upgrades/`), `world/` (Wellen, Pickups, Effekte, Rastplatz-Shop), `ui/` (Menüs, Karten, + `hud/`). Neue Skripte in den passenden Ordner legen.
 - **Data-Driven Upgrades**: Waffen, Upgrades, Status-Effekte und Werte sind benutzerdefinierte `Resource`-Skripte, damit Gameplay-Logik strikt von Spieldaten getrennt bleibt.
 - **Godot 4.7 Syntax-Sicherheit**: Moderne GDScript-Syntax: Signale via Callable verbinden (`signal.connect(_on_callback)`), `@export`-Annotationen, statische Typisierung. Funktionsparameter und Rückgabewerte immer typisieren. Bei Variablen reicht die Typ-Ableitung (`var speed := 100.0`), wenn der Typ offensichtlich ist, sonst explizit (`var target: Node2D`).
 - Spieltexte: immer über Übersetzungssystem (`tr()`), zuerst Deutsch, später Englisch

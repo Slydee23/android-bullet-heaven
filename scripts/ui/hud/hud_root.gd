@@ -6,7 +6,7 @@ extends Control
 ## wo kein HUD steht, und eingerückt wirkte alles zu weit im Bild (getestet in M6a). Braucht ein Gerät das später doch,
 ## gehört es nur hierher.
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 
 
 func _ready() -> void:

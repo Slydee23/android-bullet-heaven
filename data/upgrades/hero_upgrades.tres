@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="UpgradePool" format=3]
 
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade_pool.gd" id="1_pool"]
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="2_upgrade"]
+[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_pool.gd" id="1_pool"]
+[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="2_upgrade"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_damage.png" id="icon_0"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_cooldown.png" id="icon_1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/bonus_speed.png" id="icon_2"]

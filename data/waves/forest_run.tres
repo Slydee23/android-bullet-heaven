@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="WaveSet" format=3]
 
-[ext_resource type="Script" path="res://scripts/waves/wave_set.gd" id="1_set"]
-[ext_resource type="Script" path="res://scripts/waves/wave_data.gd" id="2_wave"]
-[ext_resource type="Script" path="res://scripts/waves/wave_spawn.gd" id="3_spawn"]
-[ext_resource type="Script" path="res://scripts/waves/wave_event.gd" id="4_event"]
+[ext_resource type="Script" path="res://scripts/world/waves/wave_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scripts/world/waves/wave_data.gd" id="2_wave"]
+[ext_resource type="Script" path="res://scripts/world/waves/wave_spawn.gd" id="3_spawn"]
+[ext_resource type="Script" path="res://scripts/world/waves/wave_event.gd" id="4_event"]
 [ext_resource type="Resource" path="res://data/enemies/skeleton.tres" id="skel"]
 [ext_resource type="Resource" path="res://data/enemies/ghoul.tres" id="ghoul"]
 [ext_resource type="Resource" path="res://data/enemies/cultist.tres" id="cult"]

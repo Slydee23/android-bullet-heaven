@@ -3,7 +3,7 @@ extends Button
 ## Eine Karte im Level-Up-Fenster: Runenstein-Karte mit Rand in der Seltenheitsfarbe, oben das Icon, darunter Name,
 ## „Neue Waffe“ bzw. „Lv 3 → 4“ und die Wirkung (bei Waffen-Upgrades als „Wert alt → neu“).
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 const CARD_TEXTURES: Array[Texture2D] = [
 	preload("res://assets/ui/card_common.png"),
 	preload("res://assets/ui/card_rare.png"),

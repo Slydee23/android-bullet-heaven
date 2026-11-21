@@ -432,7 +432,7 @@ M3d HP im Statusbildschirm, Gegner nach Höhe sortiert zeichnen, Treffer-/Tod-An
 - **Treffer-Feedback beim Helden:** kurzes Bildschirmwackeln und Vibration (Optionen „Bildschirmwackeln“ und „Vibration“).
   Stärke nach Trefferanteil an den max. HP (Wackeln über `RunCamera.shake()` mit 1,5–4 Welt-Pixeln, damit auch leichte Treffer sichtbar wackeln; Vibration 40–120 ms). Selbstschaden löst nichts aus.
   Die Android-Berechtigung VIBRATE ist in `export_presets.cfg` gesetzt.
-  Vibriert wird über `scripts/haptics.gd`: Ab Android 13 direkt über die Android-Vibration mit der Kategorie „Medien“.
+  Vibriert wird über `scripts/core/haptics.gd`: Ab Android 13 direkt über die Android-Vibration mit der Kategorie „Medien“.
   Godots `Input.vibrate_handheld` zählt als Touch-Feedback und wird auf Handys mit ausgeschalteter Touch-Vibration verworfen
   (am Redmi getestet). Ältere Android-Versionen und der PC nutzen weiter den Godot-Weg.
 - Statusbildschirm zeigt HP („Lebenspunkte: 80 / 100“, Charakter-Spalte).
@@ -523,7 +523,7 @@ Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6
 | Bombenbeutel | Schaden +6 · +1 Bombe · Wirkradius +8 · Zündzeit −0,1 s · Abklingzeit −8 % |
 | Peitsche | Schaden +7 · +1 Hieb · Länge +15 · Breite +2 · Abklingzeit −8 % |
 
-**M6c (umgesetzt, getestet):** Werte-System in `scripts/stats/`: `StatModifier` (Stat-ID, Art FLAT/PERCENT/MULT, Wert, optional `required_tags`) und `StatBlock` (Sammlung, Signal `changed`, Rechnung `(Grundwert + Σ FLAT) × (1 + Σ PERCENT) × Π MULT`). Jede `WeaponInstance` hat einen eigenen Block (`modifiers`, Upgrades) und liest den globalen Block `RunState.stats` mit, aber nur für Stats, die ihre Angriffsart versteht (`supports_stat`, z. B. kein „+1 Projektil“ für die Aura). Ergebnisse werden pro Waffe zwischengespeichert, bis sich ein Bonus ändert (kein Leistungsverlust bei 800 Gegnern). Grenzen wie bisher über `stat_limits` und `limit_stat`. Held: Grundwerte `base_speed`, `base_max_hp`, `base_pickup_radius`, geltende Werte aus Stat-IDs `move_speed`, `max_hp`, `pickup_radius` (steigen die Max-HP, steigen die HP mit). Debug (Reiter Waffen, „Globale Boni“): +10 % Schaden, −10 % Abklingzeit, +1 Projektil (alle), +20 % Lauftempo, +20 Max-HP, +20 Sammelradius, Zurücksetzen, Anzeige der Heldenwerte. Eigene Stat-Definitionen als Datendateien (Min/Max je Stat, Anzeige-Name) folgen, sobald Spielerwerte wie Rüstung, Krit oder Ausweichen dazukommen; bis dahin reichen `stat_limits` der Waffen und feste Untergrenzen beim Helden.
+**M6c (umgesetzt, getestet):** Werte-System in `scripts/core/stats/`: `StatModifier` (Stat-ID, Art FLAT/PERCENT/MULT, Wert, optional `required_tags`) und `StatBlock` (Sammlung, Signal `changed`, Rechnung `(Grundwert + Σ FLAT) × (1 + Σ PERCENT) × Π MULT`). Jede `WeaponInstance` hat einen eigenen Block (`modifiers`, Upgrades) und liest den globalen Block `RunState.stats` mit, aber nur für Stats, die ihre Angriffsart versteht (`supports_stat`, z. B. kein „+1 Projektil“ für die Aura). Ergebnisse werden pro Waffe zwischengespeichert, bis sich ein Bonus ändert (kein Leistungsverlust bei 800 Gegnern). Grenzen wie bisher über `stat_limits` und `limit_stat`. Held: Grundwerte `base_speed`, `base_max_hp`, `base_pickup_radius`, geltende Werte aus Stat-IDs `move_speed`, `max_hp`, `pickup_radius` (steigen die Max-HP, steigen die HP mit). Debug (Reiter Waffen, „Globale Boni“): +10 % Schaden, −10 % Abklingzeit, +1 Projektil (alle), +20 % Lauftempo, +20 Max-HP, +20 Sammelradius, Zurücksetzen, Anzeige der Heldenwerte. Eigene Stat-Definitionen als Datendateien (Min/Max je Stat, Anzeige-Name) folgen, sobald Spielerwerte wie Rüstung, Krit oder Ausweichen dazukommen; bis dahin reichen `stat_limits` der Waffen und feste Untergrenzen beim Helden.
 
 **M6b (umgesetzt, getestet):** `PickupManager` (Pool in gepackten Arrays, ein `_draw`, unter Aura und Gegnern): Gegner lassen beim Tod `EnemyData.xp_value` als Seelensplitter fallen (Skelett 1, Übungspuppe 0). Größe nach Wert: klein blau (1–2), mittel grün (ab 3), groß violett (ab 10). Im Sammelradius (`Player.pickup_radius`, 40 Welt-Pixel) springt der Splitter kurz zurück und fliegt dann beschleunigend zum Helden. Höchstens 400 liegen gleichzeitig, darüber wandert neue Erfahrung in den am weitesten entfernten Splitter. Grafik `tools/gen_pickups.gd` (`assets/sprites/pickups/xp_crystal.png`, 3 Zeilen × 4 Frames, Funkeln). Debug (Allgemein): „Alle Splitter anziehen“, „+300 Splitter verstreuen“. FPS-Anzeige zählt die Splitter mit.
 
@@ -694,8 +694,8 @@ Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) 
 Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeichert.
 **Regel: Jede Option kommt im selben Meilenstein wie das Feature, das sie steuert.**
 
-- **Kategorien als Reiter oben.** Alle Kategorien und Optionen stehen nur in `scripts/options_catalog.gd`. Das Menü baut
-  Reiter und Zeilen daraus selbst (Typen: An/Aus, Auswahl-Knöpfe, Schieberegler, siehe `scripts/option_def.gd`).
+- **Kategorien als Reiter oben.** Alle Kategorien und Optionen stehen nur in `scripts/ui/options_catalog.gd`. Das Menü baut
+  Reiter und Zeilen daraus selbst (Typen: An/Aus, Auswahl-Knöpfe, Schieberegler, siehe `scripts/ui/option_def.gd`).
   Kategorie hinzufügen, verschieben oder löschen heißt also eine Zeile im Katalog ändern. Kategorien ohne Optionen werden ausgeblendet.
 - Kategorien: Steuerung, Anzeige, Grafik, Audio, Allgemein.
 
@@ -811,7 +811,7 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
   Statt Umrandung gibt es einen Schlagschatten (Theme `shadow_offset`).
 - **Umfang:** Theme (Knöpfe, Fenster, Regler, Reiter), Hauptmenü, Pause, Optionen, Game Over, HUD-Knöpfe. Das Debug-Menü erbt nur das Theme.
   Joystick und Lebensleiste sind noch im alten Stil (Kandidaten für später).
-- Technisch hängt die Optik an den UI-Texturen und den Theme-Werten in `scripts/pixel_ui.gd` (`make_theme()`); der Menü-Code blieb
+- Technisch hängt die Optik an den UI-Texturen und den Theme-Werten in `scripts/ui/pixel_ui.gd` (`make_theme()`); der Menü-Code blieb
   weitgehend unberührt.
 
 ## Offene Designfragen

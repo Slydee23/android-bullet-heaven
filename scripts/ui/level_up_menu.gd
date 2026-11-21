@@ -10,7 +10,7 @@ signal reroll_requested
 ## Überspringen gedrückt: keine Karte, das Level-Up ist verbraucht
 signal skipped
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 ## So lange sind die Karten nach dem Öffnen gesperrt, damit ein Daumen, der gerade noch steuert, nicht versehentlich wählt
 const INPUT_DELAY := 0.5
 const DIM_COLOR := Color(0.03, 0.02, 0.06, 0.72)

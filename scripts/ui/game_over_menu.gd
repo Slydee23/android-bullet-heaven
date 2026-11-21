@@ -1,7 +1,7 @@
 extends Control
 ## Game Over: hält das Spiel an und führt zu einem neuen Run oder ins Hauptmenü.
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 
 ## Sieg statt Niederlage (setzt die Run-Szene vor dem Einhängen), ob der Boss besiegt wurde und die Zusammenfassung des Runs
 var victory := false

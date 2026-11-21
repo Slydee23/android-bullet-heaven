@@ -3,7 +3,7 @@ extends Button
 ## Eine Karte im Rastplatz-Shop: Runenstein-Karte mit Rand in der Seltenheitsfarbe (wie die Level-Up-Karten, nur kleiner),
 ## Icon, Name, Wirkung („Lauftempo +8 %“) und Preis in Seelen. Nicht bezahlbar: Preis rot. Gekauft: blass, „Gekauft“.
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 const SOUL_ICON := preload("res://assets/ui/hud_soul.png")
 const CARD_MARGIN := 8
 const CARD_SIZE := Vector2(360.0, 430.0)

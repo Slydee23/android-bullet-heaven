@@ -8,7 +8,7 @@ extends Control
 ## Der Spieler will weiter: die nächste Welle beginnt
 signal continued
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 const SOUL_ICON := preload("res://assets/ui/hud_soul.png")
 ## Sperre nach dem Öffnen gegen versehentliches Antippen (der Daumen steuert gerade noch)
 const INPUT_DELAY := 0.6

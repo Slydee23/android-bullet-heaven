@@ -3,7 +3,7 @@ extends RefCounted
 ## Einzige Stelle, an der Kategorien und Optionen des Optionsmenüs festgelegt werden.
 ## - Neue Kategorie: Zeile in CATEGORIES ergänzen (Reihenfolge = Reiter-Reihenfolge).
 ## - Option verschieben: ihre Kategorie-ID ändern. Option entfernen: ihre Zeile löschen.
-## - Neue Option: Zeile in options() ergänzen, dazu die Eigenschaft (Laden/Speichern) in scripts/settings.gd.
+## - Neue Option: Zeile in options() ergänzen, dazu die Eigenschaft (Laden/Speichern) in scripts/core/settings.gd.
 ## Kategorien ohne Optionen werden automatisch ausgeblendet.
 
 const CATEGORIES := [

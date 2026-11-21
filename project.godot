@@ -19,9 +19,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Settings="*res://scripts/settings.gd"
-BackGesture="*res://scripts/back_gesture.gd"
-SceneRouter="*res://scripts/scene_router.gd"
+Settings="*res://scripts/core/settings.gd"
+BackGesture="*res://scripts/core/back_gesture.gd"
+SceneRouter="*res://scripts/core/scene_router.gd"
 
 [display]
 

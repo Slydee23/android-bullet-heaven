@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="EffectData" format=3]
 
-[ext_resource type="Script" path="res://scripts/effect_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/world/effect_data.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/sprites/effects/death.png" id="2_death"]
 
 [resource]

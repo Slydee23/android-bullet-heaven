@@ -5,7 +5,7 @@ extends PanelContainer
 
 signal pressed(weapon: WeaponInstance)
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 const MARGIN := 14
 const ICON_SCALE := 2
 const DIM := Color(1, 1, 1, 0.45)

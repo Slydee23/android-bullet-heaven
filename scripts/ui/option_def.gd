@@ -1,6 +1,6 @@
 class_name OptionDef
 extends RefCounted
-## Beschreibung einer Option im Optionsmenü. Alle Optionen stehen in scripts/options_catalog.gd,
+## Beschreibung einer Option im Optionsmenü. Alle Optionen stehen in scripts/ui/options_catalog.gd,
 ## das Menü baut daraus Reiter und Zeilen selbst.
 
 enum Kind {

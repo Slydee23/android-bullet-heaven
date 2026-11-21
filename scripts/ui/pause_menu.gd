@@ -4,7 +4,7 @@ extends Control
 
 signal closed
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 const OPTIONS_MENU := preload("res://ui/options_menu.tscn")
 const HERO_UPGRADES := preload("res://data/upgrades/hero_upgrades.tres")
 const XP_FILL := preload("res://assets/ui/hud_fill_xp.png")

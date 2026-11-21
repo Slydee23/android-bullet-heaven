@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WeaponData" format=3]
 
-[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/behaviors/sweep_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/weapons/behaviors/sweep_behavior.gd" id="2_behavior"]
 [ext_resource type="Resource" path="res://data/effects/whip_slash.tres" id="3_effect"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_thorn_whip.png" id="4_icon"]
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="90_upgrade"]
+[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")

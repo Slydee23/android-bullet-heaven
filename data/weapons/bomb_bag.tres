@@ -1,12 +1,12 @@
 [gd_resource type="Resource" script_class="WeaponData" format=3]
 
-[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/behaviors/strike_behavior.gd" id="2_behavior"]
-[ext_resource type="Script" path="res://scripts/targeting/random_in_range_picker.gd" id="3_picker"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/weapons/behaviors/strike_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://scripts/weapons/targeting/random_in_range_picker.gd" id="3_picker"]
 [ext_resource type="Resource" path="res://data/effects/explosion.tres" id="4_effect"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_bomb_bag.png" id="5_icon"]
 [ext_resource type="Texture2D" path="res://assets/sprites/weapons/bomb.png" id="6_bomb"]
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="90_upgrade"]
+[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")

@@ -1,10 +1,10 @@
 extends Control
 ## Optionsmenü: wird aus dem Hauptmenü und aus der Pause geöffnet und schließt sich selbst.
-## Reiter und Zeilen entstehen aus scripts/options_catalog.gd, hier steht keine einzelne Option fest im Code.
+## Reiter und Zeilen entstehen aus scripts/ui/options_catalog.gd, hier steht keine einzelne Option fest im Code.
 
 signal closed
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 ## Größen der Elemente (der Inhaltsbereich selbst ist in options_menu.tscn festgelegt)
 const ROW_FONT_SIZE := 32
 const CHOICE_BUTTON_SIZE := Vector2(230.0, 88.0)

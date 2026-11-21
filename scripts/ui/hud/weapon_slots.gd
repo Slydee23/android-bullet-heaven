@@ -3,7 +3,7 @@ extends Control
 ## Die 4 Waffenplätze klein im HUD: Icon und Level, Startwaffe mit Goldrand. Nur Anzeige, Berührungen gehen durch.
 ## Zeichnet alles in einem _draw und nur neu, wenn sich die Waffen ändern.
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 const SLOT := preload("res://assets/ui/hud_slot.png")
 const SLOT_START := preload("res://assets/ui/hud_slot_start.png")
 const SLOT_MARGIN := 3

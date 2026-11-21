@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WeaponData" format=3]
 
-[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/behaviors/orbit_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/weapons/behaviors/orbit_behavior.gd" id="2_behavior"]
 [ext_resource type="Texture2D" path="res://assets/sprites/weapons/sword_orbit.png" id="3_blade"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icons/weapon_orbit_sword.png" id="4_icon"]
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade_data.gd" id="90_upgrade"]
+[ext_resource type="Script" path="res://scripts/weapons/upgrades/upgrade_data.gd" id="90_upgrade"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")

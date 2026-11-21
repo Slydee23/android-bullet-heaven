@@ -1,7 +1,7 @@
 extends Control
 ## Hauptmenü: Run starten und Optionen.
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 
 const OPTIONS_MENU := preload("res://ui/options_menu.tscn")
 

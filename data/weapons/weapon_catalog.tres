@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="WeaponCatalog" format=3]
 
-[ext_resource type="Script" path="res://scripts/weapon_catalog.gd" id="1_catalog"]
-[ext_resource type="Script" path="res://scripts/weapon_data.gd" id="2_weapon"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="2_weapon"]
 [ext_resource type="Resource" path="res://data/weapons/arcane_wand.tres" id="w_0"]
 [ext_resource type="Resource" path="res://data/weapons/orbit_sword.tres" id="w_1"]
 [ext_resource type="Resource" path="res://data/weapons/flame_torch.tres" id="w_2"]

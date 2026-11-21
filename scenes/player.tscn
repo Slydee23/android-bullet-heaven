@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/core/player.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/sprites/characters/hero_idle.png" id="2_idle"]
-[ext_resource type="Script" path="res://scripts/run_camera.gd" id="3_camera"]
+[ext_resource type="Script" path="res://scripts/core/run_camera.gd" id="3_camera"]
 [ext_resource type="Texture2D" path="res://assets/ui/bar_frame.png" id="4_bar_frame"]
 [ext_resource type="Texture2D" path="res://assets/ui/bar_fill.png" id="5_bar_fill"]
 [ext_resource type="Resource" path="res://data/combat/player_iframes.tres" id="6_iframes"]

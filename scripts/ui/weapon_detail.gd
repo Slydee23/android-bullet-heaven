@@ -5,7 +5,7 @@ extends Control
 
 signal closed
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 
 var weapon: WeaponInstance
 

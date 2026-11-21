@@ -3,7 +3,7 @@ extends Control
 ## Leiste im HUD: Steinfassung (9-Slice) mit einer Füllung in der Rinne, pixelgenau 4× vergrößert.
 ## Zeichnet nur neu, wenn sich der Füllstand ändert.
 
-const PixelUI := preload("res://scripts/pixel_ui.gd")
+const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 const FRAME := preload("res://assets/ui/hud_bar_frame.png")
 ## Randbreite der Fassung in Pixeln der Originaltextur (dort beginnt die Rinne)
 const FRAME_MARGIN := 3
