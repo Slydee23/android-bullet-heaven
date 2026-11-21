@@ -7,6 +7,8 @@ extends Control
 
 ## Der Spieler will weiter: die nächste Welle beginnt
 signal continued
+## Gekauft oder neu gewürfelt (sofort speichern, damit Neuladen nichts rückgängig macht)
+signal shop_changed
 
 const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
 const SOUL_ICON := preload("res://assets/ui/hud_soul.png")
@@ -159,6 +161,7 @@ func _on_card_pressed(offer: ShopOffer) -> void:
 		return
 	if shop.buy(offer):
 		_refresh()
+		shop_changed.emit()
 
 
 func _on_reroll_pressed() -> void:
@@ -166,6 +169,7 @@ func _on_reroll_pressed() -> void:
 		return
 	if shop.reroll():
 		_refresh()
+		shop_changed.emit()
 
 
 func _on_continue_pressed() -> void:

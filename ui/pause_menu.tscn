@@ -136,6 +136,12 @@ custom_minimum_size = Vector2(320, 96)
 layout_mode = 2
 text = "MENU_OPTIONS"
 
+[node name="SaveQuitButton" type="Button" parent="Margin/Layout/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 96)
+layout_mode = 2
+text = "PAUSE_SAVE_QUIT"
+
 [node name="AbandonButton" type="Button" parent="Margin/Layout/Buttons"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 96)

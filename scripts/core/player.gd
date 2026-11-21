@@ -127,6 +127,11 @@ func _die() -> void:
 	died.emit()
 
 
+## Lebenspunkte aus dem Spielstand setzen (Fortsetzen eines Runs), höchstens Max-HP, mindestens 1
+func restore_hp(value: float) -> void:
+	_set_hp(clampf(value, 1.0, max_hp))
+
+
 ## Heilung (Level-Up-Ersatzkarte, später Tränke), höchstens bis Max-HP
 func heal(amount: float) -> void:
 	if hp <= 0.0:

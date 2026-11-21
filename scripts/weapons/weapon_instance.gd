@@ -38,6 +38,8 @@ var _cache: Dictionary[StringName, float] = {}
 var upgrade_counts: Dictionary[StringName, int] = {}
 ## Summe der Werte je Upgrade über alle Wahlen (verschiedene Seltenheiten), für das Detailfenster
 var upgrade_totals: Dictionary[StringName, float] = {}
+## Alle Upgrades in Wahlreihenfolge als {id, rarity} (für den Spielstand, RunSave)
+var upgrade_log: Array[Dictionary] = []
 
 
 func _init(weapon_data: WeaponData) -> void:
@@ -79,6 +81,7 @@ func preview_stat(stat: StringName, extra: StatModifier) -> float:
 ## Nimmt ein Level-Up-Upgrade auf: Bonus dazu, Level +1
 func apply_upgrade(upgrade: UpgradeData, rarity: int) -> void:
 	upgrade_counts[upgrade.id] = upgrade_counts.get(upgrade.id, 0) + 1
+	upgrade_log.append({"id": String(upgrade.id), "rarity": rarity})
 	upgrade_totals[upgrade.id] = upgrade_totals.get(upgrade.id, 0.0) + upgrade.value_for(rarity)
 	level = mini(level + 1, MAX_LEVEL)
 	modifiers.add(upgrade.make_modifier(rarity))

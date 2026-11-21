@@ -1,5 +1,5 @@
 keys,de
-MENU_START_RUN,Run starten
+MENU_START_RUN,Neues Spiel
 MENU_OPTIONS,Optionen
 BUTTON_BACK,Zurück
 OPTIONS_TITLE,Optionen
@@ -239,3 +239,20 @@ SUMMARY_LEVEL,Stufe
 SUMMARY_SOULS,Gesammelte Seelen
 SUMMARY_XP,Erfahrung
 SUMMARY_WEAPON_LINE,Stufe %d · %s Schaden
+PAUSE_SAVE_QUIT,Speichern & Hauptmenü
+MENU_CONTINUE,Fortsetzen
+MENU_CONTINUE_INFO,Welle %d von %d · Stufe %d
+MENU_CONTINUE_REST,Rastplatz nach Welle %d · Stufe %d
+MENU_NEW_RUN_NO,Abbrechen
+SLOTS_TITLE_LOAD,Spiel fortsetzen
+SLOTS_TITLE_NEW,Neues Spiel
+SLOT_EMPTY,Platz %d · leer
+SLOT_LAST_PLAYED,Zuletzt gespielt: %s
+SLOT_NO_RUN,Keine laufende Expedition
+SLOT_DELETE,Löschen
+SLOT_DELETE_CONFIRM,"Spielstand „%s“ wirklich löschen? Zur Bestätigung den Namen eintippen."
+SLOT_OVERWRITE_CONFIRM,Spielstand „%s“ überschreiben?
+SLOT_OVERWRITE_YES,Überschreiben
+SLOT_NAME_TITLE,Wie heißt dein Held?
+SLOT_NAME_DEFAULT,Held %d
+SLOT_START,Los geht's

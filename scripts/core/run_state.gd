@@ -35,6 +35,8 @@ var time := 0.0
 var stats := StatBlock.new()
 ## Wie oft jeder Helden-Bonus (UpgradeData.id) gewählt wurde
 var hero_upgrade_counts: Dictionary[StringName, int] = {}
+## Alle Helden-Boni in Kaufreihenfolge als {id, rarity} (für den Spielstand, RunSave)
+var hero_upgrade_log: Array[Dictionary] = []
 
 
 func _init(xp_curve: XpCurve) -> void:
@@ -61,6 +63,7 @@ func spend_souls(amount: int) -> bool:
 ## Nimmt einen Helden-Bonus auf (Rastplatz-Shop; früher auch aus dem Level-Up)
 func add_hero_upgrade(upgrade: UpgradeData, rarity: int) -> void:
 	hero_upgrade_counts[upgrade.id] = hero_upgrade_counts.get(upgrade.id, 0) + 1
+	hero_upgrade_log.append({"id": String(upgrade.id), "rarity": rarity})
 	stats.add(upgrade.make_modifier(rarity))
 
 

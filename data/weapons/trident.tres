@@ -64,13 +64,13 @@ element = &"lightning"
 base_stats = {
 &"amount": 1.0,
 &"area": 20.0,
-&"cooldown": 2.0,
+&"cooldown": 4.0,
 &"damage": 45.0
 }
 stat_limits = {
 &"amount": Vector2(1, 7),
 &"area": Vector2(20, 40),
-&"cooldown": Vector2(0.6, 2)
+&"cooldown": Vector2(1.2, 4)
 }
 behavior = SubResource("Resource_behavior")
 target_picker = SubResource("Resource_picker")

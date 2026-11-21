@@ -139,7 +139,7 @@ Drei getrennte Dateien im App-Speicher (`user://`), jede mit eigener Versionsnum
 | --- | --- | --- | --- |
 | `settings.cfg` | Optionen (Joystick, Anzeige, Audio, Sprache) | dauerhaft | M2 |
 | `run.save` | **Run-Spielstand:** Waffen pro Platz (ID, Level, gewählte Upgrades/Effekte, Evolutionszweig), Spielerlevel/XP, HP, Welle, Artefakte, Tränke, Magie-Schrott, im Run gesammelte Materialien, gespeicherte Shop-Angebote und Level-Up-Karten, Run-Statistik, gewählte Spezialfähigkeit und Startwaffe (IDs) | nur während eines Runs | M8 |
-| `profile.save` | **Profil-Spielstand:** Dorf-Ausbau, Material-Lager, Rüstungsbesitz + angelegte Rüstung, Verzauberungen, permanente Upgrades, Freischaltungen (u. a. freigeschaltete Spezialfähigkeiten und Startwaffen als IDs, dazu die jeweils gewählte), Quests, Gesamtstatistik | dauerhaft, wird nie durch einen Run gelöscht | E5 |
+| `profile.save` | **Profil-Spielstand:** Dorf-Ausbau, Material-Lager, Rüstungsbesitz + angelegte Rüstung, Verzauberungen, permanente Upgrades, Freischaltungen (u. a. freigeschaltete Spezialfähigkeiten und Startwaffen als IDs, dazu die jeweils gewählte), Quests, Gesamtstatistik | dauerhaft, wird nie durch einen Run gelöscht | E6 |
 
 - Der Run-Spielstand **liest** die angelegte Rüstung nur aus dem Profil (im Run kann man sie nicht tauschen) und schreibt nie hinein.
   Genauso werden gewählte Spezialfähigkeit und Startwaffe beim Run-Start ins `run.save` kopiert und im Run nicht geändert.
@@ -250,7 +250,7 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - **`WeaponHolder` (Baustein der Run-Szene):** `START_SLOTS := 1`, `RUN_SLOTS := 3`, dazu `can_add_run_weapon()` und `has_weapon(id)` für den Level-Up-Pool.
    - **Performance:** Geschosse bleiben im Pool des `ProjectileManager` (merken sich nur den Waffen-Index). Effekte laufen nur bei Ereignissen
      (Treffer, Kill), nicht pro Frame. Waffen ohne Effekte kosten nichts extra.
-   - Evolutionen (E4) sind neue Waffen-Datendateien, die die alte im selben Platz ersetzen. Sie können Element, Status-Effekt und `TargetPicker`
+   - Evolutionen (E5) sind neue Waffen-Datendateien, die die alte im selben Platz ersetzen. Sie können Element, Status-Effekt und `TargetPicker`
      wechseln (geplant: elementare Zauberstab-Entwicklungen, brennende Schwerter, Bleeding bei physischen Waffen, Bomben auf Gegnergruppen).
    - **Fünf Angriffsarten (`WeaponBehavior`)** decken alle geplanten Muster ab:
      `ProjectileBehavior` (gezielte, durchdringende, abprallende Geschosse und Wellen mit unbegrenztem Durchschlag),
@@ -354,7 +354,7 @@ Ich erstelle die Platzhalter als PNG genau nach diesen Vorgaben. Für Alpha-Asse
 | `assets/ui/card_common.png`, `card_rare.png`, `card_epic.png` | 24×24 (9-Slice, Rand 8) | 1 | M6 |
 | `assets/sprites/enemies/bat_fly.png` | 32×32 | 4 | M7 |
 | `assets/sprites/enemies/slime_hop.png` | 32×32 | 4 | M7 |
-| `assets/ui/paperdoll.png` | Silhouette ca. 64×96 | 1 | E7 |
+| `assets/ui/paperdoll.png` | Silhouette ca. 64×96 | 1 | E8 |
 
 ## Meilensteine – Grundspiel
 
@@ -467,7 +467,7 @@ M4h (**umgesetzt, am PC getestet**) Dornenpeitsche (`SweepBehavior`) und Grundla
   Zielmodus der Waffe: `NEAREST` ist umgesetzt, `FACING` folgt mit der ersten Waffe, die ihn braucht.
 - Waffen sind ein eigener Baustein (Node `Weapons`), den die Run-Szene dem Helden anhängt. `player.gd` bleibt waffenfrei.
 - Der Zauberstab ist vorerst die **feste Startwaffe** (im Debug-Menü später wählbar). Die Run-Szene liest dafür eine einzelne Startwaffen-ID (`START_WEAPON_ID` in `run.gd`, vorerst fest
-  vorgegeben), ohne Auswahl-Logik. Die Auswahl im Hub kommt mit E10.
+  vorgegeben), ohne Auswahl-Logik. Die Auswahl im Hub kommt mit E11.
 - Gegner sterben erst zu Beginn des nächsten Frames (`EnemyManager.damage()` markiert, `_remove_dead()` entfernt) und senden dann `enemy_killed` (Anschluss für M4b/M6).
 - Geschosse fliegen in der Fußebene und werden 14 Pixel höher (Körpermitte) gezeichnet, damit sie zu den Kollisionskreisen an den Füßen passen.
 - **Effekte (M4b):** `EffectManager` (Pool, ein Zeichenaufruf, Datendatei `EffectData` in `data/effects/`) spielt Treffer-Funken (bei jedem Schaden, über das Signal
@@ -491,7 +491,7 @@ M4h (**umgesetzt, am PC getestet**) Dornenpeitsche (`SweepBehavior`) und Grundla
 - **Debug-Menü** (nur in Debug-Builds sichtbar, also beim Testen aus Godot, nicht in einem späteren Release).
   Das Grundgerüst gibt es schon seit M3: erreichbar über den Debug-Knopf neben dem Pause-Knopf, das Spiel kann dabei weiterlaufen
   (Zoom, I-Frames). Das Fenster ist scrollbar: Neue Einträge kommen in den Scrollbereich, Titel und „Zurück“ bleiben fest.
-  Neu: „+100 Gegner“, „Unverwundbar“, **„Startwaffe wählen“, „Waffe geben“, „Status geben“** (zum Testen aller Waffen und Status, bis die Startwaffen-Auswahl im Hub mit E10 kommt).
+  Neu: „+100 Gegner“, „Unverwundbar“, **„Startwaffe wählen“, „Waffe geben“, „Status geben“** (zum Testen aller Waffen und Status, bis die Startwaffen-Auswahl im Hub mit E11 kommt).
   Es wächst mit: in M6 „XP geben“ und „Level-Up auslösen“,
   in M7 „Zu Welle X springen“, später z. B. „Magie-Schrott geben“.
 - Mit „+100 Gegner“ messen, wie viele Gegner dein Handy bei stabilen 60 FPS schafft.
@@ -554,7 +554,7 @@ Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6
 - Rechnung (Stand der Überlegung):
 - **Warum:** Ein Run liefert etwa 40–49 Level-Ups (Simulation, siehe Balancing-Runde 1). Mit 10 Leveln je Stufe (120 für alle Waffen) bliebe jede Waffe „halbfertig“, und es bräuchte 30 sinnvolle Upgrade-Stufen je Waffe. Mit 5 maxt ein normaler Run 2–3 Waffen, ein guter fast alle vier; die Tiefe kommt aus den Entwicklungswahlen (9 Endformen je Waffe), nicht aus langem Hochleveln. Mehr Level-Ups je Run sind keine Lösung (jedes unterbricht das Spiel).
 - **Helden-Boni** (Lauftempo, Max-HP, Sammelradius, Schaden/Tempo aller Waffen …) sind seit **M7f** nicht mehr auf den Level-Up-Karten, sondern im **Seelen-Shop auf dem Rastplatz** (siehe M7f). Level-Ups bieten nur noch neue Waffen und Waffen-Upgrades.
-- **Noch umzubauen, wenn E4 (Evolutionen) kommt:** `WeaponInstance.MAX_LEVEL` (jetzt 10), `LevelBar` (10 Felder → Stufenanzeige x/5 plus Evolutionssterne), Detailfenster „Level x von 10“, Level-Up-Pool (ab Level 5/10 Evolutionskarten statt Upgrades), Upgrade-Pools je Stufe. Die Zahl der Upgrade-Typen je Waffe (5–6, je bis zu 3× wählbar) passt zu 15 Leveln.
+- **Noch umzubauen, wenn E5 (Evolutionen) kommt:** `WeaponInstance.MAX_LEVEL` (jetzt 10), `LevelBar` (10 Felder → Stufenanzeige x/5 plus Evolutionssterne), Detailfenster „Level x von 10“, Level-Up-Pool (ab Level 5/10 Evolutionskarten statt Upgrades), Upgrade-Pools je Stufe. Die Zahl der Upgrade-Typen je Waffe (5–6, je bis zu 3× wählbar) passt zu 15 Leveln.
 
 ### M7 – Wellen & Run-Ende
 
@@ -571,7 +571,9 @@ Schritte: **M6a** HUD-Grundgerüst · **M6b** XP-Kristalle, Sammelradius · **M6
 
 **M7f (umgesetzt, Test offen): Seelen und Rastplatz-Shop.** Entscheidung des Nutzers nach dem Test: Stat-Boni raus aus den Level-Ups, rein in einen Shop zwischen den Wellen, bezahlt mit **Seelen**. **Seelen:** neue Währung, jeder Kill bringt `EnemyData.soul_value` (Skelett 1, Ghul 1, Kultist 2, Pestbringer 2, Knochenritter 50, Übungspuppe 0), mindestens 1; sie zählen nur (kein Gegenstand), zerfallende Gegner am Wellenende geben keine. HUD: `SoulsDisplay` (Seelen-Symbol `assets/ui/hud_soul.png` aus `tools/gen_hud.gd` und Zahl) unter den Waffenplätzen; Pausemenü rechts zeigt die Seelen. `RunState.souls` (`add_souls`, `spend_souls`, Signal `souls_changed`). **Level-Ups** bieten nur noch Waffen und Waffen-Upgrades (der `hero_pool` des `LevelUpPool` bleibt im Spiel leer, der Code für Stat-Karten bleibt bestehen). **Shop** (`RestShop`, `ShopOffer`, `ShopCard`, neu gebautes `RestMenu`): 4 zufällige, verschiedene Stat-Boni aus `hero_upgrades.tres` mit Seltenheit (Gewöhnlich/Selten/Episch) und Preis, kein Angebot für Boni auf Höchststand (`max_stacks`); Preis in Seelen: gewöhnlich 10, selten 20, episch 40, dazu **+12 % je Welle**; **Neu würfeln** 6, dann 9, 12 … Seelen (je Rastplatz zurückgesetzt); gekaufte Karten bleiben blass als „Gekauft“ stehen. Oben im Rastplatz eine Zeile Zusammenfassung (Gegner, Erfahrung, Zeit), unten Neu würfeln, „Weiter“ und die Vorschau auf die nächste Welle. Regler `soul_scale` am `WaveSet` (Seelen je Kill). Alle Preiswerte sind Konstanten in `RestShop`. Debug (Allgemein): „+100 Seelen“. Offen: Seelenmenge und Preise beim Balancing prüfen (Kills je Welle wachsen von ca. 10 auf 300+, die Preise nur auf das Dreifache: spät kauft man mehr als es Karten gibt, mehr Stats/Sinks sind geplant); Shop-Angebote speichern (M8, kein Save-Scumming); Händler und Magie-Schrott kommen später an dieselbe Stelle.
 
-**Balancing-Runde 3 und Tester-Feedback (2026-11-20):** Zweiter Tester (Freund, APK) und Nutzer: Held wird ab ca. Welle 7–12 unbesiegbar, Shop und Waffen sind dann „fertig“. **Ursachen:** (1) Der Held wächst „mal-mal“ (Projektile × Schaden × Tempo), die Gegner wuchsen nur linear (+12 % je Welle). (2) Bosse waren vom Wellenwachstum ausgenommen (Knochenritter blieb bei 4000 Leben). (3) Der Inhalt ist endlich: Shop hat 6 Boni (insgesamt höchstens 27 Käufe), Waffen 4 × 9 Upgrades; Level 40 = alles voll. Preise sind daher nicht der Hebel, es fehlen **Stat-Arten** (Rüstung, Regeneration, Krit, Glück) und **Evolutionen**. (4) Flammenfackel und Kreisschwert profitieren nicht von „+Projektile“ und fallen ab: Wachstumswege je Waffentyp bei der nächsten Balancing-Runde prüfen. **Umgesetzt:** `WaveSet.enemy_hp_growth` 0.2 und `enemy_damage_growth` 0.09 (je Welle aufeinander aufbauend: Leben ×7 in Welle 12, ×32 in Welle 20); die Wellen-Faktoren in `forest_run.tres` sind nur noch Zusatzfaktoren (1.0), Anfangsschaden 0.6 steht in `enemy_damage_scale`; **Bosse wachsen mit** (kein Ausnahme mehr in `EnemyManager._hp_factor`); Shop-Preise +12 % je Welle aufeinander aufbauend; Kamera: `ZOOM_FAR` 2.5 statt 2.0; Level-Up-Menü: **Neu würfeln** (3 Versuche je Run, `RunState.START_REROLLS`) und **Überspringen** (keine Karte, z. B. um keine ungewollte Waffe zu nehmen). Test 2026-11-21: Gegner-Wachstum macht Welle 8–12 spürbar schwerer (Feinwerte weiterhin offen), Kamera deutlich besser. **Später (Nutzerwunsch):** Neu würfeln und Überspringen sind nicht von Anfang an da, sondern werden über **Relikte im Museum** (neues Dorf-Gebäude) freigeschaltet; bis dahin bleiben sie zum Testen aktiv. **Umgang mit Balancing künftig:** nur grobe Regler (WaveSet), Feintuning erst in festen Runden nach Spezialfähigkeit/Rüstung, nach Evolutionen, nach den Dorf-Upgrades und vor dem Release; später Run-Statistik je Welle (Schaden/s, Leben der Gegner, erlittener Schaden, Level, Seelen) als Messwerkzeug. **Weitere Feedback-Punkte (Roadmap):** Sounds (E2), Spezialfähigkeit mit Anzeige (E3, „Dash-Indikator“ unklar), Rüstung/Defence und Regeneration (E7), Spielschleife/Dorf („wofür ein Run?“), **neue Ideen:** thematische Wellen (Motto mit eigener Mischung und Ansage), Elite-Gegner und Mini-Bosse als Wellen-Ereignis, Sammelradius ist durch das Einsammeln am Wellenende fast wirkungslos (Bonus umbauen, z. B. Seelen-Magnet), Seelen-Karte mit Flächenwirkung, Pestbringer (grüne Explosion) besser erklären, Mehr Gründe zur Bewegung (Gegner kommen sonst nie an den Helden). Vergleichswert: Welle 12 mit 3000 Kills und Level 40 war der alte Stand.
+**Balancing-Runde 4: Notfall-Korrekturen nach Tester-Feedback (2026-11-21):** Tester 2 (und andere) meldeten einzelne Waffen deutlich zu stark bzw. zu schwach. **Arkaner Zauberstab:** Durchschlag höchstens 4 Gegner, Abpraller höchstens 3 (`stat_limits` pierce 1–4, ricochet 0–3; vorher unbegrenzt, ein Stab mit viel Durchschlag und Abprallen trug einen ganzen Run allein). **Sturmrufer:** halb so oft, Abklingzeit 2,0 → 4,0 s und schnellstens 0,6 → 1,2 s (Grenze verdoppelt, gilt also auch mit allen Tempo-Boni; vorher mit vollen Projektilen über einen Angriff pro Sekunde). **Peitsche:** Grundschaden 35 → 70. **Kreisendes Schwert:** Grundschaden 40 → 80. Upgrade-Werte und alle anderen Waffen unverändert. Geprüft mit `balance4_test` (extreme Boni: Grenzen halten). Kurzfristige Korrektur, nach dem nächsten Test erneut prüfen.
+
+**Balancing-Runde 3 und Tester-Feedback (2026-11-20):** Zweiter Tester (Freund, APK) und Nutzer: Held wird ab ca. Welle 7–12 unbesiegbar, Shop und Waffen sind dann „fertig“. **Ursachen:** (1) Der Held wächst „mal-mal“ (Projektile × Schaden × Tempo), die Gegner wuchsen nur linear (+12 % je Welle). (2) Bosse waren vom Wellenwachstum ausgenommen (Knochenritter blieb bei 4000 Leben). (3) Der Inhalt ist endlich: Shop hat 6 Boni (insgesamt höchstens 27 Käufe), Waffen 4 × 9 Upgrades; Level 40 = alles voll. Preise sind daher nicht der Hebel, es fehlen **Stat-Arten** (Rüstung, Regeneration, Krit, Glück) und **Evolutionen**. (4) Flammenfackel und Kreisschwert profitieren nicht von „+Projektile“ und fallen ab: Wachstumswege je Waffentyp bei der nächsten Balancing-Runde prüfen. **Umgesetzt:** `WaveSet.enemy_hp_growth` 0.2 und `enemy_damage_growth` 0.09 (je Welle aufeinander aufbauend: Leben ×7 in Welle 12, ×32 in Welle 20); die Wellen-Faktoren in `forest_run.tres` sind nur noch Zusatzfaktoren (1.0), Anfangsschaden 0.6 steht in `enemy_damage_scale`; **Bosse wachsen mit** (kein Ausnahme mehr in `EnemyManager._hp_factor`); Shop-Preise +12 % je Welle aufeinander aufbauend; Kamera: `ZOOM_FAR` 2.5 statt 2.0; Level-Up-Menü: **Neu würfeln** (3 Versuche je Run, `RunState.START_REROLLS`) und **Überspringen** (keine Karte, z. B. um keine ungewollte Waffe zu nehmen). Test 2026-11-21: Gegner-Wachstum macht Welle 8–12 spürbar schwerer (Feinwerte weiterhin offen), Kamera deutlich besser. **Später (Nutzerwunsch):** Neu würfeln und Überspringen sind nicht von Anfang an da, sondern werden über **Relikte im Museum** (neues Dorf-Gebäude) freigeschaltet; bis dahin bleiben sie zum Testen aktiv. **Umgang mit Balancing künftig:** nur grobe Regler (WaveSet), Feintuning erst in festen Runden nach Spezialfähigkeit/Rüstung, nach Evolutionen, nach den Dorf-Upgrades und vor dem Release; später Run-Statistik je Welle (Schaden/s, Leben der Gegner, erlittener Schaden, Level, Seelen) als Messwerkzeug. **Weitere Feedback-Punkte (Roadmap):** Sounds (E3), Spezialfähigkeit mit Anzeige (E4, „Dash-Indikator“ unklar), Rüstung/Defence und Regeneration (E8), Spielschleife/Dorf („wofür ein Run?“), **neue Ideen:** thematische Wellen (Motto mit eigener Mischung und Ansage), Elite-Gegner und Mini-Bosse als Wellen-Ereignis, Sammelradius ist durch das Einsammeln am Wellenende fast wirkungslos (Bonus umbauen, z. B. Seelen-Magnet), Seelen-Karte mit Flächenwirkung, Pestbringer (grüne Explosion) besser erklären, Mehr Gründe zur Bewegung (Gegner kommen sonst nie an den Helden). Vergleichswert: Welle 12 mit 3000 Kills und Level 40 war der alte Stand.
 
 **Balancing-Runde 2 nach dem M7f-Test (2026-11-19):** Nutzer kam weit, fühlte sich spät „unbesiegbar“; Early Game fair. Probleme: Flat-Schaden lohnte sich nie, „+Projektile“ zu häufig (Dreizack ~13 Blitze), Shop vor Welle 10 leergekauft. Änderungen: **Waffen-Schaden** je Upgrade ≈ 30 % des Grundschadens (Zauberstab 15, Dreizack 14, Bomben 9, Schwert 12, Peitsche 11, Fackel 5) und Gewicht 1.2; **Anzahl-Upgrades** Gewicht 0.6 (statt 0.8) und eine **Obergrenze je Waffe** in `stat_limits` (gilt inkl. Helden-Bonus): Zauberstab 5, Sturmrufer 7, Bomben 5, Schwert 6, Peitsche 6 (Nutzerwunsch 2026-11-19). Der Shop-Bonus „+1 Projektil“ (2×) darf die Grenze **überschreiten** (`WeaponInstance.LIMIT_BREAK_STATS`), kostet dafür das 1,5-Fache (`UpgradeData.price_factor`). Bomben streuen: Mindestabstand 1,5 × Wirkradius zwischen den Bomben eines Wurfs (`StrikeBehavior.min_spacing`). Vergleichswert des Nutzers vor dieser Runde: Welle 12 mit 3000 Kills und Level 40; weiter erst ab Selten, episch +2; Abklingzeit-Upgrades −10 % statt −8 %; Helden-Bonus „+1 Projektil“ im Shop bleibt 2×. **Shop-Preise:** +15 % je Welle und zusätzlich **+15 % je bereits gekauftem Bonus** (`RunState.hero_upgrades_total`), offene Angebote werden nach einem Kauf sofort teurer; Simulation: ca. 1–2 Käufe je Rastplatz, alle 27 Stufen erst gegen Welle 15+. Waffen-Level: Nutzer tendiert zu **10 Upgrades je Waffe** (bleibt offen, bis bestätigt).
 
@@ -617,7 +619,9 @@ Nachtrag: eigene **Charge-Animation** (PixelLab, 2 Generierungen, `bone_knight_c
   - **Sicheres Schreiben:** erst in eine temporäre Datei schreiben, dann ersetzen. Bei einem Absturz während des Speicherns
     bleibt so der alte Spielstand erhalten.
   - **Versionsnummer im Spielstand**, damit spätere Spiel-Updates alte Spielstände erkennen und umwandeln können.
-  - **Getrennte Speicherdateien** (siehe „Speicher-Architektur“). In M8 entsteht nur der Run-Spielstand, der Profil-Spielstand kommt in E5.
+  - **Getrennte Speicherdateien** (siehe „Speicher-Architektur“). In M8 entsteht nur der Run-Spielstand, der Profil-Spielstand kommt in E6.
+- **Umsetzung M8a/M8b (2026-11-21, Test offen):** `RunSave` (`scripts/core/run_save.gd`) schreibt `user://run.save` als lesbares JSON (Format-Version 1 plus Spielversion; sicher über Zwischendatei und Umbenennen; unlesbare oder unbekannte Stände werden ignoriert). **Entscheidung Nutzer:** Wird mitten in einer Welle beendet, beginnt diese **Welle von vorn** (alles darin Erreichte geht verloren). Deshalb wird nur am **Anfang jeder Welle** und **auf dem Rastplatz** gespeichert (beim Betreten, nach jedem Kauf und Neu-Würfeln); offene Level-Up-Karten müssen nicht gespeichert werden (zu diesen Zeitpunkten sind keine offen). Gespeichert: Stufe, Erfahrung, Seelen, Kills, Zeit, Neu-Würfeln-Versuche, Helden-Boni in Kaufreihenfolge (`RunState.hero_upgrade_log`), Leben, Waffen mit Upgrades in Wahlreihenfolge (`WeaponInstance.upgrade_log`) und Gesamtschaden, auf dem Rastplatz zusätzlich Zusammenfassung und Shop-Angebote. Tod, Sieg und „Run aufgeben“ löschen den Spielstand. Pausemenü: „Speichern & Hauptmenü“. Hauptmenü: siehe Speicherplätze unten. Autosave beim Wechsel in den Hintergrund entfällt dadurch (der Stand ist immer aktuell). Bekannte Folge: Wer kurz vor dem Tod die App schließt, startet die Welle neu (kleiner zweiter Versuch); bei Bedarf später verschärfen.
+- **Drei Speicherplätze (Nutzerwunsch 2026-11-21, Test offen):** `SaveSlots` (`scripts/core/save_slots.gd`, gewählter Platz als statische Variable, kein Autoload): je Platz ein Ordner `user://slots/<n>/` mit `slot.json` (Name, angelegt, zuletzt gespielt) und `run.save`; später kommt `profile.save` (E6) dazu. Ein Platz bleibt nach Tod/Sieg/Aufgeben bestehen, nur die Expedition endet. Hauptmenü: **Fortsetzen** (nur wenn ein Platz belegt ist), **Neues Spiel** (vorher „Run starten“), Optionen. Beide öffnen `SlotMenu` mit drei Karten: Name, „Zuletzt gespielt“, vorläufig die laufende Expedition (**später durch Meta-Fortschritt ersetzen**, Nutzerwunsch), darunter „Löschen“ mit Nachfrage. Fortsetzen: belegten Platz antippen → Expedition fortsetzen bzw. neue Expedition im selben Spielstand (später: ins Dorf). Neues Spiel: Platz wählen (**Entscheidung Nutzer**), belegter Platz → „Überschreiben?“, dann **Name des Helden** eingeben (höchstens 16 Zeichen, leer = „Held 1/2/3“, Eingabefeld oben wegen der Handy-Tastatur). `MenuDialog` (Nachfrage/Namenseingabe) ist wiederverwendbar. Ein alter `user://run.save` wird einmalig in Platz 1 übernommen.
 - **Changelog im Hauptmenü:** Knopf „Neuigkeiten“ öffnet eine scrollbare Liste der Änderungen je Version.
   Der Inhalt steht in einer eigenen Textdatei im Projekt, damit für eine neue Version nur diese Datei ergänzt wird.
 - **Am Handy testen:** Run mitten in einer Welle über „Speichern & Hauptmenü“ beenden, App ganz schließen, neu starten,
@@ -649,7 +653,7 @@ und Szenen lassen sich im Editor direkt sehen und verschieben.
 | --- | --- |
 | M6 | Feste HP-Leiste (die Leiste über dem Helden bleibt zusätzlich abschaltbar), XP-Leiste, Level, Waffen-Icons |
 | M7 | Welle, Zeit, Kills |
-| E1 / E3 / E5 | Magie-Schrott / Spezialfähigkeit mit Abklingzeit / Materialien |
+| E2 / E4 / E6 | Magie-Schrott / Spezialfähigkeit mit Abklingzeit / Materialien |
 
 ### Pause-/Statusbildschirm (im Run)
 
@@ -672,7 +676,7 @@ Knöpfe am unteren Rand: **Weiter · Optionen · Speichern & Hauptmenü (ab M8) 
 - Sie wird als **wiederverwendbare Komponente** gebaut. Das **Ausrüsten im Dorf läuft ebenfalls über die Paperdoll**:
   Slot an der Silhouette antippen → Liste der passenden Teile aus dem Besitz → auswählen → angelegt.
   Übersicht und Ausrüsten sind also derselbe Bildschirm, nur dass im Run das Tauschen gesperrt ist.
-- Bis zum Rüstungssystem (E7) bleibt die Stelle leer oder zeigt nur die Silhouette.
+- Bis zum Rüstungssystem (E8) bleibt die Stelle leer oder zeigt nur die Silhouette.
 - **Kategorien als Reiter:** Rüstung (Paperdoll), Artefakte, Tränke und spätere Kategorien. Auch die Slots sind Daten
   (Kategorie, Position an der Silhouette, erlaubte Teile). Eine neue Kategorie oder ein neuer Slot ist also eine neue Datei, kein Code.
 
@@ -709,27 +713,27 @@ Erreichbar aus dem Hauptmenü und aus der Pause. Einstellungen werden gespeicher
 | Anzeige | Bildschirmwackeln an/aus | M3 |
 | Anzeige | Schadenszahlen an/aus | M4 |
 | Anzeige | Lebensleisten Gegner an/aus | M4 |
-| Audio | Lautstärke Gesamt / Musik / Effekte | E2 |
-| Allgemein | Sprache Deutsch / Englisch | E14 |
-| Steuerung | Joystick-Größe | E15 |
-| Grafik | FPS-Limit 30 / 60 / 120 | E15 |
+| Audio | Lautstärke Gesamt / Musik / Effekte | E3 |
+| Allgemein | Sprache Deutsch / Englisch | E15 |
+| Steuerung | Joystick-Größe | E16 |
+| Grafik | FPS-Limit 30 / 60 / 120 | E16 |
 
 ### Run-Zusammenfassung / Belohnungsbildschirm
 
 Erscheint nach jedem Run (Sieg oder Tod) und zeigt Run-Ergebnis und langfristigen Fortschritt.
 
 - **Basis (M7):** Kills, überstandene Wellen, Zeit, erreichtes Level, verwendete Waffen mit Level, Schaden pro Waffe.
-- **Voll (E5):**
+- **Voll (E6):**
   - Run-Statistiken: Kills nach Gegnertyp, erlittener und geheilter Schaden, höchster Einzeltreffer.
   - Build-Zusammenfassung: Waffen mit Evolutionszweig, gewählte Upgrades und Werte, Artefakte.
   - Belohnungen: erhaltene Materialien und Ressourcen, was davon ins Dorf geht.
-- **Quests (E9):** erhaltene Quest-Items und Questfortschritt.
+- **Quests (E10):** erhaltene Quest-Items und Questfortschritt.
 
 ## Hub-Stadt
 
 Die Stadt, die man nach und nach wieder aufbaut, ist ein **begehbarer Ort** und das Zentrum des Spiels, kein reines Menü.
 
-- **Einstieg:** Der Held erwacht im Wald → Intro-Level als Tutorial (E11) → am Ende entdeckt er eine zerstörte Dorf-Ruine,
+- **Einstieg:** Der Held erwacht im Wald → Intro-Level als Tutorial (E12) → am Ende entdeckt er eine zerstörte Dorf-Ruine,
   die als Hub freigeschaltet wird.
 - **Eigenes Haus:** von Anfang an vorhanden, betretbar, dient als **Lager**.
 - **Gebäude als Daten** (`BuildingData`): Zustände (Ruine → Stufe 1 → 2 …) mit Grafik je Zustand, Freischalt-Bedingungen
@@ -745,36 +749,38 @@ Die Stadt, die man nach und nach wieder aufbaut, ist ein **begehbarer Ort** und 
 - **Übergang zu Expeditionen:** Stadttor bzw. Expeditionstafel → Map-Auswahl → Run. Nach dem Run: Zusammenfassung → zurück in den Hub.
 - Der Hub hat nur wenige Objekte, die Performance-Regeln für Gegnermassen gelten dort nicht in derselben Strenge.
 
-## Erweiterungen (Alpha, nach M8)
+## Erweiterungen (Beta, nach M8)
 
 Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Beginn.
 
-0. **E0 – Map-Hindernisse (Vorschlag: direkt nach M8, Zeitpunkt vom Nutzer noch zu bestätigen):** Hindernisse passend zur Map (Wald: Bäume, Felsen, Stämme), die Held und Gegner umlaufen müssen. Früh, weil sie fast alles berühren, was sich bewegt: Gegner-Laufen und Abstoßen (ohne Physik: Kreis-Hindernisse im Spatial Grid, einfaches Ausweichen statt Pfadsuche), Ghul-Sprung, Boss-Ansturm, Feuerbälle und eigene Geschosse, Spawn-Punkte, Kristalle. Je mehr Gegner, Bosse und Fähigkeiten (E3, E12) es gibt, desto mehr müsste man später nachrüsten. Gleichzeitig wird die Map zu einer Datendatei (Boden, Rand, Hindernisse), die E12 (weitere Maps/Biome) direkt weiterverwendet. Neue Grafiken (Stil vorher absprechen); Leistung am Testhandy prüfen.
-1. **E1 – Rastplätze mit Händlern:** zufällige Händler (Tränke, Artefakte), Währung „Magie-Schrott“. Braucht Wellen (M7) und Speichern (M8).
-2. **E2 – Audio:** Musik und Soundeffekte, Lautstärke-Optionen.
-3. **E3 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm. Eine erste Fähigkeit als Datendatei
-   (`SpecialAbilityData`), damit weitere ohne Code-Umbau dazukommen. Freischalten und Wechseln kommt erst mit E10.
-4. **E4 – Waffen-Evolutionen:** Level 10 → 1 von 3 Varianten → 2. Evolution → 1 von 3 = 9 Endformen (Zahl der Level je Stufe noch offen, siehe „Waffen-Level“).
+0. **E0 – Map-Hindernisse (bestätigt 2026-11-21: direkt nach M8):** Hindernisse passend zur Map (Wald: Bäume, Felsen, Stämme), die Held und Gegner umlaufen müssen. Früh, weil sie fast alles berühren, was sich bewegt: Gegner-Laufen und Abstoßen (ohne Physik: Kreis-Hindernisse im Spatial Grid, einfaches Ausweichen statt Pfadsuche), Ghul-Sprung, Boss-Ansturm, Feuerbälle und eigene Geschosse, Spawn-Punkte, Kristalle. Je mehr Gegner, Bosse und Fähigkeiten (E4, E13) es gibt, desto mehr müsste man später nachrüsten. Gleichzeitig wird die Map zu einer Datendatei (Boden, Rand, Hindernisse), die E13 (weitere Maps/Biome) direkt weiterverwendet. Neue Grafiken (Stil vorher absprechen); Leistung am Testhandy prüfen.
+1. **E1 – Stats-System (neu 2026-11-21, vor allen übrigen Erweiterungen):** Neue Helden-Werte im vorhandenen Werte-System (StatModifier/StatBlock), zuerst als Boni im Seelen-Shop, später auch über Rüstung, Waffen, Evolutionen und Dorf. **Bestätigt:** Rüstung (Schadensreduktion, abnehmender Ertrag), Ausweichen (Chance, Obergrenze), Lebensregeneration, Krit-Chance, Krit-Multiplikator, Glück (z. B. Seltenheiten beim Level-Up). Berechnung und Balancing legen wir später fest. **Weitere Stats:** Recherche und Vorschläge in `docs/stats-recherche.md`, Auswahl gemeinsam; nichts davon ist freigegeben. Hintergrund: Shop-Inhalt war ab Welle 7–12 erschöpft, Tester vermissten Verteidigung abseits von Leben und Heilung.
+2. **E2 – Rastplätze mit Händlern:** zufällige Händler (Tränke, Artefakte), Währung „Magie-Schrott“. Braucht Wellen (M7) und Speichern (M8).
+3. **E3 – Audio:** Musik und Soundeffekte, Lautstärke-Optionen.
+4. **E4 – Spezialfähigkeit:** aufladbar, Knopf rechts, Anzeige im Statusbildschirm. Eine erste Fähigkeit als Datendatei
+   (`SpecialAbilityData`), damit weitere ohne Code-Umbau dazukommen. Freischalten und Wechseln kommt erst mit E11.
+5. **E5 – Waffen-Evolutionen:** Level 10 → 1 von 3 Varianten → 2. Evolution → 1 von 3 = 9 Endformen (Zahl der Level je Stufe noch offen, siehe „Waffen-Level“).
+   **Ideen (Nutzer 2026-11-21):** Peitsche und Kreisendes Schwert dürfen als Grundwaffe schlicht bleiben; ihr eigentliches Potenzial soll eine starke, interessante Evolution bringen. Konzept für beide noch offen, bei der Planung von E5 zuerst angehen.
    Eine Evolution ist eine neue Waffen-Datendatei (andere Werte, Effekte, Verhalten), die die alte im selben Platz ersetzt.
-5. **E5 – Meta-Spielstand + Belohnungsbildschirm:** Profil-Spielstand (`profile.save`), Material-Register und erste Materialien
+6. **E6 – Meta-Spielstand + Belohnungsbildschirm:** Profil-Spielstand (`profile.save`), Material-Register und erste Materialien
    aus Runs, volle Run-Zusammenfassung.
-6. **E6 – Begehbare Hub-Stadt** (siehe „Hub-Stadt“). Ab hier startet das Hauptmenü in den Hub statt direkt in einen Run.
-   - **E6a Grundgerüst:** Stadt begehen, eigenes Haus (betretbar, Lager), Stadttor/Expeditionstafel → Run → zurück in den Hub.
-   - **E6b Ausbau:** Gebäude wieder aufbauen (Schmied, Alchemist, Enchanter …) und betreten, NPCs, Story-Dialoge.
-7. **E7 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und über die Paperdoll anlegen, im Run ansehen.
-8. **E8 – Permanente Upgrades** über Dorf-Gebäude.
-9. **E9 – Questsystem:** Quest-Items und Questfortschritt, Anzeige im Belohnungsbildschirm.
-10. **E10 – Spezialfähigkeiten und Startwaffen freischalten und wählen:** NPC `[Lehrmeister]` im Hub für Fähigkeiten,
-    Auswahl der Startwaffe vor der Expedition (Ort klären wir mit E6, z. B. Expeditionstafel). Mehrere Fähigkeiten und
-    Startwaffen, Speicherung im Profil. Braucht E3, E5 und E6b. (Ersetzt die frühere Idee „mehrere spielbare Charaktere“.)
-11. **E11 – Intro-Level / Tutorial:** Der Held erwacht im Wald, das erste Level bringt schrittweise die Grundlagen bei
+7. **E7 – Begehbare Hub-Stadt** (siehe „Hub-Stadt“). Ab hier startet das Hauptmenü in den Hub statt direkt in einen Run.
+   - **E7a Grundgerüst:** Stadt begehen, eigenes Haus (betretbar, Lager), Stadttor/Expeditionstafel → Run → zurück in den Hub.
+   - **E7b Ausbau:** Gebäude wieder aufbauen (Schmied, Alchemist, Enchanter …) und betreten, NPCs, Story-Dialoge.
+8. **E8 – Rüstungssystem mit Paperdoll:** im Dorf kaufen, verbessern und über die Paperdoll anlegen, im Run ansehen.
+9. **E9 – Permanente Upgrades** über Dorf-Gebäude.
+10. **E10 – Questsystem:** Quest-Items und Questfortschritt, Anzeige im Belohnungsbildschirm.
+11. **E11 – Spezialfähigkeiten und Startwaffen freischalten und wählen:** NPC `[Lehrmeister]` im Hub für Fähigkeiten,
+    Auswahl der Startwaffe vor der Expedition (Ort klären wir mit E7, z. B. Expeditionstafel). Mehrere Fähigkeiten und
+    Startwaffen, Speicherung im Profil. Braucht E4, E6 und E7b. (Ersetzt die frühere Idee „mehrere spielbare Charaktere“.)
+12. **E12 – Intro-Level / Tutorial:** Der Held erwacht im Wald, das erste Level bringt schrittweise die Grundlagen bei
     (die erste Waffe materialisiert sich in höchster Not). Am Ende entdeckt er die Dorf-Ruine, die zum Hub wird.
     Braucht Level-Up, Rastplatz, Spezialfähigkeit und den Hub. Den Inhalt besprechen wir vorher gemeinsam.
-12. **E12 – Weitere Maps/Biome, Gegnertypen, Bosse.**
-13. **E13 – Endlos-Modus** nach der letzten Welle. Brotato verkürzt dort die I-Frames, bei uns ginge das über eine eigene `IFrameRule`.
-14. **E14 – Englisch** + Sprach-Option.
-15. **E15 – Erweiterte Optionen:** Joystick-Größe, FPS-Limit.
-16. **E16 – Credits-Bildschirm.** Ab dem ersten fremden Asset führen wir `CREDITS.md` mit Quelle und Lizenz,
+13. **E13 – Weitere Maps/Biome, Gegnertypen, Bosse.**
+14. **E14 – Endlos-Modus** nach der letzten Welle. Brotato verkürzt dort die I-Frames, bei uns ginge das über eine eigene `IFrameRule`.
+15. **E15 – Englisch** + Sprach-Option.
+16. **E16 – Erweiterte Optionen:** Joystick-Größe, FPS-Limit.
+17. **E17 – Credits-Bildschirm.** Ab dem ersten fremden Asset führen wir `CREDITS.md` mit Quelle und Lizenz,
     damit am Ende nichts fehlt.
 
 - **Laufend:** Ersetzt werden nur Dateien mit dem Status „Platzhalter“ (siehe „Assets“), sobald du bessere Grafiken hast.
@@ -828,16 +834,16 @@ Reihenfolge nach technischen Abhängigkeiten. Details planen wir jeweils zu Begi
   - ~~Überzählige Geschosse~~ → **entschieden:** Zauberstab = Salve reihum auf die gewählten Ziele, Dreizack = zufälliger Punkt im Bild (Dreizack vor M4f noch einmal ansehen).
   - ~~Peitschen-Richtung~~ → **entschieden:** zufällig aus den 4 Himmelsrichtungen, zusätzliche Schläge gegenüber → „+“ → Diagonalen (max. 8). Länge der Sichel mit Probebild abstimmen (vor M4h).
   - **Salve-Abstand** (jetzt 0,1 s, `ProjectileBehavior.SALVO_DELAY`) und **Größe der Bomben-Warnfläche** am Handy abstimmen.
-  - Weitere Entwicklungen und Freischalt-Quellen der Waffen im Dorf → mit E4/E10.
+  - Weitere Entwicklungen und Freischalt-Quellen der Waffen im Dorf → mit E5/E11.
 - **Fortsetzen nach Abbruch mitten in einer Welle:** Am Anfang der Welle neu starten (einfach, so macht es Brotato) oder
   exakt an der Stelle (aufwendig)? Beim Neustart am Wellenanfang könnte man kurz vor dem Tod beenden und die Welle mit
   vollen HP vom Wellenanfang wiederholen. Ist das okay, oder braucht es eine Gegenmaßnahme? → vor M8 entscheiden
 - **Magie-Schrott vs. Materialien:** Magie-Schrott = Run-Währung für Rastplatz-Händler, verfällt am Run-Ende
-  (Lore-Idee: Überreste der zerfallenen Waffen). Materialien (z. B. Holz, Erz, Kräuter) = dauerhafte Beute fürs Dorf. Passt das? → vor E1
+  (Lore-Idee: Überreste der zerfallenen Waffen). Materialien (z. B. Holz, Erz, Kräuter) = dauerhafte Beute fürs Dorf. Passt das? → vor E2
 - **Endlos-Modus und Beute:** Gilt die Expedition nach der letzten regulären Welle als erfolgreich, sodass die Beute bis dahin
-  schon sicher ist, und riskiert man im Endlos-Modus nur die zusätzliche Beute? → vor E13
-- Welche Materialien es gibt (Liste wächst laufend, dank Daten-Dateien unkritisch) → vor E5
-- Händlertypen an Rastplätzen und was es dort außer Shops noch gibt → vor E1
+  schon sicher ist, und riskiert man im Endlos-Modus nur die zusätzliche Beute? → vor E14
+- Welche Materialien es gibt (Liste wächst laufend, dank Daten-Dateien unkritisch) → vor E6
+- Händlertypen an Rastplätzen und was es dort außer Shops noch gibt → vor E2
 - Echte Namen für [Hohe Zirkel], [den Bann] und die Welt
 - Details zu Dorf, Rüstung, Evolutionen → jeweils vor dem Meilenstein
 

@@ -84,7 +84,9 @@ base_stats = {
 }
 stat_limits = {
 &"amount": Vector2(1, 5),
-&"cooldown": Vector2(0.25, 0.8)
+&"cooldown": Vector2(0.25, 0.8),
+&"pierce": Vector2(1, 4),
+&"ricochet": Vector2(0, 3)
 }
 behavior = SubResource("Resource_behavior")
 target_picker = SubResource("Resource_picker")

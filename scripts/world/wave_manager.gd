@@ -71,6 +71,22 @@ func start() -> void:
 	_start_wave(1)
 
 
+## Fortsetzen eines gespeicherten Runs: Welle n beginnt von vorn
+func start_at(n: int) -> void:
+	run_state.wave_total = total()
+	_start_wave(n)
+
+
+## Fortsetzen auf dem Rastplatz nach Welle n (die Run-Szene öffnet den Rastplatz selbst)
+func resume_rest(n: int) -> void:
+	run_state.wave_total = total()
+	number = clampi(n, 1, total())
+	current = wave_set.waves[number - 1]
+	run_state.wave = number
+	state = State.REST
+	player.shielded = true
+
+
 ## Der Rastplatz ist vorbei: nächste Welle
 func next_wave() -> void:
 	_start_wave(number + 1)

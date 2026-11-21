@@ -32,7 +32,7 @@ const XP_CURVE := preload("res://data/progression/xp_curve.tres")
 const LEVEL_UP_MENU := preload("res://ui/level_up_menu.tscn")
 const WEAPON_CATALOG := preload("res://data/weapons/weapon_catalog.tres")
 const HERO_UPGRADES := preload("res://data/upgrades/hero_upgrades.tres")
-## Startwaffe des Runs (vorerst fest, die Auswahl im Hub kommt mit E10). Datei: data/weapons/<id>.tres
+## Startwaffe des Runs (vorerst fest, die Auswahl im Hub kommt mit E11). Datei: data/weapons/<id>.tres
 const START_WEAPON_ID := &"arcane_wand"
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
 ## Bewusst fest und nicht von den Waves abhängig: Ab 50 Gegnern ist der Bildschirm voll genug für den weitesten Zoom.
@@ -177,7 +177,12 @@ func _ready() -> void:
 
 	pause_button.pressed.connect(open_pause_menu)
 	if Settings.debug_waves_enabled:
-		wave_manager.start()
+		var saved := RunSave.read() if SceneRouter.resume_requested else {}
+		SceneRouter.resume_requested = false
+		if saved.is_empty():
+			wave_manager.start()
+		else:
+			_resume(saved)
 	# Debug-Menü nur in Test-Builds, nicht in einer späteren Veröffentlichung
 	debug_button.visible = OS.is_debug_build()
 	debug_button.pressed.connect(_toggle_debug_menu)
@@ -287,9 +292,25 @@ func open_pause_menu() -> void:
 	hud.add_child(_pause_menu)
 
 
-## Eine neue Welle beginnt: Kamera zurück auf volle Nähe (Zoomstufen siehe RunCamera)
-func _on_wave_started(_number: int, _total: int, _duration: float) -> void:
+## Eine neue Welle beginnt: Kamera zurück auf volle Nähe (Zoomstufen siehe RunCamera). Autosave: Wird der Run in dieser Welle
+## beendet, beginnt sie beim Fortsetzen von vorn.
+func _on_wave_started(number: int, _total: int, _duration: float) -> void:
 	camera.reset_wave()
+	if not _game_over:
+		RunSave.write(RunSave.capture(RunSave.PHASE_WAVE, number, run_state, player, weapon_holder))
+
+
+## Gespeicherten Run fortsetzen: Stufe, Seelen, Boni, Waffen und Leben wiederherstellen, dann die Welle von vorn bzw. den Rastplatz
+func _resume(saved: Dictionary) -> void:
+	RunSave.restore_run_state(saved, run_state, HERO_UPGRADES)
+	RunSave.restore_weapons(saved, weapon_holder, WEAPON_CATALOG)
+	RunSave.restore_hp(saved, player)
+	var number := int(saved.get("wave", 1))
+	if saved.get("phase", "") == RunSave.PHASE_REST:
+		wave_manager.resume_rest(number)
+		_open_rest_menu(saved)
+	else:
+		wave_manager.start_at(number)
 
 
 ## Wellenende: Der Rastplatz öffnet sich, sobald keine Level-Up-Karten mehr offen sind
@@ -302,18 +323,36 @@ func _try_open_rest() -> void:
 	if not _rest_pending or _rest_menu or _level_up_menu or _pending_level_ups > 0 or _game_over:
 		return
 	_rest_pending = false
+	_open_rest_menu()
+
+
+## Rastplatz mit Seelen-Shop (Stat-Boni für Seelen, die Preise hängen an der überstandenen Welle). saved: Fortsetzen mit
+## genau den gespeicherten Angeboten und der gespeicherten Zusammenfassung, sonst neu gewürfelt. Speichert sofort.
+func _open_rest_menu(saved: Dictionary = {}) -> void:
 	_rest_menu = RestMenu.new()
-	_rest_menu.summary = wave_manager.summary()
-	# Seelen-Shop: Stat-Boni für Seelen, die Preise hängen an der überstandenen Welle
 	var shop := RestShop.new()
 	shop.pool = HERO_UPGRADES
 	shop.run_state = run_state
 	shop.wave = wave_manager.number
-	shop.roll()
+	if saved.is_empty():
+		_rest_menu.summary = wave_manager.summary()
+		shop.roll()
+	else:
+		_rest_menu.summary = saved.get("summary", {})
+		RunSave.restore_shop(saved, shop)
 	_rest_menu.shop = shop
 	_rest_menu.continued.connect(_on_rest_continued)
+	_rest_menu.shop_changed.connect(_save_rest)
 	hud.add_child(_rest_menu)
 	_update_pause()
+	_save_rest()
+
+
+## Autosave auf dem Rastplatz (beim Betreten, nach jedem Kauf und Neu-Würfeln)
+func _save_rest() -> void:
+	if _rest_menu and not _game_over:
+		RunSave.write(RunSave.capture(RunSave.PHASE_REST, wave_manager.number, run_state, player, weapon_holder,
+				_rest_menu.summary, _rest_menu.shop))
 
 
 func _on_rest_continued() -> void:
@@ -326,6 +365,7 @@ func _on_rest_continued() -> void:
 ## Die Expedition ist gewonnen (Boss besiegt oder letzte Welle überstanden): Sieg-Bildschirm
 func _on_run_won(boss_defeated: bool) -> void:
 	_game_over = true
+	RunSave.delete()
 	if _debug_menu:
 		_debug_menu.queue_free()
 	var menu: GameOverMenu = GAME_OVER_MENU.instantiate()
@@ -341,6 +381,8 @@ func _on_run_won(boss_defeated: bool) -> void:
 ## Der Held stirbt: Gegner frieren ein, der Held spielt seine Tod-Animation, und erst danach erscheint Game Over.
 func _on_player_died() -> void:
 	_game_over = true
+	# Kein Retten durch Neuladen: Der Spielstand verschwindet sofort
+	RunSave.delete()
 	enemy_manager.process_mode = Node.PROCESS_MODE_DISABLED
 	projectile_manager.process_mode = Node.PROCESS_MODE_DISABLED
 	weapon_holder.process_mode = Node.PROCESS_MODE_DISABLED

@@ -28,6 +28,7 @@ var _abandon_armed := false
 @onready var resume_button: Button = %ResumeButton
 @onready var options_button: Button = %OptionsButton
 @onready var abandon_button: Button = %AbandonButton
+@onready var save_quit_button: Button = %SaveQuitButton
 
 
 func _ready() -> void:
@@ -39,6 +40,7 @@ func _ready() -> void:
 	resume_button.pressed.connect(close)
 	options_button.pressed.connect(_on_options_pressed)
 	abandon_button.pressed.connect(_on_abandon_pressed)
+	save_quit_button.pressed.connect(_on_save_quit_pressed)
 
 
 ## Charakterspalte: Stufe mit XP-Leiste, Heldenwerte (inklusive der globalen Boni für alle Waffen) und gewählte Helden-Boni.
@@ -205,5 +207,10 @@ func _on_abandon_pressed() -> void:
 		_abandon_armed = true
 		abandon_button.text = "PAUSE_ABANDON_CONFIRM"
 		return
-	# Bis M8 geht der Run dabei verloren
+	RunSave.delete()
+	SceneRouter.go_to_main_menu()
+
+
+## Der Run ist schon gespeichert (Anfang der Welle bzw. Rastplatz): beim Fortsetzen beginnt die laufende Welle von vorn
+func _on_save_quit_pressed() -> void:
 	SceneRouter.go_to_main_menu()
