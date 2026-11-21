@@ -1,0 +1,35 @@
+# Neuigkeiten in Banebound
+# Format: "## Version · Datum" beginnt eine Version (neueste oben), "- Text" ist ein Punkt. Zeilen mit "#" am Anfang sind Notizen.
+
+## Beta v0.2.0 · in Arbeit
+- Drei Speicherplätze: Gib deinem Helden einen Namen, setze Expeditionen fort oder lösche Spielstände.
+- Das Spiel speichert automatisch zu Beginn jeder Welle und auf dem Rastplatz. Wer mitten in einer Welle aufhört, beginnt sie beim Fortsetzen von vorn.
+- Neu im Pausemenü: Speichern & Hauptmenü.
+- Das Spiel pausiert jetzt auch, wenn du die Benachrichtigungsleiste herunterziehst.
+- Neu im Hauptmenü: Neuigkeiten.
+- Arkaner Zauberstab: Durchschlag höchstens 4 Gegner, Abprallen höchstens 3.
+- Sturmrufer: schlägt nur noch halb so oft ein.
+- Dornenpeitsche und Kreisendes Schwert: doppelter Grundschaden.
+
+## Beta v0.1.1 · 21.11.2026
+- Aufräumarbeiten im Hintergrund, Vorbereitung auf Hindernisse in der Karte.
+
+## Beta v0.1.0 · 21.11.2026
+- Eine komplette Expedition: 20 Wellen mit wachsenden Horden, Einkesselungen und Ansturm-Ereignissen.
+- Der Knochenritter wartet als Boss in der letzten Welle.
+- Neue Gegner: springende Ghule, Feuer-Kultisten mit Feuerbällen und Pestbringer, die in einer Giftwolke platzen.
+- Rastplatz zwischen den Wellen mit Seelen-Shop für Helden-Boni.
+- Level-Ups bieten jetzt Waffen und Waffen-Upgrades, mit Neu würfeln und Überspringen.
+- Sieg- und Niederlage-Bildschirm mit Zusammenfassung deines Runs.
+- Die Kamera ist etwas näher am Geschehen.
+
+## Alpha v0.5 · 18.11.2026
+- Sechs Waffen mit eigenem Angriff: Arkaner Zauberstab, Kreisendes Schwert, Flammenfackel, Sturmrufer, Bombenbeutel und Dornenpeitsche.
+- Elemente und Status-Effekte: Brennen, Gift, Kettenblitz und Frost.
+- Seelensplitter als Erfahrung und Level-Up-Karten in drei Seltenheiten.
+- Neue Anzeige im Spiel: Lebensleiste, Erfahrungsleiste und Waffenplätze.
+- Pausemenü mit Werten deines Helden und Details zu jeder Waffe.
+
+## Alpha v0.3 · 09.11.2026
+- Der Wald als erste Karte, umgeben von dichtem Waldrand.
+- Skelett-Horden, Touch-Joystick und Optionsmenü.

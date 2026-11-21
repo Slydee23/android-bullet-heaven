@@ -1,5 +1,5 @@
 extends Control
-## Hauptmenü: Fortsetzen (wenn es einen Spielstand gibt), Neues Spiel und Optionen.
+## Hauptmenü: Fortsetzen (wenn es einen Spielstand gibt), Neues Spiel und Optionen, unten rechts „Neuigkeiten“.
 ## Fortsetzen und Neues Spiel öffnen beide die Speicherplätze (SlotMenu).
 
 const PixelUI := preload("res://scripts/ui/pixel_ui.gd")
@@ -16,6 +16,9 @@ const OPTIONS_MENU := preload("res://ui/options_menu.tscn")
 var continue_button: Button
 ## Offenes Speicherplatz-Menü (oder null)
 var slot_menu: SlotMenu
+## Knopf „Neuigkeiten“ unten rechts über der Versionsnummer
+var news_button: Button
+var news_menu: ChangelogMenu
 
 
 func _ready() -> void:
@@ -32,6 +35,18 @@ func _ready() -> void:
 	start_button.get_parent().add_child(continue_button)
 	start_button.get_parent().move_child(continue_button, start_button.get_index())
 	_update_continue()
+
+	news_button = Button.new()
+	news_button.text = "MENU_NEWS"
+	news_button.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	news_button.offset_left = -440.0
+	news_button.offset_top = -200.0
+	news_button.offset_right = -40.0
+	news_button.offset_bottom = -104.0
+	news_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	news_button.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	news_button.pressed.connect(_open_news)
+	add_child(news_button)
 
 	start_button.pressed.connect(_open_slots.bind(SlotMenu.Mode.NEW))
 	options_button.pressed.connect(_on_options_button_pressed)
@@ -50,12 +65,30 @@ func _open_slots(mode: SlotMenu.Mode) -> void:
 	slot_menu.closed.connect(_on_slots_closed)
 	add_child(slot_menu)
 	menu_center.visible = false
+	news_button.visible = false
 
 
 func _on_slots_closed() -> void:
 	slot_menu = null
 	menu_center.visible = true
+	news_button.visible = true
 	_update_continue()
+
+
+func _open_news() -> void:
+	if news_menu or slot_menu:
+		return
+	news_menu = ChangelogMenu.new()
+	news_menu.closed.connect(_on_news_closed)
+	add_child(news_menu)
+	menu_center.visible = false
+	news_button.visible = false
+
+
+func _on_news_closed() -> void:
+	news_menu = null
+	menu_center.visible = true
+	news_button.visible = true
 
 
 func _on_options_button_pressed() -> void:

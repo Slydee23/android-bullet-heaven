@@ -37,6 +37,10 @@ const START_WEAPON_ID := &"arcane_wand"
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
 ## Bewusst fest und nicht von den Waves abhängig: Ab 50 Gegnern ist der Bildschirm voll genug für den weitesten Zoom.
 const ZOOM_FULL_ENEMIES := 50
+## Auto-Pause beim Herunterziehen der Benachrichtigungsleiste (Rückfall, falls Android nichts meldet):
+## Berührung beginnt im obersten Streifen (Anteil der Bildhöhe) und wandert so weit nach unten (Pixel)
+const TOP_EDGE_SHARE := 0.04
+const TOP_EDGE_PULL := 60.0
 ## Wie oft die FPS-Anzeige aktualisiert wird (Sekunden)
 const FPS_UPDATE_INTERVAL := 0.5
 ## So viele letzte Bildzeiten fließen in die Leistungsanzeige ein (bei 60 FPS etwa 2 Sekunden)
@@ -69,6 +73,9 @@ var _rest_menu: RestMenu
 var _rest_pending := false
 ## Stufenaufstiege, deren Fenster noch kommt (mehrere auf einmal erscheinen nacheinander)
 var _pending_level_ups := 0
+## Berührung an der obersten Kante (Benachrichtigungsleiste), -1 = keine
+var _edge_touch := -1
+var _edge_start_y := 0.0
 var _pause_menu: Control
 var _debug_menu: DebugMenu
 ## Der Held ist gestorben (sperrt die Pause), auch schon während der Tod-Animation
@@ -176,6 +183,8 @@ func _ready() -> void:
 	camera.call_deferred("reset_smoothing")
 
 	pause_button.pressed.connect(open_pause_menu)
+	# Fenster verliert den Fokus (zusätzlich zu den Benachrichtigungen unten; auf manchen Handys der einzige Hinweis)
+	get_window().focus_exited.connect(open_pause_menu)
 	if Settings.debug_waves_enabled:
 		var saved := RunSave.read() if SceneRouter.resume_requested else {}
 		SceneRouter.resume_requested = false
@@ -213,6 +222,26 @@ func _update_fps_label() -> void:
 	var average := total / FRAME_SAMPLES
 	fps_label.text = tr("DEBUG_FPS") % [Engine.get_frames_per_second(), average * 1000.0, longest * 1000.0,
 			enemy_manager.count, projectile_manager.count + strike_manager.count, effect_manager.count, pickup_manager.count]
+
+
+## Auto-Pause beim Herunterziehen der Benachrichtigungsleiste. Das Testhandy meldet dabei keinen Fokus-Verlust (siehe M2),
+## deshalb zwei weitere Wege: Android bricht die laufende Berührung ab (Godot: canceled), oder ein Wisch beginnt an der
+## obersten Kante und zieht nach unten. Der Joystick lässt alle Berührungen durch, hier kommt also jede an.
+func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		var touch := event as InputEventScreenTouch
+		if touch.canceled:
+			_edge_touch = -1
+			open_pause_menu()
+		elif touch.pressed and touch.position.y < get_viewport().get_visible_rect().size.y * TOP_EDGE_SHARE:
+			_edge_touch = touch.index
+			_edge_start_y = touch.position.y
+		elif not touch.pressed and touch.index == _edge_touch:
+			_edge_touch = -1
+	elif event is InputEventScreenDrag and (event as InputEventScreenDrag).index == _edge_touch:
+		if (event as InputEventScreenDrag).position.y - _edge_start_y > TOP_EDGE_PULL:
+			_edge_touch = -1
+			open_pause_menu()
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -256,3 +256,5 @@ SLOT_OVERWRITE_YES,Überschreiben
 SLOT_NAME_TITLE,Wie heißt dein Held?
 SLOT_NAME_DEFAULT,Held %d
 SLOT_START,Los geht's
+MENU_NEWS,Neuigkeiten
+NEWS_EMPTY,Noch keine Neuigkeiten.
