@@ -23,6 +23,8 @@ var xp_gained := 0
 var rerolls := START_REROLLS
 ## Seelen: zählen bei jedem Kill und werden im Rastplatz-Shop für Stat-Boni ausgegeben
 var souls := 0
+## Alle in diesem Run verdienten Seelen (auch ausgegebene, für die Zusammenfassung am Ende)
+var souls_earned := 0
 ## Fortschritt der Expedition: aktuelle Welle, Zahl der Wellen, besiegte Gegner, Kampfzeit in Sekunden (ohne Rastplätze)
 var wave := 0
 var wave_total := 0
@@ -43,6 +45,7 @@ func add_souls(amount: int) -> void:
 	if amount <= 0:
 		return
 	souls += amount
+	souls_earned += amount
 	souls_changed.emit(souls)
 
 

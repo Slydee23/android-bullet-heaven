@@ -328,10 +328,11 @@ func _on_run_won(boss_defeated: bool) -> void:
 	_game_over = true
 	if _debug_menu:
 		_debug_menu.queue_free()
-	var menu: Control = GAME_OVER_MENU.instantiate()
+	var menu: GameOverMenu = GAME_OVER_MENU.instantiate()
 	menu.victory = true
 	menu.boss_defeated = boss_defeated
-	menu.summary = wave_manager.summary()
+	menu.run_state = run_state
+	menu.weapons = weapon_holder
 	_game_over_menu = menu
 	hud.add_child(menu)
 	_update_pause()
@@ -379,8 +380,11 @@ func _on_enemy_killed(pos: Vector2, data: EnemyData, flipped: bool) -> void:
 
 
 func _on_death_animation_finished() -> void:
-	_game_over_menu = GAME_OVER_MENU.instantiate()
-	hud.add_child(_game_over_menu)
+	var menu: GameOverMenu = GAME_OVER_MENU.instantiate()
+	menu.run_state = run_state
+	menu.weapons = weapon_holder
+	_game_over_menu = menu
+	hud.add_child(menu)
 
 
 ## Treffer-Feedback: Bild wackeln und Handy vibrieren lassen, je nach Optionen. Große Treffer wirken stärker.

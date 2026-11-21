@@ -232,3 +232,10 @@ PAUSE_RUN_SOULS,Seelen
 DEBUG_SOULS,+100 Seelen
 LEVEL_UP_REROLL,Neu würfeln (%d)
 LEVEL_UP_SKIP,Überspringen
+SUMMARY_BOSS_DEFEATED,Der Boss ist besiegt. Die Expedition ist geschafft!
+SUMMARY_SURVIVED,Die letzte Welle ist überstanden. Die Expedition ist geschafft!
+SUMMARY_FELL_IN_WAVE,Gefallen in Welle %d von %d
+SUMMARY_LEVEL,Stufe
+SUMMARY_SOULS,Gesammelte Seelen
+SUMMARY_XP,Erfahrung
+SUMMARY_WEAPON_LINE,Stufe %d · %s Schaden

@@ -49,27 +49,31 @@ from pure need, and return to rebuild a village that the old wars left in ashes.
 - **Save and continue** – leave mid-run and pick up later. No save-scumming: shop offers and level-up choices are
   locked in.
 
-## Current status – Alpha v0.5
+## Current status – Beta v0.1.0
 
-Banebound is in early development. The core combat loop is playable; expeditions, waves and the village are next.
+Banebound is in development. A full expedition is playable from the first wave to the boss; the village and meta progression are next.
 
 **Playable now**
 
 - Free movement through a forest arena with a touch joystick (floating or fixed)
-- Endless skeletons that swarm the hero – stays smooth with several hundred enemies on a mid-range phone
+- **An expedition of 20 waves** with growing hordes, surround and rush events, and a **boss** (the Bone Knight) in the final wave
+- **Four enemy types** with their own attacks: skeletons, leaping ghouls, fire cultists (dodgeable fireballs) and plaguebringers that burst into poison
+- Stays smooth with several hundred enemies on a mid-range phone
 - **Six weapons**, each with its own attack pattern: Arcane Wand (aimed bolts), Orbiting Sword, Flame Torch (fire aura),
   Trident (lightning strikes), Bomb Bag (bombs with a warning zone) and Thorn Whip
 - **Elements and status effects:** burning, poison, chain lightning (shock) and frost
 - **Soul shards (XP)** dropped by enemies, pulled in by a pickup radius
-- **Level-ups with three cards:** new weapons, weapon upgrades and hero boons in three rarities (common, rare, epic)
+- **Level-ups with three cards:** new weapons and weapon upgrades in three rarities (common, rare, epic), with reroll and skip
+- **Resting place between waves** with a shop: spend **souls** earned from kills on hero boons
+- **Victory and defeat screens** with a run summary (waves, kills, level, souls, damage per weapon)
 - HUD with health, XP bar and weapon slots; pause screen with detailed weapon stats and chosen upgrades
 - Options for joystick, damage numbers, health bars, screen shake and vibration
 
 **Coming next**
 
-- Waves with a timer, ranged enemies and bosses, and a run that can be won
-- Resting places with merchants between waves
-- Weapon evolutions from level 10, special abilities, saving and continuing a run
+- Saving and continuing a run
+- Sound and music, special abilities
+- Weapon evolutions, more stats (armour, regeneration, critical hits) and elite enemies
 - The village hub, armour and permanent upgrades
 
 ## Controls
