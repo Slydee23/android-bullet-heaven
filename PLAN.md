@@ -604,7 +604,7 @@ Nachtrag: eigene **Charge-Animation** (PixelLab, 2 Generierungen, `bone_knight_c
   Stimmen die Zahlen in der Zusammenfassung?
 - **Entscheidung nach M7 (2026-11-21):** Die alten Props-Texturen (`forest_props.png`) sind gelöscht, die Asset-Pläne haben sich seitdem geändert. Gewünscht sind stattdessen **Hindernisse passend zur jeweiligen Map** (im Wald z. B. Bäume, Felsen, umgestürzte Stämme), siehe „E0 – Map-Hindernisse“.
 
-### M8 – Run speichern & fortsetzen
+### M8 – Run speichern & fortsetzen (abgeschlossen 2026-11-24 → Beta v0.2.0)
 
 - Die genaue technische Umsetzung planen wir zu Beginn von M8. Diese Grundsätze stehen schon fest:
   - Im Pausemenü wird „Run aufgeben“ ergänzt durch **„Speichern & Hauptmenü“**. Im Hauptmenü erscheint **„Fortsetzen“**,
@@ -629,8 +629,7 @@ Nachtrag: eigene **Charge-Animation** (PixelLab, 2 Generierungen, `bone_knight_c
   „Fortsetzen“ funktioniert. Am Rastplatz etwas kaufen, App beenden, neu starten: Der Kauf ist noch da, die Angebote sind dieselben.
   Der Changelog lässt sich öffnen, scrollen und schließen.
 
-- ⚠ **Erinnerung nach Abschluss von M8:**
-  - README gemeinsam aktualisieren: Screenshots und Abschnitt „Current status“ erneuern (erste Screenshots kamen schon mit Alpha v0.5, `docs/screenshots/`).
+- **README aktualisiert (2026-11-24):** neue Screenshots mit Beta v0.2.0 (Hauptmenü, Speicherplätze, Kampf in Welle 8, Level-Up, Rastplatz, Status, Sieg) und „Current status“. Am Handy getestet: Benachrichtigungsleiste pausiert, Neuigkeiten lesbar.
 
 ➡ **Nach M8 ist das Grundspiel fertig.**
 

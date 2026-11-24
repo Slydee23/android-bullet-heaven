@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Banebound"
-config/version="Beta v0.1.1"
+config/version="Beta v0.2.0"
 run/main_scene="res://ui/main_menu.tscn"
 config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "Mobile")

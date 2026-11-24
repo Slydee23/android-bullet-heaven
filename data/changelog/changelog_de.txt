@@ -1,12 +1,12 @@
 # Neuigkeiten in Banebound
 # Format: "## Version · Datum" beginnt eine Version (neueste oben), "- Text" ist ein Punkt. Zeilen mit "#" am Anfang sind Notizen.
 
-## Beta v0.2.0 · in Arbeit
+## Beta v0.2.0 · 24.11.2026
 - Drei Speicherplätze: Gib deinem Helden einen Namen, setze Expeditionen fort oder lösche Spielstände.
 - Das Spiel speichert automatisch zu Beginn jeder Welle und auf dem Rastplatz. Wer mitten in einer Welle aufhört, beginnt sie beim Fortsetzen von vorn.
 - Neu im Pausemenü: Speichern & Hauptmenü.
 - Das Spiel pausiert jetzt auch, wenn du die Benachrichtigungsleiste herunterziehst.
-- Neu im Hauptmenü: Neuigkeiten.
+- Neu im Hauptmenü: Neuigkeiten. Außerdem ist das Hauptmenü aufgeräumt: Fortsetzen, Neues Spiel und Optionen.
 - Arkaner Zauberstab: Durchschlag höchstens 4 Gegner, Abprallen höchstens 3.
 - Sturmrufer: schlägt nur noch halb so oft ein.
 - Dornenpeitsche und Kreisendes Schwert: doppelter Grundschaden.

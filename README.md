@@ -9,11 +9,15 @@ from pure need, and return to rebuild a village that the old wars left in ashes.
   <img src="docs/screenshots/combat.png" alt="Fighting a horde of skeletons with four weapons" width="100%">
 </p>
 
-| Main menu | Level-up | Status screen |
+| Main menu | Save slots | Level-up |
 |---|---|---|
-| ![Main menu](docs/screenshots/main_menu.png) | ![Level-up cards](docs/screenshots/level_up.png) | ![Pause and status screen](docs/screenshots/pause_menu.png) |
+| ![Main menu](docs/screenshots/main_menu.png) | ![Three named save slots](docs/screenshots/save_slots.png) | ![Level-up cards with reroll and skip](docs/screenshots/level_up.png) |
 
-<sub>Screenshots from Alpha v0.5, recorded on PC in the aspect ratio of the test phone (20:9).</sub>
+| Resting place | Status screen | Run summary |
+|---|---|---|
+| ![Resting place with the soul shop](docs/screenshots/rest_stop.png) | ![Pause and status screen](docs/screenshots/pause_menu.png) | ![Victory screen with run summary](docs/screenshots/summary.png) |
+
+<sub>Screenshots from Beta v0.2.0, recorded on PC in the aspect ratio of the test phone (20:9).</sub>
 
 ---
 
@@ -46,12 +50,12 @@ from pure need, and return to rebuild a village that the old wars left in ashes.
   the enchanter and more, and unlock permanent upgrades.
 - **Hundreds of enemies on screen** – built from the ground up to stay smooth on mid-range phones.
 - **Made for touch** – floating or fixed joystick, left, right or both sides of the screen, adjustable transparency.
-- **Save and continue** – leave mid-run and pick up later. No save-scumming: shop offers and level-up choices are
-  locked in.
+- **Save and continue** – three named save slots; leave a run and pick it up later. No save-scumming: shop offers are
+  locked in, and a wave you leave starts over.
 
-## Current status – Beta v0.1.1
+## Current status – Beta v0.2.0
 
-Banebound is in development. A full expedition is playable from the first wave to the boss; the village and meta progression are next.
+Banebound is in development. A full expedition is playable from the first wave to the boss and can be saved and continued; the village and meta progression are next.
 
 **Playable now**
 
@@ -66,14 +70,16 @@ Banebound is in development. A full expedition is playable from the first wave t
 - **Level-ups with three cards:** new weapons and weapon upgrades in three rarities (common, rare, epic), with reroll and skip
 - **Resting place between waves** with a shop: spend **souls** earned from kills on hero boons
 - **Victory and defeat screens** with a run summary (waves, kills, level, souls, damage per weapon)
+- **Three named save slots:** the game saves at the start of every wave and at each resting place; leaving mid-wave restarts that wave
+- In-game **news** page with the changes of every version
 - HUD with health, XP bar and weapon slots; pause screen with detailed weapon stats and chosen upgrades
 - Options for joystick, damage numbers, health bars, screen shake and vibration
 
 **Coming next**
 
-- Saving and continuing a run
-- Sound and music, special abilities
-- Weapon evolutions, more stats (armour, regeneration, critical hits) and elite enemies
+- Obstacles on the map that heroes and monsters must walk around
+- A full stat system: armour, dodge, regeneration, critical hits, luck and more
+- Sound and music, special abilities, weapon evolutions and elite enemies
 - The village hub, armour and permanent upgrades
 
 ## Controls
