@@ -51,7 +51,10 @@ func update(m: EnemyManager, i: int, data: EnemyData, target: Player, delta: flo
 			var frames := m.pose_frame_count(data, EnemyManager.POSE_ATTACK)
 			var progress := clampf(m.ability_time[i] / leap_time, 0.0, 1.0)
 			m.set_pose(i, EnemyManager.POSE_ATTACK, windup_frames + mini(int(progress * (frames - windup_frames)), frames - windup_frames - 1))
-			m.move_enemy(i, m.ability_vec[i] * leap_distance / leap_time * delta)
+			# Prallt er gegen ein Hindernis, endet der Sprung dort (Deckung für den Helden)
+			if m.move_enemy(i, m.ability_vec[i] * leap_distance / leap_time * delta):
+				m.set_ability_state(i, STATE_RECOVER)
+				return true
 			# Trifft er den Helden, endet der Sprung sofort (ein Treffer pro Sprung)
 			if target:
 				var reach := data.radius + target.body_radius

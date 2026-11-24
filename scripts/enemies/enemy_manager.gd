@@ -980,9 +980,17 @@ func face(i: int, direction: Vector2) -> void:
 
 
 ## Verschiebt Gegner i (z. B. im Sprung), innerhalb der Arena
-func move_enemy(i: int, offset: Vector2) -> void:
+## Gibt true zurück, wenn ein Hindernis die Bewegung aufgehalten hat (es schiebt mehr als die Hälfte des Schritts zurück).
+## Streifen an der Seite zählt nicht. So können Sprung und Ansturm am Hindernis enden statt daran entlangzurutschen.
+func move_enemy(i: int, offset: Vector2) -> bool:
 	var pos := (_positions[i] + offset).clamp(_bounds.position, _bounds.end)
-	_positions[i] = obstacles.push_out(pos, _radii[i]) if obstacles else pos
+	if not obstacles:
+		_positions[i] = pos
+		return false
+	var pushed := obstacles.push_out(pos, _radii[i])
+	_positions[i] = pushed
+	var step_sq := offset.length_squared()
+	return step_sq > 0.0001 and (pos - pushed).dot(offset) > 0.5 * step_sq
 
 
 ## Tönung in der Elementfarbe. Hat ein Gegner mehrere Status, wechselt die Farbe reihum (alle STATUS_CYCLE Sekunden).

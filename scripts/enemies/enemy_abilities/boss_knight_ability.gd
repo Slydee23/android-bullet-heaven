@@ -94,7 +94,11 @@ func update(m: EnemyManager, i: int, data: EnemyData, target: Player, delta: flo
 			# Charge-Animation im Kreis (ab Frame 3: volle Schritte, Umhang weht)
 			var charge_frames := m.pose_frame_count(data, EnemyManager.POSE_SPECIAL)
 			m.set_pose(i, EnemyManager.POSE_SPECIAL, 3 + int(m.ability_time[i] * 14.0) % maxi(charge_frames - 3, 1))
-			m.move_enemy(i, m.ability_vec[i] * charge_distance / charge_time * delta)
+			# Rennt er gegen ein Hindernis, endet der Ansturm dort (Deckung für den Helden)
+			if m.move_enemy(i, m.ability_vec[i] * charge_distance / charge_time * delta):
+				m.screen_shake.emit(slam_shake * 0.5)
+				m.set_ability_state(i, STATE_RECOVER)
+				return true
 			var reach := data.radius + target.body_radius
 			if m.get_enemy_position(i).distance_squared_to(hero) <= reach * reach:
 				target.take_damage(charge_damage * m.damage_multiplier)
