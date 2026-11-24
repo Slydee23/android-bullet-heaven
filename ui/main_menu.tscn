@@ -34,7 +34,7 @@ grow_vertical = 2
 
 [node name="Menu" type="VBoxContainer" parent="Center" unique_id=1639970832]
 layout_mode = 2
-theme_override_constants/separation = 28
+theme_override_constants/separation = 14
 
 [node name="Title" type="Label" parent="Center/Menu" unique_id=1526451523]
 layout_mode = 2
