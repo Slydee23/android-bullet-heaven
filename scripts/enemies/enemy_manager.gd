@@ -103,6 +103,8 @@ var ability_timer_b := PackedFloat32Array()
 var status_types: Array[StatusEffectData] = []
 
 var _bounds := Rect2()
+## Hindernisse der Karte: Gegner lenken seitlich daran vorbei und werden nie hineingeschoben (setzt die Run-Szene)
+var obstacles: ObstacleMap
 var _type_list: Array[EnemyData] = []
 var _types := PackedInt32Array()
 var _positions := PackedVector2Array()
@@ -201,7 +203,7 @@ func spawn(data: EnemyData, pos: Vector2) -> void:
 		_type_list.append(data)
 		type_index = _type_list.size() - 1
 	_types[count] = type_index
-	_positions[count] = pos
+	_positions[count] = obstacles.push_out(pos, data.radius) if obstacles else pos
 	_radii[count] = data.radius
 	_hp[count] = data.max_hp * _hp_factor(data)
 	_since_hit[count] = 0.0
@@ -803,6 +805,8 @@ func _move(delta: float) -> void:
 			continue
 		var pos := _positions[i]
 		var direction := pos.direction_to(target_pos)
+		if obstacles:
+			direction = obstacles.steer(pos, direction, data.radius)
 		# Am Rand des Helden bzw. in Angriffsreichweite stehen bleiben
 		var contact_distance := data.radius + target_radius
 		var stop_distance := contact_distance + data.attack_range
@@ -821,6 +825,8 @@ func _move(delta: float) -> void:
 		if away.length_squared() < contact_distance * contact_distance:
 			pos = target_pos + (away.normalized() if away != Vector2.ZERO else Vector2.RIGHT) * contact_distance
 		pos = pos.clamp(_bounds.position, _bounds.end)
+		if obstacles:
+			pos = obstacles.push_out(pos, data.radius)
 		_positions[i] = pos
 
 		_update_attack(i, data, pos.distance_to(target_pos) <= stop_distance + ATTACK_TOLERANCE, delta)
@@ -975,7 +981,8 @@ func face(i: int, direction: Vector2) -> void:
 
 ## Verschiebt Gegner i (z. B. im Sprung), innerhalb der Arena
 func move_enemy(i: int, offset: Vector2) -> void:
-	_positions[i] = (_positions[i] + offset).clamp(_bounds.position, _bounds.end)
+	var pos := (_positions[i] + offset).clamp(_bounds.position, _bounds.end)
+	_positions[i] = obstacles.push_out(pos, _radii[i]) if obstacles else pos
 
 
 ## Tönung in der Elementfarbe. Hat ein Gegner mehrere Status, wechselt die Farbe reihum (alle STATUS_CYCLE Sekunden).

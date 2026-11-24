@@ -32,6 +32,8 @@ const XP_CURVE := preload("res://data/progression/xp_curve.tres")
 const LEVEL_UP_MENU := preload("res://ui/level_up_menu.tscn")
 const WEAPON_CATALOG := preload("res://data/weapons/weapon_catalog.tres")
 const HERO_UPGRADES := preload("res://data/upgrades/hero_upgrades.tres")
+## Karte der Expedition (vorerst nur die Hindernisse, E0)
+const MAP := preload("res://data/maps/forest.tres")
 ## Startwaffe des Runs (vorerst fest, die Auswahl im Hub kommt mit E11). Datei: data/weapons/<id>.tres
 const START_WEAPON_ID := &"arcane_wand"
 ## Ab so vielen lebenden Gegnern ist der dynamische Zoom ganz draußen (darüber wird es nur voller).
@@ -73,6 +75,8 @@ var _rest_menu: RestMenu
 var _rest_pending := false
 ## Stufenaufstiege, deren Fenster noch kommt (mehrere auf einmal erscheinen nacheinander)
 var _pending_level_ups := 0
+## Hindernisse dieses Runs (Kreise im Raster), gebaut aus MAP und run_state.map_seed
+var obstacles := ObstacleMap.new()
 ## Berührung an der obersten Kante (Benachrichtigungsleiste), -1 = keine
 var _edge_touch := -1
 var _edge_start_y := 0.0
@@ -119,16 +123,31 @@ func _ready() -> void:
 	_build_canopy(arena_tiles)
 	_build_forest_edge(walkable)
 
+	# Gespeicherten Run früh lesen: Er bestimmt auch die zufälligen Hindernisse (gleiche Karte beim Fortsetzen)
+	var saved: Dictionary = {}
+	if Settings.debug_waves_enabled and SceneRouter.resume_requested:
+		saved = RunSave.read()
+	SceneRouter.resume_requested = false
+	run_state.map_seed = int(saved.get("map_seed", randi()))
+	obstacles.build(MAP, walkable, run_state.map_seed)
+	var obstacle_drawer := ObstacleDrawer.new()
+	obstacle_drawer.name = "Obstacles"
+	add_child(obstacle_drawer)
+	move_child(obstacle_drawer, pickup_manager.get_index())
+	obstacle_drawer.obstacles = obstacles
+
 	# Der Spieler bleibt innerhalb des Waldes
 	player.bounds = walkable
 	player.position = walkable.get_center()
 	player.joystick = joystick
+	player.obstacles = obstacles
 	player.died.connect(_on_player_died)
 	player.death_animation_finished.connect(_on_death_animation_finished)
 	player.damaged.connect(_on_player_damaged)
 
 	enemy_manager.set_bounds(player.bounds)
 	enemy_manager.target = player
+	enemy_manager.obstacles = obstacles
 	# Gegner erscheinen über das Wellen-System (WaveManager), nicht mehr über den einfachen Spawn des EnemyManagers
 	enemy_manager.vanish_effect = DEATH_EFFECT
 	enemy_manager.enemy_damaged.connect(_on_enemy_damaged)
@@ -137,6 +156,7 @@ func _ready() -> void:
 	hostile_projectiles.target = player
 	hostile_projectiles.effect_manager = effect_manager
 	hostile_projectiles.bounds = player.bounds
+	hostile_projectiles.obstacles = obstacles
 	enemy_manager.hostile_projectiles = hostile_projectiles
 	enemy_manager.effect_manager = effect_manager
 	enemy_manager.screen_shake.connect(_on_screen_shake)
@@ -186,8 +206,6 @@ func _ready() -> void:
 	# Fenster verliert den Fokus (zusätzlich zu den Benachrichtigungen unten; auf manchen Handys der einzige Hinweis)
 	get_window().focus_exited.connect(open_pause_menu)
 	if Settings.debug_waves_enabled:
-		var saved := RunSave.read() if SceneRouter.resume_requested else {}
-		SceneRouter.resume_requested = false
 		if saved.is_empty():
 			wave_manager.start()
 		else:

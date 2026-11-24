@@ -13,6 +13,8 @@ const SHOT_HEIGHT := 14.0
 var target: Player
 var effect_manager: EffectManager
 var bounds := Rect2()
+## Hindernisse: Feuerbälle zerplatzen daran (Deckung für den Helden), setzt die Run-Szene
+var obstacles: ObstacleMap
 var count := 0
 
 var _positions := PackedVector2Array()
@@ -65,7 +67,7 @@ func _process(delta: float) -> void:
 		if target and _positions[i].distance_squared_to(hero) <= reach * reach:
 			target.take_damage(_damage[i])
 			_burst(i, kind)
-		elif _life[i] <= 0.0 or (bounds.has_area() and not bounds.has_point(_positions[i])):
+		elif _life[i] <= 0.0 or (bounds.has_area() and not bounds.has_point(_positions[i])) or (obstacles and obstacles.blocks(_positions[i])):
 			_burst(i, kind)
 	if count > 0 or _time > 0.0:
 		queue_redraw()

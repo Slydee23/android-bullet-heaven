@@ -89,6 +89,7 @@ static func capture(phase: String, wave: int, run_state: RunState, player: Playe
 		"phase": phase,
 		"wave": wave,
 		"wave_total": run_state.wave_total,
+		"map_seed": run_state.map_seed,
 		"run": {
 			"level": run_state.level,
 			"xp": run_state.xp,
@@ -146,6 +147,7 @@ static func restore_run_state(data: Dictionary, run_state: RunState, hero_pool: 
 	run_state.kills = int(run.get("kills", 0))
 	run_state.time = float(run.get("time", 0.0))
 	run_state.rerolls = int(run.get("rerolls", RunState.START_REROLLS))
+	run_state.map_seed = int(data.get("map_seed", run_state.map_seed))
 	run_state.xp_changed.emit(run_state.xp, run_state.xp_needed())
 	run_state.souls_changed.emit(run_state.souls)
 

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ObstacleKind" format=3]
+
+[ext_resource type="Script" path="res://scripts/world/obstacle_kind.gd" id="1_kind"]
+
+[resource]
+script = ExtResource("1_kind")
+id = &"tree"
+circles = PackedVector3Array(0, 0, 16)
+weight = 2.0
+placeholder_color = Color(0.2, 0.32, 0.18, 1)

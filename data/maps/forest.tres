@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="MapData" format=3]
+
+[ext_resource type="Script" path="res://scripts/world/map_data.gd" id="1_map"]
+[ext_resource type="Script" path="res://scripts/world/obstacle_placement.gd" id="2_place"]
+[ext_resource type="Script" path="res://scripts/world/obstacle_kind.gd" id="3_kind"]
+[ext_resource type="Resource" path="res://data/obstacles/rock_large.tres" id="rock_large"]
+[ext_resource type="Resource" path="res://data/obstacles/rock_small.tres" id="rock_small"]
+[ext_resource type="Resource" path="res://data/obstacles/tree.tres" id="tree"]
+[ext_resource type="Resource" path="res://data/obstacles/stump.tres" id="stump"]
+[ext_resource type="Resource" path="res://data/obstacles/fallen_log.tres" id="fallen_log"]
+[ext_resource type="Resource" path="res://data/obstacles/rock_formation.tres" id="rock_formation"]
+
+[sub_resource type="Resource" id="P1"]
+script = ExtResource("2_place")
+kind = ExtResource("rock_formation")
+position = Vector2(230, 190)
+
+[sub_resource type="Resource" id="P4"]
+script = ExtResource("2_place")
+kind = ExtResource("fallen_log")
+position = Vector2(880, 590)
+
+[sub_resource type="Resource" id="P5"]
+script = ExtResource("2_place")
+kind = ExtResource("tree")
+position = Vector2(900, 190)
+
+[sub_resource type="Resource" id="P6"]
+script = ExtResource("2_place")
+kind = ExtResource("tree")
+position = Vector2(260, 600)
+
+[resource]
+script = ExtResource("1_map")
+fixed = Array[ExtResource("2_place")]([SubResource("P1"), SubResource("P4"), SubResource("P5"), SubResource("P6")])
+random_kinds = Array[ExtResource("3_kind")]([ExtResource("rock_large"), ExtResource("rock_small"), ExtResource("tree"), ExtResource("stump"), ExtResource("fallen_log")])
+random_count = 10
+min_gap = 56.0
+center_clear = 190.0
+edge_margin = 40.0

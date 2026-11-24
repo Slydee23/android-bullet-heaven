@@ -55,6 +55,8 @@ const DEATH_TEXTURE := preload("res://assets/sprites/characters/hero_death.png")
 
 ## Bereich, den der Spieler nicht verlassen kann (setzt die Run-Szene)
 var bounds := Rect2()
+## Hindernisse der Karte (der Held gleitet daran entlang), setzt die Run-Szene
+var obstacles: ObstacleMap
 ## Touch-Joystick (setzt die Run-Szene)
 var joystick: TouchJoystick
 ## Geltende Werte (Grundwert mit Boni), neu gerechnet bei jeder Änderung der Boni
@@ -203,6 +205,8 @@ func _process(delta: float) -> void:
 	position += velocity * delta
 	if bounds.has_area():
 		position = position.clamp(bounds.position, bounds.end)
+	if obstacles:
+		position = obstacles.push_out(position, body_radius)
 	if direction.x != 0.0:
 		sprite.flip_h = direction.x < 0.0
 	_animate(delta, direction != Vector2.ZERO)

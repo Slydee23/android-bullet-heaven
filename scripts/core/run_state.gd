@@ -21,6 +21,8 @@ var xp := 0
 var xp_gained := 0
 ## Übrige Neu-Würfeln-Versuche für Level-Up-Karten
 var rerolls := START_REROLLS
+## Startwert der zufälligen Hindernisse (gleicher Wert = gleiche Karte, z. B. beim Fortsetzen)
+var map_seed := 0
 ## Seelen: zählen bei jedem Kill und werden im Rastplatz-Shop für Stat-Boni ausgegeben
 var souls := 0
 ## Alle in diesem Run verdienten Seelen (auch ausgegebene, für die Zusammenfassung am Ende)
