@@ -1,10 +1,15 @@
 [gd_resource type="Resource" script_class="ObstacleKind" format=3]
 
 [ext_resource type="Script" path="res://scripts/world/obstacle_kind.gd" id="1_kind"]
+[ext_resource type="Texture2D" path="res://assets/sprites/obstacles/tree.png" id="2_tex"]
 
 [resource]
 script = ExtResource("1_kind")
 id = &"tree"
-circles = PackedVector3Array(0, 0, 16)
+circles = PackedVector3Array(0, 0, 10)
 weight = 2.0
 placeholder_color = Color(0.2, 0.32, 0.18, 1)
+texture = ExtResource("2_tex")
+variants = 2
+anchor = Vector2(64, 104)
+crown_height = 88

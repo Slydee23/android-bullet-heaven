@@ -24,6 +24,8 @@ var circle_kind := PackedInt32Array()
 var kinds: Array[ObstacleKind] = []
 var positions := PackedVector2Array()
 var extents := PackedFloat32Array()
+## Welche Grafik-Variante jedes Hindernis zeigt (ergibt sich aus der Position, gleiche Karte = gleiche Bilder)
+var variants := PackedInt32Array()
 
 var _area := Rect2()
 var _grid_size := Vector2i.ZERO
@@ -43,6 +45,7 @@ func build(map: MapData, area: Rect2, seed_value: int) -> void:
 	kinds.clear()
 	positions.clear()
 	extents.clear()
+	variants.clear()
 	if map:
 		for placement in map.fixed:
 			if placement and placement.kind:
@@ -104,6 +107,8 @@ func _add(kind: ObstacleKind, pos: Vector2) -> void:
 	kinds.append(kind)
 	positions.append(pos)
 	extents.append(kind.extent())
+	# Variante aus der Position: hängt nicht vom Zufallsgenerator ab und bleibt beim Fortsetzen gleich
+	variants.append(absi(roundi(pos.x) * 7 + roundi(pos.y) * 13) % maxi(kind.variants, 1))
 	for c in kind.circles:
 		centers.append(pos + Vector2(c.x, c.y))
 		radii.append(c.z)

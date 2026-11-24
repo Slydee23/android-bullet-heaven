@@ -135,6 +135,14 @@ func _ready() -> void:
 	add_child(obstacle_drawer)
 	move_child(obstacle_drawer, pickup_manager.get_index())
 	obstacle_drawer.obstacles = obstacles
+	# Baumkronen über Held, Gegnern und Geschossen (unter dem vorderen Waldrand), blenden über dem Helden aus
+	var crown_drawer := ObstacleDrawer.new()
+	crown_drawer.name = "ObstacleCrowns"
+	crown_drawer.layer = ObstacleDrawer.Layer.CROWN
+	crown_drawer.hero = player
+	add_child(crown_drawer)
+	move_child(crown_drawer, forest_edge_front.get_index())
+	crown_drawer.obstacles = obstacles
 
 	# Der Spieler bleibt innerhalb des Waldes
 	player.bounds = walkable

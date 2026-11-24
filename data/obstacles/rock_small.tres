@@ -1,10 +1,14 @@
 [gd_resource type="Resource" script_class="ObstacleKind" format=3]
 
 [ext_resource type="Script" path="res://scripts/world/obstacle_kind.gd" id="1_kind"]
+[ext_resource type="Texture2D" path="res://assets/sprites/obstacles/rock_small.png" id="2_tex"]
 
 [resource]
 script = ExtResource("1_kind")
 id = &"rock_small"
-circles = PackedVector3Array(0, 0, 14)
+circles = PackedVector3Array(0, 0, 12)
 weight = 1.5
 placeholder_color = Color(0.5, 0.47, 0.52, 1)
+texture = ExtResource("2_tex")
+variants = 3
+anchor = Vector2(32, 33)
