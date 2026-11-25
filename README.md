@@ -53,13 +53,14 @@ from pure need, and return to rebuild a village that the old wars left in ashes.
 - **Save and continue** – three named save slots; leave a run and pick it up later. No save-scumming: shop offers are
   locked in, and a wave you leave starts over.
 
-## Current status – Beta v0.2.0
+## Current status – Beta v0.2.5
 
 Banebound is in development. A full expedition is playable from the first wave to the boss and can be saved and continued; the village and meta progression are next.
 
 **Playable now**
 
 - Free movement through a forest arena with a touch joystick (floating or fixed)
+- **Obstacles** (rocks, stumps, old trees, a fallen log): a fixed base layout plus random ones per expedition; enemies walk around them, fireballs, ghoul leaps and boss charges stop at them, so they serve as cover
 - **An expedition of 20 waves** with growing hordes, surround and rush events, and a **boss** (the Bone Knight) in the final wave
 - **Four enemy types** with their own attacks: skeletons, leaping ghouls, fire cultists (dodgeable fireballs) and plaguebringers that burst into poison
 - Stays smooth with several hundred enemies on a mid-range phone

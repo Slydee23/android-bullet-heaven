@@ -1,6 +1,14 @@
 # Neuigkeiten in Banebound
 # Format: "## Version · Datum" beginnt eine Version (neueste oben), "- Text" ist ein Punkt. Zeilen mit "#" am Anfang sind Notizen.
 
+## Beta v0.2.5 · 25.11.2026
+- Der Wald hat jetzt Hindernisse: Felsen, Baumstümpfe, alte Bäume, ein umgestürzter Stamm und eine Felsgruppe.
+- Ein Teil steht immer an derselben Stelle, der Rest wird bei jeder neuen Expedition neu verteilt.
+- Du gleitest an Hindernissen entlang, Gegner laufen um sie herum.
+- Feuerbälle der Kultisten zerplatzen an Hindernissen. Nutze sie als Deckung!
+- Auch der Sprung der Ghule und der Ansturm des Knochenritters enden an Hindernissen.
+- Baumkronen werden durchsichtig, wenn du darunter stehst.
+
 ## Beta v0.2.0 · 24.11.2026
 - Drei Speicherplätze: Gib deinem Helden einen Namen, setze Expeditionen fort oder lösche Spielstände.
 - Das Spiel speichert automatisch zu Beginn jeder Welle und auf dem Rastplatz. Wer mitten in einer Welle aufhört, beginnt sie beim Fortsetzen von vorn.
