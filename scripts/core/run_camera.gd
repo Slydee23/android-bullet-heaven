@@ -7,6 +7,10 @@ extends Camera2D
 ## (32×32-Figuren: Nah = 96, Weit = 80 Bildschirmpixel hoch; Weit war erst 2.0, das wirkte zu fern und die Treffer-Größen unpassend)
 const ZOOM_NEAR := 3.0
 const ZOOM_FAR := 2.5
+## Zoom je Kamera-Abstand (Optionsmenü): x = ruhige Phase, y = volle Welle. „Normal“ sind ZOOM_NEAR/ZOOM_FAR.
+## „Nah“ ist für Handys gedacht (kleiner Bildschirm, 20:9 zeigt ohnehin mehr Breite).
+## Reihenfolge wie Settings.CameraDistance: Nah, Normal, Weit
+const DISTANCE_ZOOMS: Array[Vector2] = [Vector2(3.5, 3.0), Vector2(ZOOM_NEAR, ZOOM_FAR), Vector2(2.5, 2.1)]
 ## Wie schnell sich der Zoom dem Ziel nähert (klein = langsam und weich)
 const ZOOM_SPEED := 0.4
 ## Bildschirmwackeln: größter Versatz in Welt-Pixeln (bei Zoom 3× also 12 Bildschirmpixel)
@@ -51,6 +55,13 @@ func _update_shake(delta: float) -> void:
 	var amount := lerpf(SHAKE_MIN_OFFSET, SHAKE_MAX_OFFSET, _trauma * _trauma)
 	# Ganze Pixel, damit die Pixel-Art scharf bleibt
 	offset = Vector2(randf_range(-amount, amount), randf_range(-amount, amount)).round()
+
+
+## Zoom-Paar (ruhig, volle Welle) für einen Kamera-Abstand
+static func zooms(distance: int) -> Vector2:
+	if distance < 0 or distance >= DISTANCE_ZOOMS.size():
+		return Vector2(ZOOM_NEAR, ZOOM_FAR)
+	return DISTANCE_ZOOMS[distance]
 
 
 ## Springt sofort auf den Zielzoom (z. B. beim Run-Start), statt langsam dorthin zu zoomen.

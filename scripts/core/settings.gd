@@ -20,6 +20,8 @@ const MAX_IFRAME_SHARE := 0.5
 const IFRAME_NOT_SET := -1.0
 ## Kamera-Zoom zum Vergleichen (Debug-Menü): Nah 3×, Weit 2×, Dynamisch nach Gegnerdruck (siehe RunCamera)
 enum CameraZoomMode { NEAR, FAR, DYNAMIC }
+## Kamera-Abstand (Optionsmenü): wie groß die Spielwelt erscheint, Zoom-Werte siehe RunCamera.zooms()
+enum CameraDistance { NEAR, NORMAL, FAR }
 
 var joystick_mode := JoystickMode.FLOATING
 var joystick_side := JoystickSide.BOTH
@@ -42,6 +44,8 @@ var debug_waves_enabled := true
 var debug_iframe_min := IFRAME_NOT_SET
 var debug_iframe_max := IFRAME_NOT_SET
 var debug_iframe_share := IFRAME_NOT_SET
+## Handys sind klein: Dort ist „Nah“ voreingestellt, am PC „Normal“
+var camera_distance := CameraDistance.NEAR if OS.has_feature("mobile") else CameraDistance.NORMAL
 var show_player_health_bar := true
 ## Schadenszahlen über getroffenen Gegnern
 var show_damage_numbers := true
@@ -80,6 +84,9 @@ func load_settings() -> void:
 	var iframe_share: float = config.get_value("debug", "iframe_share", IFRAME_NOT_SET)
 	if iframe_min >= 0.0 and iframe_max >= 0.0 and iframe_share >= 0.0:
 		_store_debug_iframes(iframe_min, iframe_max, iframe_share)
+	var distance: int = config.get_value("display", "camera_distance", camera_distance)
+	if distance in CameraDistance.values():
+		camera_distance = distance as CameraDistance
 	var health_bar: bool = config.get_value("display", "player_health_bar", show_player_health_bar)
 	show_player_health_bar = health_bar
 	var numbers: bool = config.get_value("display", "damage_numbers", show_damage_numbers)
@@ -103,6 +110,7 @@ func save_settings() -> void:
 	config.set_value("debug", "iframe_min", debug_iframe_min)
 	config.set_value("debug", "iframe_max", debug_iframe_max)
 	config.set_value("debug", "iframe_share", debug_iframe_share)
+	config.set_value("display", "camera_distance", camera_distance)
 	config.set_value("display", "player_health_bar", show_player_health_bar)
 	config.set_value("display", "damage_numbers", show_damage_numbers)
 	config.set_value("display", "enemy_health_bars", show_enemy_health_bars)

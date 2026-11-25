@@ -536,11 +536,14 @@ func _on_settings_changed() -> void:
 
 ## Zoom-Testmodus aus dem Debug-Menü übernehmen (Spawn-Abstand passt sich über das sichtbare Rechteck von selbst an)
 func _apply_zoom() -> void:
+	var pair := RunCamera.zooms(Settings.camera_distance)
+	camera.zoom_near = pair.x
+	camera.zoom_far = pair.y
 	camera.dynamic = Settings.camera_zoom_mode == Settings.CameraZoomMode.DYNAMIC
 	if Settings.camera_zoom_mode == Settings.CameraZoomMode.FAR:
-		camera.fixed_zoom = RunCamera.ZOOM_FAR
+		camera.fixed_zoom = pair.y
 	else:
-		camera.fixed_zoom = RunCamera.ZOOM_NEAR
+		camera.fixed_zoom = pair.x
 
 
 ## TileSet mit allen 32×32-Kacheln eines Bildes (Quelle 0, Kachel = Spalte/Zeile im Bild).

@@ -182,6 +182,7 @@ Gemeinsam festgelegt, bevor das Kampfsystem entsteht. Änderungen daran nur nach
    - **Ab 50 lebenden Gegnern ist der Zoom immer ganz draußen (2×)**, fest und unabhängig von den Waves
      (am Handy getestet: ab 50 Gegnern ist der Bildschirm voll genug).
    - (Bis zur 32×32-Umstellung waren es 4× bis 3× mit 16×16-Figuren. Auf dem Bildschirm sind die Figuren jetzt 1,5× so groß.)
+   - **Kamera-Abstand im Optionsmenü (2026-11-25, Reiter Anzeige):** Nah 3,5×→3,0× · Normal 3,0×→2,5× · Weit 2,5×→2,1× (ruhig → volle Welle). Grund: Am Handy wirkte alles viel kleiner als am PC (kleiner Bildschirm, 20:9 zeigt 25 % mehr Breite). Voreinstellung: Handy „Nah“, PC „Normal“. Tabelle in `RunCamera.DISTANCE_ZOOMS`; die Debug-Knöpfe „Immer nah/weit“ nutzen die Werte des gewählten Abstands. (Aktuelle Werte; die Zeilen oben sind der alte Stand.)
    - Zwischenstufen sind nicht ganzzahlig, deshalb der Sharp-Pixel-Shader für Held und Gegner (siehe „Technische Grundentscheidungen“).
 3. **Rüstung ist nicht an der Spielfigur sichtbar**, sondern nur in Paperdoll und Icons (siehe „Ideen“ für ein mögliches Update).
 4. **Assets:** kostenlose Assets, KI-Tools (z. B. Pixellab) und selbst erstellte Platzhalter gemischt.

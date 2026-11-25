@@ -31,6 +31,11 @@ static func options() -> Array[OptionDef]:
 				0.0, (1.0 - Settings.MIN_JOYSTICK_OPACITY) * 100.0, 5.0, "%d %%"),
 		OptionDef.toggle(&"controls", "OPTIONS_VIBRATION", &"vibration"),
 		# Anzeige
+		OptionDef.choice(&"display", "OPTIONS_CAMERA_DISTANCE", &"camera_distance", [
+			[Settings.CameraDistance.NEAR, "OPTIONS_CAMERA_NEAR"],
+			[Settings.CameraDistance.NORMAL, "OPTIONS_CAMERA_NORMAL"],
+			[Settings.CameraDistance.FAR, "OPTIONS_CAMERA_FAR"],
+		]),
 		OptionDef.toggle(&"display", "OPTIONS_PLAYER_HEALTH_BAR", &"show_player_health_bar"),
 		OptionDef.toggle(&"display", "OPTIONS_ENEMY_HEALTH_BARS", &"show_enemy_health_bars"),
 		OptionDef.toggle(&"display", "OPTIONS_DAMAGE_NUMBERS", &"show_damage_numbers"),
