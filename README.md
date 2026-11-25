@@ -53,7 +53,7 @@ from pure need, and return to rebuild a village that the old wars left in ashes.
 - **Save and continue** – three named save slots; leave a run and pick it up later. No save-scumming: shop offers are
   locked in, and a wave you leave starts over.
 
-## Current status – Beta v0.2.5
+## Current status – Beta v0.2.6
 
 Banebound is in development. A full expedition is playable from the first wave to the boss and can be saved and continued; the village and meta progression are next.
 

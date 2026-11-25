@@ -1,6 +1,9 @@
 # Neuigkeiten in Banebound
 # Format: "## Version · Datum" beginnt eine Version (neueste oben), "- Text" ist ein Punkt. Zeilen mit "#" am Anfang sind Notizen.
 
+## Beta v0.2.6 · 25.11.2026
+- Neue Option „Kamera-Abstand“ (Nah, Normal, Weit) unter Optionen → Anzeige. Auf dem Handy ist „Nah“ voreingestellt.
+
 ## Beta v0.2.5 · 25.11.2026
 - Der Wald hat jetzt Hindernisse: Felsen, Baumstümpfe, alte Bäume, ein umgestürzter Stamm und eine Felsgruppe.
 - Ein Teil steht immer an derselben Stelle, der Rest wird bei jeder neuen Expedition neu verteilt.
